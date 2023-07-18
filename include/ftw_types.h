@@ -1,6 +1,6 @@
 /* ftw_types.h */
 
-#include <vacuumms/limits.h>
+#include "vacuumms/limits.h"
 
 
 #ifndef FTW_TYPES
