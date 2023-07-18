@@ -22,7 +22,12 @@ set_target_properties(ftw_general PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
     )
 
+message("PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
+message("PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}")
+
+# Use the newly configured includes here:
 target_include_directories(ftw_general PUBLIC
+    "${PROJECT_BINARY_DIR}/include"
     "${PROJECT_SOURCE_DIR}/include"
     )
 

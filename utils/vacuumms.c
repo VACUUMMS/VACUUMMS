@@ -1,8 +1,5 @@
 #include <stdio.h>
-
-#define VACUUMMS_MAJOR_VERSION 1
-#define VACUUMMS_MINOR_VERSION 1
-#define VACUUMMS_PATCH_VERSION 3
+#include <vacuumms/version.h>
 
 int main()
 {

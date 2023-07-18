@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name
-project(VACUUMMS)
+project(VACUUMMS VERSION 1.1.4)
+configure_file("cmake/vacuumms/version.h.in" "include/vacuumms/version.h")
+configure_file("cmake/vacuumms/limits.h.in" "include/vacuumms/limits.h")
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
