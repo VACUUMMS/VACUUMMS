@@ -7,6 +7,7 @@ option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
 option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
 option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
+option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
 
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
@@ -21,6 +22,7 @@ message("X11_SM_LIB set to ${X11_SM_LIB}")
 message("X11_Xext_LIB set to ${X11_Xext_LIB}")
 message("X11_ICE_LIB set to ${X11_ICE_LIB}")
 message("X11_LIBRARIES set to ${X11_LIBRARIES}")
+message("BUILD_VORONOI_UTILS set to ${BUILD_VORONOI_UTILS}")
 
 # FTW: This was done in an attempt to make the package buildable with non-system install
 #      of X11, but have abandoned this effort for now. CMake standalone build will work
@@ -50,6 +52,12 @@ endif()
 
 if (BUILD_CUDA_COMPONENTS)
     find_package(CUDA)
+endif()
+
+# There's no find_package for voropp, so just add a path
+if (BUILD_VORONOI_UTILS)
+    # set paths here
+    message("Setting voropp paths...")
 endif()
 
 add_subdirectory(libraries)
