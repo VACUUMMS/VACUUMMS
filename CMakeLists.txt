@@ -57,7 +57,10 @@ endif()
 # There's no find_package for voropp, so just add a path
 if (BUILD_VORONOI_UTILS)
     # set paths here
-    message("Setting voropp paths...")
+    add_library(voro++ SHARED IMPORTED)
+    message("Setting voropp paths... VOROPP_HOME=${VOROPP_HOME}")
+    #    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib")
+    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib/libvoro++.a")
 endif()
 
 add_subdirectory(libraries)
