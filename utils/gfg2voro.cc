@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// Hacking to interface to C linkage, because voro++ is C++, this also needs to be C++
+// Hacking to interface to C linkage; since voro++ is C++, this also needs to be C++
 extern "C"
 {
 #include <ftw_param.h>
@@ -12,7 +12,41 @@ extern "C"
 }
 #include "voro++.hh"
 
+/*
+#include "voro++.hh"
+using namespace voro;
 
+// Set up constants for the container geometry
+const double x_min=-5,x_max=5;
+const double y_min=-5,y_max=5;
+const double z_min=0,z_max=10;
+
+// Set up the number of blocks that the container is divided into
+const int n_x=6,n_y=6,n_z=6;
+
+int main() {
+
+        // Create a container with the geometry given above, and make it
+        // non-periodic in each of the three coordinates. Allocate space for
+        // eight particles within each computational block
+//      container con(x_min,x_max,y_min,y_max,z_min,z_max,n_x,n_y,n_z,
+//                      false,false,false,8);
+        container con(x_min,x_max,y_min,y_max,z_min,z_max,n_x,n_y,n_z,
+                        true,true,true,8);
+
+        //Randomly add particles into the container
+        con.import("pack_ten_cube");
+
+        // Save the Voronoi network of all the particles to text files
+        // in gnuplot and POV-Ray formats
+        con.draw_cells_gnuplot("pack_ten_cube.gnu");
+        con.draw_cells_pov("pack_ten_cube_v.pov");
+
+        // Output the particles in POV-Ray format
+        con.draw_particles_pov("pack_ten_cube_p.pov");
+}
+
+// end of example */
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +55,8 @@ int main(int argc, char *argv[])
   double x, y, z, d, e;
   char *color="White";
   double box_x=10, box_y=10, box_z=10;
-  double transmit = 0.0;
+  int verts = 0;
+  int edges = 0;
   char transmit_str[256] = "";
   double phong = 0.0;
   char phong_str[256] = "";
@@ -29,33 +64,27 @@ int main(int argc, char *argv[])
   setCommandLineParameters(argc, argv);
   if (getFlagParam("-usage"))
   {
-    printf("usage:       gfg2voro    -transmit [ 0.0 ] \n");
-    printf("                         -phong [ 0.0 ] \n");
-    printf("                         -color [ White ] \n");
-    printf("                         -clip \n");
-    printf("***FTW develop, not ready*** \n");
-    exit(0);
+    printf("usage:       gfg2voro    [ -verts || -edges ]\n");
+    printf("                         -box [ n.nn n.nn n.nn ] \n");
+    return 0;
   }
-//  writePOVHeader();
 
+  // Create a temp file for input to voro++
+  char temp_name[] = "/tmp/vacuumms-XXXXXX";
+  int fd = mkstemp(temp_name);
+  printf("FTW: got temp_name = >>>%s<<<\n", temp_name);
+  FILE* tempfile=fopen(temp_name, "w");
+
+  // Parse command line
   getVectorParam("-box", &box_x, &box_y, &box_z);
+  verts = getFlagParam("-verts"); // dump vertices
+  edges = getFlagParam("-edges"); // dump edges
 
-  if (getFlagParam("-transmit")) // sets up transmit string
-  {
-    getDoubleParam("-transmit", &transmit);
-    sprintf(transmit_str, " transmit %lf ", transmit);
-  }
-  if (getFlagParam("-phong")) // sets up phong string
-  {
-    getDoubleParam("-phong", &phong);
-    sprintf(phong_str, " finish {phong %lf} ", phong);
-  }
-  getStringParam("-color", &color);
+  printf("FTW: got box dims = %lf x %lf x %lf \n", box_x, box_y, box_z);
 
-  printf("got box dims = %lf x %lf x %lf \n", box_x, box_y, box_z);
-
-  printf("// begin gfg2pov records\n");
-  while (1) // loop over all lines
+  int particle_number=0;
+  //while (1) // loop over all lines
+  while (++particle_number) // loop over all lines
   {
     fgets(line, 256, stdin);
     if (feof(stdin)) break;
@@ -71,18 +100,41 @@ int main(int argc, char *argv[])
     z = strtod(zs, NULL);
     d = strtod(ds, NULL);
     e = strtod(es, NULL);
-
-    /* we use diameter, pov uses radius... */
-    d *= .5;
-
-    if (getFlagParam("-clip")) printf("intersection {sphere{<%lf, %lf, %lf>, %lf} box {<0,0,0>< %lf, %lf, %lf>} texture{ pigment {color %s %s } %s }}\n", 
-                                      x, y, z, d, box_x, box_y, box_z, color, transmit_str, phong_str);
-    else printf("sphere{<%lf, %lf, %lf>, %lf texture{ pigment {color %s %s } %s } }\n", x, y, z, d, color, transmit_str, phong_str);
+    
+    // Grab the centers and write to the tempfile
+    // printf("%lf,%lf,%lf\n", x, y, z);
+    fprintf(tempfile, "%d %lf %lf %lf\n", particle_number, x, y, z);
   }
- 
-  printf("***FTW develop, not ready*** \n");
-
   fclose(stdin);
+  fclose(tempfile);
+
+
+  // Now do the voro++ stuff.
+  
+  // Set up constants for the container geometry
+  const double x_min=0, x_max=box_x;
+  const double y_min=0, y_max=box_y;
+  const double z_min=0, z_max=box_z;
+  
+  // Set up the number of blocks that the container is divided into
+  const int n_x=6,n_y=6,n_z=6;
+
+  voro::container con(x_min,x_max,y_min,y_max,z_min,z_max,n_x,n_y,n_z, true,true,true,8);
+  //Randomly add particles into the container
+  con.import(temp_name);
+
+  // Create a temp file for output from voro++
+  char pov_temp_name[] = "/tmp/vacuumms-pov-XXXXXX";
+  int pov_fd = mkstemp(pov_temp_name);
+  printf("Got pov_temp_name = %s\n", pov_temp_name);
+  printf("Got pov_fd = %d\n", pov_fd);
+  con.draw_cells_pov(pov_temp_name);
+
+
+  // clean up
+//  remove(temp_name);
+//  remove(pov_temp_name);
+
   return 0;
 }
 
