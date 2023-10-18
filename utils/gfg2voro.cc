@@ -53,18 +53,19 @@ int main(int argc, char *argv[])
   char line[256];
   char *xs, *ys, *zs, *ds, *es;
   double x, y, z, d, e;
-  char *color="White";
+  const char *color="White";
   double box_x=10, box_y=10, box_z=10;
-  int verts = 0;
-  int edges = 0;
+//  int verts = 0;
+//  int edges = 0;
   char transmit_str[256] = "";
   double phong = 0.0;
   char phong_str[256] = "";
 
   setCommandLineParameters(argc, argv);
-  if (getFlagParam("-usage"))
+  if (getFlagParam((char*)"-usage"))
   {
-    printf("usage:       gfg2voro    [ -verts || -edges ]\n");
+    printf("usage:       gfg2voro    [ -verts || -edges || -povray ]\n");
+    printf("                         ( -povray dumps in povray format, otherwise just positions)\n");
     printf("                         -box [ n.nn n.nn n.nn ] \n");
     return 0;
   }
@@ -76,9 +77,10 @@ int main(int argc, char *argv[])
   FILE* tempfile=fopen(temp_name, "w");
 
   // Parse command line
-  getVectorParam("-box", &box_x, &box_y, &box_z);
-  verts = getFlagParam("-verts"); // dump vertices
-  edges = getFlagParam("-edges"); // dump edges
+  getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
+  int verts = getFlagParam((char*)"-verts"); // dump vertices
+  int edges = getFlagParam((char*)"-edges"); // dump edges
+  int povray = getFlagParam((char*)"-povray"); // povray format
 
   printf("FTW: got box dims = %lf x %lf x %lf \n", box_x, box_y, box_z);
 
@@ -130,6 +132,46 @@ int main(int argc, char *argv[])
   printf("Got pov_fd = %d\n", pov_fd);
   con.draw_cells_pov(pov_temp_name);
 
+
+  // Dump the results back to stdout
+
+  if (verts)
+  {
+      char command[1024];
+      sprintf(command, "grep sphere < %s | sed -e \"s/sphere{<//g\" | sed -e \"s/>.*//g\" |tr \",\" \"\t\"", pov_temp_name);
+
+      FILE* process = popen(command, "r"); 
+      while(1)
+      {
+        fgets(line, 256, process);
+        if (feof(process)) break;
+        printf("%s", line);
+      }
+      fclose(process);
+  }
+  else if (edges)
+  {
+      char command[1024];
+      // cylinder{<3,13,13>,<3,13,3>,r}
+
+      sprintf(command, "grep cylinder < %s", pov_temp_name);
+      FILE* process = popen(command, "r"); 
+      double x0,y0,z0,x1,y1,z1;
+// need to find a way to break loop
+      while(1)
+      {
+//        fgets(line, 256, process);
+        int retval = fscanf(process, "cylinder{<%lf,%lf,%lf>,<%lf,%lf,%lf>,r}", &x0, &y0, &z0, &x1, &y1, &z1);
+printf("FTW retval is %d\n", retval);
+if (retval == 0) break;
+        if (feof(process)) break;
+        printf("got <%lf,%lf,%lf> - <%lf,%lf,%lf>!\n", x0, y0, z0, x1, y1, z1);
+      }
+      fclose(process);
+  } 
+ 
+  
+//  FILE *popen(const char *command, const char *mode); [Option End]
 
   // clean up
 //  remove(temp_name);
