@@ -30,7 +30,11 @@ int main(int argc, char *argv[])
   int verts = getFlagParam((char*)"-verts"); // dump vertices
   int edges = getFlagParam((char*)"-edges"); // dump edges
   int povray = getFlagParam((char*)"-povray"); // povray format
-
+  if ((edges && verts) || (edges && povray) || (verts && povray)) 
+  {
+    printf("vacuumms: please specify only one of { -verts | -edges | -povray }\n");
+    exit(2);
+  }
 
   // get centers from gfg and dump to temp file for input to voro++
 
@@ -101,12 +105,12 @@ int main(int argc, char *argv[])
   if (verts)
   {
     char command[1024];
-    double x0, y0, z0;
     sprintf(command, "grep sphere < %s", pov_temp_name);
-
     FILE* process = popen(command, "r"); 
+
     while(fgets(line, 256, process))
     {
+      double x0, y0, z0;
       sscanf(line, "sphere{<%lf,%lf,%lf>,r}", &x0, &y0, &z0);
       printf("%lf\t%lf\t%lf\n", x0, y0, z0);
     }
@@ -115,16 +119,14 @@ int main(int argc, char *argv[])
   else if (edges)
   {
     char command[1024];
-    // cylinder{<3,13,13>,<3,13,3>,r}
-
     sprintf(command, "grep cylinder < %s", pov_temp_name);
     FILE* process = popen(command, "r"); 
-    double x0, y0, z0, x1, y1, z1;
 
     while(fgets(line, 256, process))
     {
-        sscanf(line, "cylinder{<%lf,%lf,%lf>,<%lf,%lf,%lf>,r}", &x0, &y0, &z0, &x1, &y1, &z1);
-        printf("%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", x0, y0, z0, x1, y1, z1);
+      double x0, y0, z0, x1, y1, z1;
+      sscanf(line, "cylinder{<%lf,%lf,%lf>,<%lf,%lf,%lf>,r}", &x0, &y0, &z0, &x1, &y1, &z1);
+      printf("%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", x0, y0, z0, x1, y1, z1);
     }
     fclose(process);
   }
@@ -136,11 +138,10 @@ int main(int argc, char *argv[])
   }
   
 
-  // clean up
+  // clean up and exit
 
   remove(temp_name);
   remove(pov_temp_name);
-
 
   return 0;
 }
