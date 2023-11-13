@@ -1,7 +1,7 @@
-
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include "rebalance.hh"
 
 extern "C"
 {
@@ -16,6 +16,9 @@ float points_y[] = {1.0,-1.0};
 int n_points = 2;
 int n_iter = 1;
 int n_var_points = 25;
+int update = 0;
+//float var_x[n_var_points], var_y[n_var_points];
+float *var_x, *var_y;
 
 float end_x = 2;
 float end_y = 0;
@@ -36,72 +39,18 @@ float energy(float x, float y)
     return total;    
 }
 
-rebalance_points()
-{
-    // get the total length of curve
-    float prev_x = start_x, prev_y = start_y;
-    float curve_length = 0;
-    for (int i=0; i < n_var_points; i++)
-    {
-        curve_length += sqrt((var_x[i] - prev_x) * (var_x[i] - prev_x) + (var_y[i] - prev_y) * (var_y[i] - prev_y));
-
-        // update for next iteration
-        prev_x = var_x[i]; 
-        prev_y = var_y[i];
-    }
-
-    // add the last piece
-    curve_length += sqrt(end_x - prev_x) * (end_x - prev_x) + (end_y - prev_y) * (end_y - prev_y));
-
-
-    // now redistribute the points 
-    float new_segment_length = curve_length / (n_var_points + 1);
-    float new_var_x[n_var_points], new_var_y[n_var_points];
-    float length_so_far = 0;
-    float cursor_x = start_x;
-    float cursor_y = start_y;
-    prev_x = start_x; prev_y = start_y;
-    // outer loop is over new set of points
-    for (int i=0; i < n_var_points; i++)
-    {
-        // move cursor along old trajectory until reaching place to drop each new point
-        float distance_since_last_point = 0;
-        while (distance_since_last_point < new_segment_length)
-        {
-            float segment_x = var_x[i] - prev_x;
-            float segment_y = var_y[i] - prev_y;
-            float segment_length = sqrt(segment_x*segment_x + segment_y*segment_y);
-            if (segment_length < distance_since_last_point) // add this segment and continue
-            {
-                cursor_x += segment_x;
-                cursor_y += segment_y;
-                continue;
-            }
-            else // new point falls along this segment
-            {
-                float fraction_of_segment = (segment_length - distance_since_last_point) / segment_length;
-                cursor_x += fraction_of_segment * segment_x;
-                cursor_y += fraction_of_segment * segment_y;
-                break;
-            }
-
-        }
-
-        // mark the point and move on to the next one
-        new_var_x[i] = cursor_x; new_var_y[i] = cursor_y;
-    }
-    
-}
-
 int main(int argc, char** argv)
 {
     setCommandLineParameters(argc, argv);
     getIntParam((char*)"-n_iter", &n_iter);
+    getIntParam((char*)"-update", &update);
     getIntParam((char*)"-n_var_points", &n_var_points);
+
+    var_x = new float[n_var_points];
+    var_y = new float[n_var_points];
 
     // initialize set of points
     
-    float var_x[n_var_points], var_y[n_var_points];
     for (int i=0; i<n_var_points; i++)
     {
         var_x[i] = start_x + (i + 1) * (end_x - start_x) / (n_var_points + 1);
@@ -221,5 +170,12 @@ int main(int argc, char** argv)
         }
         printf("%f %f\n", end_x, end_y);
 
+        // call the update to re-space points:
+        if (update && (iter % update == 0))
+        {
+            std::cout << "rebalancing at iter = " << iter << std::endl;
+            rebalance_points(start_x, start_y, end_x, end_y, var_x, var_y, n_var_points);
+            for (int i=0; i<n_var_points; i++) printf("%f %f\n", var_x[i], var_y[i]);
+        }
     }
 }
