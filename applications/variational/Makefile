@@ -4,6 +4,9 @@ variational: variational.cc rebalance.o
 tester: tester.cc rebalance.o
 	g++ -g -O0 tester.cc rebalance.o -o tester -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
+1d: 1d.cc
+	g++ 1d.cc -g -O0 -o 1d
+
 runtester: tester
 	./tester
 

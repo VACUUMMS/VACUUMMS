@@ -20,69 +20,90 @@ void rebalance_points(float _start_x, float _start_y, float _end_x, float _end_y
 
     // add the last piece
     curve_length += sqrt((_end_x - prev_x) * (_end_x - prev_x) + (_end_y - prev_y) * (_end_y - prev_y));
-
-
-    // now redistribute the points 
+    // Cut each new segment along old path to this length
     float new_segment_length = curve_length / (_n_var_points + 1);
 
-    // old_segment vector is relative
-    float old_segment_x = 0;
-    float old_segment_y = 0;
 
-    // new_segment vector is relative
-    float new_segment_x = 0;
-    float new_segment_y = 0;
-
-    // cursor sits on old path at last cut, value is absolute
+    // now the respace
     float cursor_x = _start_x;
     float cursor_y = _start_y;
+    float remainder_x = 0;         
+    float remainder_y = 0;         
+    float remainder = 0;
+    int old_point = 0;
 
-    float new_var_x[_n_var_points], new_var_y[_n_var_points]; // new points
+    float new_var_x[_n_var_points];
+    float new_var_y[_n_var_points];
 
-    int new_point_index = 0;
-
-    // outer for loop over old points/segments, inner while loop over old segment
-    for (int old_point_index = 0; old_point_index < _n_var_points; old_point_index++)
+    for (int i=0; i<_n_var_points; ) 
     {
-        // grab the segment and start working on it.
-        old_segment_x += (_var_x[old_point_index] - cursor_x);
-        old_segment_y += (_var_y[old_point_index] - cursor_y);
-        float old_segment_length = sqrt(old_segment_x*old_segment_x + old_segment_y*old_segment_y);
-
-        // cut new segments from old until there's not enough left; zero, once, or multiple
-        while (old_segment_length > new_segment_length)
+        // grab old segments until there's enough to cut at least one new one
+        // while (remainder_x < new_segment_length)
+        while (remainder < new_segment_length)
         {
-            // Cut the piece from the old segment, and add to the new
-            float delta_x = new_segment_length * (old_segment_x / old_segment_length);
-            float delta_y = new_segment_length * (old_segment_y / old_segment_length);
-            old_segment_x -= delta_x;
-            old_segment_y -= delta_y;
-            // update the vector length so we keep getting the right value when we normalize
-            old_segment_length = sqrt(old_segment_x*old_segment_x + old_segment_y*old_segment_y);
-
-            // add the remainder to the new segment
-            new_segment_x += delta_x;
-            new_segment_y += delta_y;
-
-            // mark the new point
-            new_var_x[new_point_index] = cursor_x + new_segment_x;
-            new_var_y[new_point_index] = cursor_y + new_segment_y;
-
-            printf("%d: %f, %f\n", new_point_index, new_var_x[new_point_index], new_var_y[new_point_index]);
-
-            // increment the new point counter and move the cursor, check bounds
-            if (new_point_index++ > _n_var_points)
+            float segment_x, segment_y;
+            if (old_point < _n_var_points) 
             {
-                std::cout << "too many (" << new_point_index << ") new points! exiting.\n";
-                exit(1);
+                segment_x = _var_x[old_point] - cursor_x;
+                segment_y = _var_y[old_point] - cursor_y;
             }
-            cursor_x += new_segment_x;
-            cursor_y += new_segment_y;
-            // new_segment_x = 0;
-            // new_segment_y = 0;
+            else 
+            {
+                segment_x = _end_x - cursor_x;
+                segment_y = _end_y - cursor_y;
+            }
+            remainder_x += segment_x;
+            remainder_y += segment_y;
+            remainder = sqrt(remainder_x*remainder_x + remainder_y*remainder_y);
+std::cout<<"adding, remainder = " << remainder << std::endl;
+            cursor_x = _var_x[old_point];
+            cursor_y = _var_y[old_point];
+            old_point++;
         }
-
+        
+        // now cut new segments until there's not enough left
+        // while (new_segment_length < remainder_x)
+        while (new_segment_length <= remainder)
+        {
+// need to get projections of new_segment_length onto x, y directions
+            float delta_x = (remainder_x / remainder) * new_segment_length;
+            float delta_y = (remainder_y / remainder) * new_segment_length;
+            if (i==0) 
+            {
+                new_var_x[i] = _start_x + delta_x;
+                new_var_y[i] = _start_y + delta_y;
+            }
+            else
+            {
+                new_var_x[i] = new_var_x[i-1] + delta_x;
+                new_var_y[i] = new_var_y[i-1] + delta_y;
+            }
+            remainder_x -= delta_x;
+            remainder_y -= delta_x;
+            remainder = sqrt(remainder_x*remainder_x + remainder_y*remainder_y);
+std::cout<<"cutting, remainder = " << remainder << std::endl;
+            i++; // move to next new point
+        }            
     }
+
+    // check new curve length, add distance to each variational point
+    float new_curve_length = 0;
+    prev_x = _start_x, prev_y = _start_y;
+    
+    for (int i=0; i < _n_var_points; i++)
+    {
+        new_curve_length += sqrt((_var_x[i] - prev_x) * (_var_x[i] - prev_x) + (_var_y[i] - prev_y) * (_var_y[i] - prev_y));
+
+        // update for next iteration
+        prev_x = _var_x[i]; 
+        prev_y = _var_y[i];
+    }
+
+    // add the last piece
+    new_curve_length += sqrt((_end_x - prev_x) * (_end_x - prev_x) + (_end_y - prev_y) * (_end_y - prev_y));
+
+printf("curve shrinkage: %f\n", new_curve_length / curve_length);
+
 
     // copy out
     for (int i=0; i<_n_var_points; i++)

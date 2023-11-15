@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     float* var_x = new float[n_var_points];
     float* var_y = new float[n_var_points];
 
-    float start_x = -1.0, start_y = 1.0;
+    float start_x = -1.0, start_y = -1.0;
     float end_x = 1.0, end_y = 1.0;
 
     // initialize set of points
