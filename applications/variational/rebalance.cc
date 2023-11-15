@@ -22,6 +22,7 @@ void rebalance_points(float _start_x, float _start_y, float _end_x, float _end_y
     curve_length += sqrt((_end_x - prev_x) * (_end_x - prev_x) + (_end_y - prev_y) * (_end_y - prev_y));
     // Cut each new segment along old path to this length
     float new_segment_length = curve_length / (_n_var_points + 1);
+std::cout << "new segment length: " << new_segment_length << std::endl;
 
 
     // now the respace
@@ -52,10 +53,12 @@ void rebalance_points(float _start_x, float _start_y, float _end_x, float _end_y
                 segment_x = _end_x - cursor_x;
                 segment_y = _end_y - cursor_y;
             }
+//printf("Adding new segment, remainder_x = %f + %f\n", remainder_x, segment_x);
+//printf("Adding new segment, remainder_y = %f + %f\n", remainder_y, segment_y);
             remainder_x += segment_x;
             remainder_y += segment_y;
             remainder = sqrt(remainder_x*remainder_x + remainder_y*remainder_y);
-std::cout<<"adding, remainder = " << remainder << std::endl;
+//std::cout<<"remainder = " << remainder << std::endl;
             cursor_x = _var_x[old_point];
             cursor_y = _var_y[old_point];
             old_point++;
@@ -78,10 +81,13 @@ std::cout<<"adding, remainder = " << remainder << std::endl;
                 new_var_x[i] = new_var_x[i-1] + delta_x;
                 new_var_y[i] = new_var_y[i-1] + delta_y;
             }
+//printf("cutting new segment, remainder_x = %f - %f\n", remainder_x, delta_x);
+//printf("cutting new segment, remainder_y = %f - %f\n", remainder_y, delta_y);
             remainder_x -= delta_x;
-            remainder_y -= delta_x;
+            remainder_y -= delta_y;
             remainder = sqrt(remainder_x*remainder_x + remainder_y*remainder_y);
-std::cout<<"cutting, remainder = " << remainder << std::endl;
+//std::cout<<"remainder = " << remainder << std::endl;
+////std::cout<<"cutting, delta_x = " << delta_x << ", delta_y = " << delta_y << std::endl;
             i++; // move to next new point
         }            
     }

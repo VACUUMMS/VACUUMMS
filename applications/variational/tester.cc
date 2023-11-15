@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     float* var_x = new float[n_var_points];
     float* var_y = new float[n_var_points];
 
-    float start_x = -1.0, start_y = -1.0;
+    float start_x = -1.0, start_y = 1.0;
     float end_x = 1.0, end_y = 1.0;
 
     // initialize set of points
@@ -34,7 +34,8 @@ int main(int argc, char** argv)
         var_x[i] = start_x + (i + 1) * (end_x - start_x) / (n_var_points + 1);
 //        var_y[i] = var_x[i] * var_x[i];
 // make the simplest possible linear example y=x, should recover original points
-        var_y[i] = var_x[i];
+// make parabolic example y=x*x
+        var_y[i] = var_x[i] * var_x[i];
         printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
     }
     printf("%f %f\n", end_x, end_y);
