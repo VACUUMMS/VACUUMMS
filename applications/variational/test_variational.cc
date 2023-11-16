@@ -13,12 +13,8 @@ float sqrt_epsilon = 0.000244131112315;
 
 int main(int argc, char** argv)
 {
-
     int n_var_points = 9;
-
-//    getIntParam((char*)"-n_iter", &n_iter);
-//    getIntParam((char*)"-update", &update);
-//    getIntParam((char*)"-n_var_points", &n_var_points);
+    getIntParam((char*)"-n_var_points", &n_var_points);
 
     float* var_x = new float[n_var_points];
     float* var_y = new float[n_var_points];
@@ -36,7 +32,7 @@ int main(int argc, char** argv)
 // make the simplest possible linear example y=x, should recover original points
 // make parabolic example y=x*x
         var_y[i] = var_x[i] * var_x[i];
-        printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
+        printf("%f %f\n", var_x[i], var_y[i]);
     }
     printf("%f %f\n", end_x, end_y);
 
@@ -52,10 +48,12 @@ int main(int argc, char** argv)
 
     // call the update to re-space points:
     std::cout << "rebalancing " << std::endl;
-    rebalance_points(start_x, start_y, end_x, end_y, var_x, var_y, n_var_points);
+    float shrinkage = rebalance_points(start_x, start_y, end_x, end_y, var_x, var_y, n_var_points);
 
     // dump the points after rebalance
     printf("%f %f\n", start_x, start_y);
     for (int i=0; i<n_var_points; i++) printf("%f %f\n", var_x[i], var_y[i]);
     printf("%f %f\n", end_x, end_y);
+
+//    printf("shrinkage: %f\n", shrinkage);
 }

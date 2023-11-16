@@ -16,7 +16,7 @@ float points_y[] = {1.0,-1.0};
 int n_points = 2;
 int n_iter = 1;
 int n_var_points = 25;
-int update = 0;
+int update = 1;
 //float var_x[n_var_points], var_y[n_var_points];
 float *var_x, *var_y;
 
