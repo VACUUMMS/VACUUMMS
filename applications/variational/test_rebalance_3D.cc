@@ -34,8 +34,8 @@ int main(int argc, char** argv)
 
     // dump the points before rebalance
     printf("%f %f %f\n", start_x, start_y, start_z);
-    for (int i=0; i<n_var_points; i++) printf("%f %f\n", var_x[i], var_y[i]);
-    printf("%f %f\n", end_x, end_y, end_z);
+    for (int i=0; i<n_var_points; i++) printf("%f %f %f\n", var_x[i], var_y[i], var_z[i]);
+    printf("%f %f %f\n", end_x, end_y, end_z);
 
     // call the update to re-space points:
     std::cout << "rebalancing " << std::endl;
@@ -43,8 +43,8 @@ int main(int argc, char** argv)
 
     // dump the points after rebalance
     printf("%f %f %f\n", start_x, start_y, start_z);
-    for (int i=0; i<n_var_points; i++) printf("%f %f\n", var_x[i], var_y[i]);
-    printf("%f %f\n", end_x, end_y, end_z);
+    for (int i=0; i<n_var_points; i++) printf("%f %f %f\n", var_x[i], var_y[i], var_z[i]);
+    printf("%f %f %f\n", end_x, end_y, end_z);
 
     printf("shrinkage: %f\n", shrinkage);
 }
