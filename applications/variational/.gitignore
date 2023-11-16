@@ -3,4 +3,5 @@ test_rebalance_1D
 test_rebalance_2D
 test_rebalance_3D
 variational
+variational_2D
 #

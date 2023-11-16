@@ -1,6 +1,9 @@
 variational: variational.cc rebalance.o
 	g++ -g -O0 variational.cc rebalance.o -o variational -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
+variational_2D: variational_2D.cc rebalance.o
+	g++ -g -O0 variational_2D.cc rebalance.o -o variational_2D -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
+
 rebalance.o: rebalance.cc
 	g++ -g -O0 -c rebalance.cc -lm -I/home/frankwillmore/VACUUMMS/include 
 
@@ -31,6 +34,10 @@ test_rebalance: test_rebalance_1D test_rebalance_2D test_rebalance_3D
 #plot: variational
 #	./variational -n_var_points 25 -n_iter 25000|tail -27 > x.dat 
 #	gnuplot -p -e "plot 'x.dat'" 
+
+2Dplot: variational_2D
+	./variational_2D -n_var_points 25 -n_iter 25000|tail -25 > x.dat 
+	gnuplot -p -e "plot 'x.dat'" 
 
 clean:
 	rm -f test_rebalance_1D test_rebalance_2D test_rebalance_3D rebalance.o variational

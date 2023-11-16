@@ -39,15 +39,9 @@ float energy(float x, float y)
     return total;    
 }
 
-int main(int argc, char** argv)
+// start of method
+void variational(int n_iter, int update, int n_var_points, float(*energy)(float x, float y))
 {
-    setCommandLineParameters(argc, argv);
-    getIntParam((char*)"-n_iter", &n_iter);
-    getIntParam((char*)"-update", &update);
-    getIntParam((char*)"-n_var_points", &n_var_points);
-
-    var_x = new float[n_var_points];
-    var_y = new float[n_var_points];
 
     // initialize set of points
     
@@ -108,49 +102,11 @@ int main(int argc, char** argv)
             // Not using alpha step size, just nudging. may need to normalize step size somehow
             // dE = (dE/dx)dx + (dE/dy)dy
             float dE = energy_right - energy_left;
-            std::cout << "dE = " << dE << "\n";
+//std::cout << "dE = " << dE << "\n";
 
             // update position
             new_x[i] = var_x[i] - alpha * dE * directional_x;
             new_y[i] = var_y[i] - alpha * dE * directional_y;
-
-/*
-            if (dE < 0)
-            {
-                std::cout << "nudging left.\n";
-                new_x[i] = var_x[i] - directional_x;
-                new_y[i] = var_y[i] - directional_y;
-            }
-            else if (dE > 0)
-            {
-                std::cout << "nudging right.\n";
-                new_x[i] = var_x[i] + directional_x;
-                new_y[i] = var_y[i] + directional_y;
-            }
-            else std::cout << "no change.\n";
-*/
-
-            // generate perturbation and calculate energy at perturbed points
-
-/*
-            float perturb_x = var_x[i] - delta_y;
-            float perturb_y = var_y[i] + delta_x;
-
-            float energy_0 = energy(var_x[i], var_y[i]);
-            float energy_1 = energy(var_x[i] + perturb_x, var_y[i] + perturb_y);
-     
-            // descent?
-            // or bump by epsilon in direction of normal
-
-            float delta_energy = energy_1 - energy_0; 
-            
-    //        std::cout << "energy_0 = " << energy_0 << "\tenergy_1 = " << energy_1 << std::endl;
-            std::cout << "delta_energy = " << delta_energy << std::endl;
-
-            // now make the update
-            var_x[i] -= delta_y * delta_energy ; 
-            var_y[i] += delta_x * delta_energy ; 
-*/
         }
 
         // FTW: After full pass, copy the updates back.
@@ -160,13 +116,12 @@ int main(int argc, char** argv)
             var_y[i] = new_y[i];
         }
 
-
         printf("iteration: %d\n", iter);
 
         printf("%f %f\n", start_x, start_y);
         for (int i=0; i<n_var_points; i++)
         {
-            printf("%f %f\n", var_x[i], var_y[i]);
+        printf("%f %f\n", var_x[i], var_y[i]);
         }
         printf("%f %f\n", end_x, end_y);
 
@@ -174,8 +129,26 @@ int main(int argc, char** argv)
         if (update && (iter % update == 0))
         {
             std::cout << "rebalancing at iter = " << iter << std::endl;
-            rebalance_points(start_x, start_y, end_x, end_y, var_x, var_y, n_var_points);
+            float shrinkage = rebalance_points_2D(start_x, start_y, end_x, end_y, var_x, var_y, n_var_points);
+printf("shrinkage: %f\n", shrinkage);
             for (int i=0; i<n_var_points; i++) printf("%f %f\n", var_x[i], var_y[i]);
         }
-    }
+    } // next iter
+//end of method
 }
+
+int main(int argc, char** argv)
+{
+    setCommandLineParameters(argc, argv);
+    getIntParam((char*)"-n_iter", &n_iter);
+    getIntParam((char*)"-update", &update);
+    getIntParam((char*)"-n_var_points", &n_var_points);
+
+    var_x = new float[n_var_points];
+    var_y = new float[n_var_points];
+
+    // this is replacing the old main
+    variational(n_iter, update, n_var_points, &energy);
+
+}
+
