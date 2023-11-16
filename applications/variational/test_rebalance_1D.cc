@@ -1,7 +1,6 @@
 #include <iostream>
+#include "rebalance.hh"
 
-float start_x = 0.0;
-float end_x = 100.0;
 
 void initialize(float var_x[], int n_var_points)
 {
@@ -13,6 +12,7 @@ void print_points(float var_x[], int n_var_points)
     for (int i=0; i<n_var_points; i++) std::cout << var_x[i] << std::endl;
 }
 
+/*
 void respace_points(float var_x[], int n_var_points)
 {
     float new_var_x[n_var_points];
@@ -29,7 +29,6 @@ void respace_points(float var_x[], int n_var_points)
     float new_segment_length = curve_length / (n_var_points +1);
     
     std::cout << "got curve_length = " << curve_length << std::endl;
-
 
     // now the respace
     cursor_x = start_x;
@@ -62,19 +61,23 @@ void respace_points(float var_x[], int n_var_points)
     for (int i=0; i<n_var_points; i++) var_x[i] = new_var_x[i];
 
 }
+*/
+
 
 int main()
 {
+    float start_x = 0.0;
+    float end_x = 100.0;
     int n_var_points = 9;
     float var_x[n_var_points];
 
     initialize(var_x, n_var_points);
     print_points(var_x, n_var_points);
-    respace_points(var_x, n_var_points);
+    printf("rebalancing...\n");
+    float shrinkage = rebalance_points_1D(start_x, end_x, var_x, n_var_points);
     print_points(var_x, n_var_points);
     
+    printf("shrinkage: %f\n", shrinkage);
 }
 
       
-      
-
