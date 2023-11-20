@@ -8,6 +8,7 @@ extern "C"
 #include <ftw_param.h>
 }; 
 
+/*
 float epsilon =  5.96e-08;
 float sqrt_epsilon = 0.000244131112315;
 
@@ -24,23 +25,13 @@ float start_x = -2;
 float start_y = 0;
 float end_x = 2;
 float end_y = 0;
+*/
 
-// Calculate energy at this point
-float energy(float x, float y)
-{
-    float total = 0.0;
-    for (int i=0; i<n_points; i++)
-    {
-        float r_sq = (points_x[i] - x) * (points_x[i] - x) + (points_y[i] - y) * (points_y[i] - y);
-        float r_6 = r_sq * r_sq * r_sq;
-        float r_12 = r_6 * r_6;
-        total += (1.0/r_12 - 1.0/r_6);
-    }
-    return total;    
-}
+// prototype only
+float energy(float x, float y);
 
-// start of method
-void variational(int n_iter, int update, int n_var_points, float(*energy)(float x, float y))
+// start of method. how do I want to return the curve? 
+void variational_2D(float start_x, float start_y, int n_iter, int update, int n_var_points, float(*energy)(float x, float y))
 {
 
     // initialize set of points
@@ -136,19 +127,3 @@ printf("shrinkage: %f\n", shrinkage);
     } // next iter
 //end of method
 }
-
-int main(int argc, char** argv)
-{
-    setCommandLineParameters(argc, argv);
-    getIntParam((char*)"-n_iter", &n_iter);
-    getIntParam((char*)"-update", &update);
-    getIntParam((char*)"-n_var_points", &n_var_points);
-
-    var_x = new float[n_var_points];
-    var_y = new float[n_var_points];
-
-    // this is replacing the old main
-    variational(n_iter, update, n_var_points, &energy);
-
-}
-
