@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
-#include "rebalance.hh"
 #include "variational.hh"
 
 extern "C" 
@@ -9,8 +8,10 @@ extern "C"
 #include <ftw_param.h>
 }; 
 
-float epsilon =  5.96e-08;
-float sqrt_epsilon = 0.000244131112315;
+//extern float epsilon;
+//extern float sqrt_epsilon;
+//float epsilon =  5.96e-08;
+//float sqrt_epsilon = 0.000244131112315;
 
 float points_x[] = {-0.0149969,0.0149969};
 float points_y[] = {1.0,-1.0};
@@ -58,8 +59,8 @@ int main(int argc, char** argv)
     //    variational_2D(start_x, start_y, n_iter, update, n_var_points, &energy);
 
 // this should instantiate, and then be destructed, right?
-    Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, &energy);
-
+    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, &energy);
+    v.printValues();
 
 
 }

@@ -4,18 +4,17 @@
 
 variational_2D.o: variational_2D.cc 
 	g++ -g -O0 -c variational_2D.cc -o variational_2D.o 
-#	g++ -g -O0 -c variational_2D.cc -o variational_2D.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
 rebalance.o: rebalance.cc
-	g++ -g -O0 -c rebalance.cc -lm -I/home/frankwillmore/VACUUMMS/include 
+	g++ -g -O0 -c rebalance.cc -I/home/frankwillmore/VACUUMMS/include 
+
+constants.o: constants.cc
+	g++ -g -O0 -c constants.cc 
 
 # Tests
 
-test_variational_2D: test_variational_2D.cc variational_2D.o rebalance.o
+test_variational_2D: test_variational_2D.cc variational_2D.o rebalance.o constants.o
 	g++ -g -O0 test_variational_2D.cc variational_2D.o rebalance.o -o test_variational_2D -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
-
-#test_variational_2D: test_variational_2D.cc rebalance.o
-#	g++ -g -O0 tester.cc rebalance.o -o tester -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
 test_rebalance_1D: test_rebalance_1D.cc rebalance.o
 	g++ test_rebalance_1D.cc rebalance.o -g -O0 -o test_rebalance_1D -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
@@ -40,9 +39,9 @@ test_rebalance: test_rebalance_1D test_rebalance_2D test_rebalance_3D
 #	./variational -n_var_points 25 -n_iter 25000|tail -27 > x.dat 
 #	gnuplot -p -e "plot 'x.dat'" 
 
-2Dplot: variational_2D
-	./variational_2D -n_var_points 25 -n_iter 25000|tail -25 > x.dat 
-	gnuplot -p -e "plot 'x.dat'" 
+#2Dplot: variational_2D
+#	./variational_2D -n_var_points 25 -n_iter 25000|tail -25 > x.dat 
+#	gnuplot -p -e "plot 'x.dat'" 
 
 clean:
 	rm -f test_rebalance_1D test_rebalance_2D test_rebalance_3D variational *.o

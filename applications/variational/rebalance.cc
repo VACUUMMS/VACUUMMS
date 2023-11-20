@@ -1,5 +1,9 @@
 #include <math.h>
-#include "rebalance.hh"
+#include "variational.hh"
+
+extern float epsilon;
+extern float sqrt_epsilon;
+//#include "rebalance.hh"
 
 float rebalance_points_3D(float _start_x, float _start_y, float _start_z, float _end_x, float _end_y, float _end_z, float* _var_x, float* _var_y, float* _var_z, int _n_var_points)
 {
