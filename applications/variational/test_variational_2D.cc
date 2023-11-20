@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rebalance.hh"
+#include "variational.hh"
 
 extern "C" 
 {
@@ -49,11 +50,17 @@ int main(int argc, char** argv)
     getIntParam((char*)"-update", &update);
     getIntParam((char*)"-n_var_points", &n_var_points);
 
-    var_x = new float[n_var_points];
-    var_y = new float[n_var_points];
+// moved to constructor
+//    var_x = new float[n_var_points];
+//    var_y = new float[n_var_points];
 
     // this is replacing the old main
-    variational_2D(start_x, start_y, n_iter, update, n_var_points, &energy);
+    //    variational_2D(start_x, start_y, n_iter, update, n_var_points, &energy);
+
+// this should instantiate, and then be destructed, right?
+    Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, &energy);
+
+
 
 }
 

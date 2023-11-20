@@ -3,7 +3,8 @@
 #	g++ -g -O0 variational.cc rebalance.o -o variational -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
 variational_2D.o: variational_2D.cc 
-	g++ -g -O0 -c variational_2D.cc -o variational_2D.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
+	g++ -g -O0 -c variational_2D.cc -o variational_2D.o 
+#	g++ -g -O0 -c variational_2D.cc -o variational_2D.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
 rebalance.o: rebalance.cc
 	g++ -g -O0 -c rebalance.cc -lm -I/home/frankwillmore/VACUUMMS/include 

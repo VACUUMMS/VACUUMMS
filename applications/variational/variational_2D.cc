@@ -2,36 +2,56 @@
 #include <stdio.h>
 #include <math.h>
 #include "rebalance.hh"
-
-extern "C"
-{
-#include <ftw_param.h>
-}; 
-
-/*
-float epsilon =  5.96e-08;
-float sqrt_epsilon = 0.000244131112315;
-
-float points_x[] = {-0.0149969,0.0149969};
-float points_y[] = {1.0,-1.0};
-int n_points = 2;
-int n_iter = 1;
-int n_var_points = 25;
-int update = 1;
-//float var_x[n_var_points], var_y[n_var_points];
-float *var_x, *var_y;
-
-float start_x = -2;
-float start_y = 0;
-float end_x = 2;
-float end_y = 0;
-*/
+#include "variational.hh"
 
 // prototype only
 float energy(float x, float y);
 
-// start of method. how do I want to return the curve? 
-void variational_2D(float start_x, float start_y, int n_iter, int update, int n_var_points, float(*energy)(float x, float y))
+
+// constructor definition
+Variational2D::Variational2D(float _start_x, float _start_y, float _end_x, float _end_y, int _n_iter, int _update, int _n_var_points, float(*_energy_function)(float x, float y))
+{
+    // grab the passed values
+    start_x = _start_x; 
+    start_y = _start_y; 
+    end_x = _end_x; 
+    end_y = _end_y; 
+    n_iter  = _n_iter;
+    update  = _update;;
+    n_var_points = _n_var_points;
+    energy_function = _energy_function;
+
+    std::cout << "constructing " << this << std::endl;
+
+    // start constructing 
+
+    var_x = new float[n_var_points];
+    var_y = new float[n_var_points];
+
+    // initialize set of points
+    
+    for (int i=0; i<n_var_points; i++)
+    {
+        var_x[i] = start_x + (i + 1) * (end_x - start_x) / (n_var_points + 1);
+        var_y[i] = start_y + (i + 1) * (end_y - start_y) / (n_var_points + 1);
+        printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
+    }
+
+
+}
+
+Variational2D::~Variational2D()
+{
+    // free any resources allocated
+    std::cout << "destructing " << this << std::endl;
+    delete var_x, var_y;
+}
+
+
+
+/* everything from here to bottom is the meat
+
+// start of old method. how do I want to return the curve? 
 {
 
     // initialize set of points
@@ -42,6 +62,13 @@ void variational_2D(float start_x, float start_y, int n_iter, int update, int n_
         var_y[i] = start_y + (i + 1) * (end_y - start_y) / (n_var_points + 1);
         printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
     }
+
+^^^moved to constructor
+
+
+
+
+
 
     // now iterate
     for (int iter=0; iter < n_iter; iter++)
@@ -127,3 +154,5 @@ printf("shrinkage: %f\n", shrinkage);
     } // next iter
 //end of method
 }
+
+end of meat */ 
