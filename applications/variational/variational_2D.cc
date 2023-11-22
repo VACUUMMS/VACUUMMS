@@ -17,14 +17,13 @@ float (*energy)(float x, float y);
 // constructor definition
 //Variational2D::Variational2D(float _start_x, float _start_y, float _end_x, float _end_y, int _n_iter, int _update, int _n_var_points, float(*_energy_function)(float x, float y))
 
-Variational2D::Variational2D(float _start_x, 
-                             float _start_y, 
-                             float _end_x, 
-                             float _end_y, 
-                             int _n_iter, 
-                             int _update, 
-                             int _n_var_points, 
-                             float(*_energy_function)(float x, float y))
+void Variational2D::init(float _start_x, 
+                    float _start_y, 
+                    float _end_x, 
+                    float _end_y, 
+                    int _n_iter, 
+                    int _update, 
+                    int _n_var_points)
 {
     // grab the passed values
     start_x = _start_x; 
@@ -34,12 +33,6 @@ Variational2D::Variational2D(float _start_x,
     n_iter  = _n_iter;
     update  = _update;;
     n_var_points = _n_var_points;
-    energy_function = _energy_function;
-
-energy = energy_function;
-
-    // getting energy function explicitly so setting this to nullptr
-    configuration = nullptr;
 
     std::cout << "constructing " << this << std::endl;
 
@@ -58,6 +51,19 @@ energy = energy_function;
     }
 }
 
+Variational2D::Variational2D(float _start_x, 
+                             float _start_y, 
+                             float _end_x, 
+                             float _end_y, 
+                             int _n_iter, 
+                             int _update, 
+                             int _n_var_points, 
+                             float(*_energy_function)(float x, float y))
+{
+    init(_start_x, _start_y, _end_x, _end_y, _n_iter, _update, _n_var_points);
+    configuration = nullptr;
+    energy_function = _energy_function;
+}
 
 Variational2D::Variational2D(float _start_x, 
                              float _start_y, 
@@ -68,10 +74,9 @@ Variational2D::Variational2D(float _start_x,
                              int _n_var_points, 
                              Configuration _configuration)
 {
-    // Call the other constructor for initiation
-    Variational2D(_start_x, _start_y, _end_x, _end_y, _n_iter, _update, _n_var_points, nullptr);
-    // getting energy function from Configuration so setting this to nullptr
+    init(_start_x, _start_y, _end_x, _end_y, _n_iter, _update, _n_var_points);
     configuration = _configuration;
+    energy_function = nullptr;
 }
 
 /*

@@ -52,9 +52,10 @@ int main(int argc, char** argv)
 
     char filename[] = "x.gfg";
     Configuration c = Configuration(filename);
+//printf("here and c=%d\n", c);
     Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, c);
+//printf("here2 and v=%d\n", v);
     v.printValues();
 
 }
-
 

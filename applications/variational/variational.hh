@@ -21,6 +21,14 @@ class Variational2D
 
     public:
 
+        void init(float start_x, 
+             float start_y, 
+             float end_x, 
+             float end_y, 
+             int n_iter, 
+             int update, 
+             int n_var_points);
+
         Variational2D(float start_x, 
                       float start_y, 
                       float end_x, 

@@ -25,6 +25,7 @@ Configuration::Configuration()
 Configuration::Configuration(char *filename)
 {
     FILE* infile = fopen(filename, "r");
+std::cout << "wuh " << infile << std::endl;
     float x, y, z, sigma, epsilon;
     records = std::vector<ConfigurationRecord>();    
 
