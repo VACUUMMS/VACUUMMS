@@ -1,5 +1,5 @@
 // variational.hh
-
+#include "configuration.hh"
 
 
 class Variational2D
@@ -13,11 +13,11 @@ class Variational2D
         int n_iter;
         int update;
         int n_var_points;
+        Configuration configuration;
         float(*energy_function)(float x, float y);
 
         float* var_x;
         float* var_y;
-
 
     public:
 
@@ -29,6 +29,15 @@ class Variational2D
                       int update, 
                       int n_var_points, 
                       float(*energy_function)(float x, float y));
+
+        Variational2D(float start_x, 
+                      float start_y, 
+                      float end_x, 
+                      float end_y, 
+                      int n_iter, 
+                      int update, 
+                      int n_var_points, 
+                      Configuration c);
 
         void printValues();
         void iterate();

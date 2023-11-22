@@ -8,13 +8,8 @@ extern "C"
 #include <ftw_param.h>
 }; 
 
-//extern float epsilon;
-//extern float sqrt_epsilon;
-//float epsilon =  5.96e-08;
-//float sqrt_epsilon = 0.000244131112315;
-
-float points_x[] = {-0.0149969,0.0149969};
-float points_y[] = {1.0,-1.0};
+//float points_x[] = {-0.0149969,0.0149969};
+//float points_y[] = {1.0,-1.0};
 int n_points = 2;
 int n_iter = 1;
 int n_var_points = 25; 
@@ -27,8 +22,9 @@ float start_y = 0;
 float end_x = 2;
 float end_y = 0;
 
-void variational_2D(float start_x, float start_y, int n_iter, int update, int n_var_points, float(*energy)(float x, float y));
+//void variational_2D(float start_x, float start_y, int n_iter, int update, int n_var_points, float(*energy)(float x, float y));
 
+/* 
 // Calculate energy at this point
 float energy(float x, float y)
 {
@@ -42,7 +38,7 @@ float energy(float x, float y)
     }   
     return total;    
 }
-
+*/
 
 int main(int argc, char** argv)
 {
@@ -51,17 +47,14 @@ int main(int argc, char** argv)
     getIntParam((char*)"-update", &update);
     getIntParam((char*)"-n_var_points", &n_var_points);
 
-// moved to constructor
-//    var_x = new float[n_var_points];
-//    var_y = new float[n_var_points];
-
-    // this is replacing the old main
-    //    variational_2D(start_x, start_y, n_iter, update, n_var_points, &energy);
-
 // this should instantiate, and then be destructed, right?
-    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, &energy);
+//    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, &energy);
+
+    char filename[] = "x.gfg";
+    Configuration c = Configuration(filename);
+    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, c);
     v.printValues();
 
-
 }
+
 
