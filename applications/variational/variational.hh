@@ -10,8 +10,6 @@ class Variational2D
         float start_y; 
         float end_x; 
         float end_y; 
-        int n_iter;
-        int update;
         int n_var_points;
         Configuration configuration;
         float(*energy_function)(float x, float y);
@@ -25,16 +23,12 @@ class Variational2D
              float start_y, 
              float end_x, 
              float end_y, 
-             int n_iter, 
-             int update, 
              int n_var_points);
 
         Variational2D(float start_x, 
                       float start_y, 
                       float end_x, 
                       float end_y, 
-                      int n_iter, 
-                      int update, 
                       int n_var_points, 
                       float(*energy_function)(float x, float y));
 
@@ -42,8 +36,6 @@ class Variational2D
                       float start_y, 
                       float end_x, 
                       float end_y, 
-                      int n_iter, 
-                      int update, 
                       int n_var_points, 
                       Configuration c);
 

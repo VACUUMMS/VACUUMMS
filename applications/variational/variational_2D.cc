@@ -10,19 +10,13 @@ float sqrt_epsilon;
 
 // prototype only
 //float energy(float x, float y);
-
 float (*energy)(float x, float y);
 
-
-// constructor definition
-//Variational2D::Variational2D(float _start_x, float _start_y, float _end_x, float _end_y, int _n_iter, int _update, int _n_var_points, float(*_energy_function)(float x, float y))
 
 void Variational2D::init(float _start_x, 
                     float _start_y, 
                     float _end_x, 
                     float _end_y, 
-                    int _n_iter, 
-                    int _update, 
                     int _n_var_points)
 {
     // grab the passed values
@@ -30,8 +24,6 @@ void Variational2D::init(float _start_x,
     start_y = _start_y; 
     end_x = _end_x; 
     end_y = _end_y; 
-    n_iter  = _n_iter;
-    update  = _update;;
     n_var_points = _n_var_points;
 
     std::cout << "constructing " << this << std::endl;
@@ -55,12 +47,10 @@ Variational2D::Variational2D(float _start_x,
                              float _start_y, 
                              float _end_x, 
                              float _end_y, 
-                             int _n_iter, 
-                             int _update, 
                              int _n_var_points, 
                              float(*_energy_function)(float x, float y))
 {
-    init(_start_x, _start_y, _end_x, _end_y, _n_iter, _update, _n_var_points);
+    init(_start_x, _start_y, _end_x, _end_y, _n_var_points);
     configuration = nullptr;
     energy_function = _energy_function;
 }
@@ -69,23 +59,14 @@ Variational2D::Variational2D(float _start_x,
                              float _start_y, 
                              float _end_x, 
                              float _end_y, 
-                             int _n_iter, 
-                             int _update, 
                              int _n_var_points, 
                              Configuration _configuration)
 {
-    init(_start_x, _start_y, _end_x, _end_y, _n_iter, _update, _n_var_points);
+    init(_start_x, _start_y, _end_x, _end_y, _n_var_points);
     configuration = _configuration;
     energy_function = nullptr;
 }
 
-/*
-{
-//    this->Variational2D((float _start_x, float _start_y, float _end_x, float _end_y, int _n_iter, int _update, int _n_var_points, NULL)
-    // initialize as with above constructor, but set configuration
-    configuration = _configuration;
-}
-*/
 
 Variational2D::~Variational2D()
 {
@@ -103,29 +84,8 @@ void Variational2D::printValues()
 }
     
 
-
-/* everything from here to bottom is the meat
-
-// start of old method. how do I want to return the curve? 
-{
-
-    // initialize set of points
-    
-    for (int i=0; i<n_var_points; i++)
-    {
-        var_x[i] = start_x + (i + 1) * (end_x - start_x) / (n_var_points + 1);
-        var_y[i] = start_y + (i + 1) * (end_y - start_y) / (n_var_points + 1);
-        printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
-    }
-
-^^^moved to constructor
-*/
-
 void Variational2D::iterate()
-{    // now iterate
-    for (int iter=0; iter < n_iter; iter++)
-    {
-
+{
         // FTW: need to make a full pass before updating!!!
         float new_x[n_var_points], new_y[n_var_points];
         // looking along direction of line, point before and point after
@@ -186,7 +146,7 @@ void Variational2D::iterate()
             var_y[i] = new_y[i];
         }
 
-        printf("iteration: %d\n", iter);
+//        printf("iteration: %d\n", iter);
 
         printf("%f %f\n", start_x, start_y);
         for (int i=0; i<n_var_points; i++)
@@ -195,7 +155,7 @@ void Variational2D::iterate()
         }
         printf("%f %f\n", end_x, end_y);
 
-    }    
+//    }    
 }
 
 
