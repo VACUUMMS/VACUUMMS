@@ -9,6 +9,8 @@ class ConfigurationRecord
         float z;
         float sigma;
         float epsilon;
+        float sigma_6;
+        float sigma_12;
 
         ConfigurationRecord(float _x, float _y, float _z, float _sigma, float _epsilon);
 };

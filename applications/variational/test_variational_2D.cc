@@ -53,12 +53,16 @@ int main(int argc, char** argv)
     char filename[] = "x.gfg";
     Configuration c = Configuration(filename);
 //printf("here and c=%d\n", c);
-    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_var_points, c);
+    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_var_points, &c);
 //printf("here2 and v=%d\n", v);
     v.printValues();
-printf("here2 and v=%ld\n", v);
+printf("here2 and v=%p\n", (void*)&v);
     v.iterate();
-printf("here2 and v=%ld\n", v);
+printf("here3 and v=%p\n", (void*)&v);
+    v.printValues();
+printf("here4 and v=%p\n", (void*)&v);
+    v.rebalancePoints2D();
+printf("here5 and v=%p\n", (void*)&v);
     v.printValues();
 
 }

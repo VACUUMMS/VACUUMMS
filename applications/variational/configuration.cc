@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "configuration.hh"
 
 ConfigurationRecord::ConfigurationRecord(float _x, float _y, float _z, float _sigma, float _epsilon)
@@ -8,6 +9,8 @@ ConfigurationRecord::ConfigurationRecord(float _x, float _y, float _z, float _si
     z = _z;
     sigma = _sigma;
     epsilon = _epsilon;
+    sigma_6 = powf(sigma, (1.0/6.0));
+    sigma_12 = sqrt(sigma_6);
 
     /* FTW: will add this in later, and include in energy calcs also
     int mirror_depth_x = 0;
@@ -25,9 +28,10 @@ Configuration::Configuration()
 Configuration::Configuration(char *filename)
 {
     FILE* infile = fopen(filename, "r");
-std::cout << "wuh " << infile << std::endl;
+std::cout << "constructing Configuration from " << filename << " as " << infile << std::endl;
     float x, y, z, sigma, epsilon;
     records = std::vector<ConfigurationRecord>();    
+std::cout << "constructing Configuration.records as " << this << "." << &records << std::endl;
 
     while (!feof(infile))
     {
@@ -52,7 +56,7 @@ float Configuration::insertionEnergy2D(float x, float y)
                    + (records[i].y - y) * (records[i].y - y);
         float r_6 = r_sq * r_sq * r_sq;
         float r_12 = r_6 * r_6;
-        total += (1.0/r_12 - 1.0/r_6);
+        total += 4 * records[i].epsilon * (records[i].sigma_12/r_12 - records[i].sigma_6/r_6);
     }
     return total;
 }
