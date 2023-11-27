@@ -4,8 +4,8 @@
 #include "variational.hh"
 
 // These are provided and initialized in constants.o
-float epsilon;
-float sqrt_epsilon;
+//extern float epsilon;
+//extern float sqrt_epsilon;
 
 
 // prototype only
@@ -26,7 +26,7 @@ void Variational2D::init(float _start_x,
     end_y = _end_y; 
     n_var_points = _n_var_points;
 
-    std::cout << "constructing/initing Variational2D: " << this << std::endl;
+    // std::cout << "constructing/initing Variational2D: " << this << std::endl;
 
     // start constructing 
 
@@ -39,7 +39,7 @@ void Variational2D::init(float _start_x,
     {
         var_x[i] = start_x + (i + 1) * (end_x - start_x) / (n_var_points + 1);
         var_y[i] = start_y + (i + 1) * (end_y - start_y) / (n_var_points + 1);
-        printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
+        // printf("var[i] = {%f,%f}\n", var_x[i], var_y[i]);
     }
 }
 
@@ -73,7 +73,7 @@ Variational2D::Variational2D(float _start_x,
 Variational2D::~Variational2D()
 {
     // free any resources allocated
-    std::cout << "destructing " << this << std::endl;
+    // std::cout << "destructing " << this << std::endl;
     delete var_x, var_y;
 }
 
@@ -117,21 +117,21 @@ void Variational2D::iterate()
         directional_x /= directional_magnitude;
         directional_y /= directional_magnitude;
 
-        std::cout << "direction for var point " << i << ": (" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
+//FTW
+        std::cout << "direction for var point " << i << ": (" << var_x[i] << ", " << var_y[i] << "):(" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
 
         // resize the direction vector to machine epsilon
         directional_x *= sqrt_epsilon;
         directional_y *= sqrt_epsilon;
+
+printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
+printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
 
         // sample energy to evaluate derivative
         float sample_left_x = var_x[i] - directional_x;
         float sample_left_y = var_y[i] - directional_y;
         float sample_right_x = var_x[i] + directional_x;
         float sample_right_y = var_y[i] + directional_y;
-
-// I don't have a value for energy() so it's segfaulting here
-//            float energy_left = energy(sample_left_x, sample_left_y);
-//            float energy_right = energy(sample_right_x, sample_right_y);
 
         float energy_left;
         float energy_right;
@@ -147,7 +147,7 @@ void Variational2D::iterate()
             energy_right = energy_function(sample_right_x, sample_right_y);
         }
 
-printf("%f <--> %f\n", energy_left, energy_right);
+printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
         // Not using alpha step size, just nudging. may need to normalize step size somehow
         // dE = (dE/dx)dx + (dE/dy)dy
         float dE = energy_right - energy_left;
@@ -165,12 +165,14 @@ printf("%f <--> %f\n", energy_left, energy_right);
         var_y[i] = new_y[i];
     }
 
+    /* FTW
     printf("%f %f\n", start_x, start_y);
     for (int i=0; i<n_var_points; i++)
     {
         printf("%f %f\n", var_x[i], var_y[i]);
     }
     printf("%f %f\n", end_x, end_y);
+    */
 }
 
 

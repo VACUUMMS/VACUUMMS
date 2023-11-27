@@ -2,11 +2,11 @@
 #variational: variational.cc rebalance.o
 #	g++ -g -O0 variational.cc rebalance.o -o variational -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
-variational_2D.o: variational_2D.cc 
-	g++ -g -O0 -c variational_2D.cc -o variational_2D.o 
+variational_2D.o: variational_2D.cc constants.o
+	g++ -g -O0 -c variational_2D.cc constants.o -o variational_2D.o 
 
-rebalance.o: rebalance.cc
-	g++ -g -O0 -c rebalance.cc -I/home/frankwillmore/VACUUMMS/include 
+#rebalance.o: rebalance.cc
+#	g++ -g -O0 -c rebalance.cc -I/home/frankwillmore/VACUUMMS/include 
 
 constants.o: constants.cc
 	g++ -g -O0 -c constants.cc 
@@ -19,8 +19,9 @@ configuration.o: configuration.hh configuration.cc
 test_configuration: configuration.o
 	g++ -g -O0 test_configuration.cc configuration.o -o test_configuration
 
-test_variational_2D: test_variational_2D.cc variational_2D.o rebalance.o constants.o configuration.o
-	g++ -g -O0 test_variational_2D.cc variational_2D.o rebalance.o configuration.o constants.o -o test_variational_2D -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
+#test_variational_2D: test_variational_2D.cc variational_2D.o rebalance.o constants.o configuration.o
+test_variational_2D: test_variational_2D.cc variational_2D.o constants.o configuration.o
+	g++ -g -O0 test_variational_2D.cc variational_2D.o configuration.o constants.o -o test_variational_2D -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
 test_rebalance_1D: test_rebalance_1D.cc rebalance.o
 	g++ test_rebalance_1D.cc rebalance.o -g -O0 -o test_rebalance_1D -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/

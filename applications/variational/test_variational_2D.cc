@@ -47,23 +47,29 @@ int main(int argc, char** argv)
     getIntParam((char*)"-update", &update);
     getIntParam((char*)"-n_var_points", &n_var_points);
 
-// this should instantiate, and then be destructed, right?
-//    Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_iter, update, n_var_points, &energy);
-
     char filename[] = "x.gfg";
     Configuration c = Configuration(filename);
-//printf("here and c=%d\n", c);
+
+    printf("dumping configuration:\n");
+    c.dumpContents();
+    printf("done. \n\n");
+
     Variational2D v = Variational2D(start_x, start_y, end_x, end_y, n_var_points, &c);
-//printf("here2 and v=%d\n", v);
+    printf("dumping Variational2D object: %p\n", &v);
     v.printValues();
-printf("here2 and v=%p\n", (void*)&v);
+    printf("done. \n\n");
+
+    printf("iterating:\n\n");
     v.iterate();
-printf("here3 and v=%p\n", (void*)&v);
+    printf("dumping Variational2D object: %p\n", &v);
     v.printValues();
-printf("here4 and v=%p\n", (void*)&v);
+    printf("done. \n\n");
+
+    printf("rebalancing:\n\n");
     v.rebalancePoints2D();
-printf("here5 and v=%p\n", (void*)&v);
+    printf("dumping Variational2D object: %p\n", &v);
     v.printValues();
+    printf("done. \n\n");
 
 }
 

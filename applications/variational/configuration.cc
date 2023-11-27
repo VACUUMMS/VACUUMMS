@@ -28,10 +28,10 @@ Configuration::Configuration()
 Configuration::Configuration(char *filename)
 {
     FILE* infile = fopen(filename, "r");
-std::cout << "constructing Configuration from " << filename << " as " << infile << std::endl;
+    //std::cout << "constructing Configuration from " << filename << " as " << infile << std::endl;
     float x, y, z, sigma, epsilon;
     records = std::vector<ConfigurationRecord>();    
-std::cout << "constructing Configuration.records as " << this << "." << &records << std::endl;
+    //std::cout << "constructing Configuration.records as " << this << "." << &records << std::endl;
 
     while (!feof(infile))
     {
@@ -44,11 +44,11 @@ void Configuration::dumpContents()
 {
     for (int i = 0; i < records.size(); i++)
         printf("%f\t%f\t%f\t%f\t%f\n", records[i].x, records[i].y, records[i].z, records[i].sigma, records[i].epsilon);
-//        std::cout << records[i].x << "\t" << records[i].y << "\t" << records[i].z << "\t" << records[i].sigma << "\t" << records[i].epsilon << std::endl;
 }
 
 float Configuration::insertionEnergy2D(float x, float y)
 {
+printf("Calculating insertion energy at %0.012f, %0.012f\n", x,y);
     float total = 0.0;
     for (int i=0; i<records.size(); i++)
     {
