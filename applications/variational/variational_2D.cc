@@ -79,10 +79,10 @@ Variational2D::~Variational2D()
 
 void Variational2D::printValues()
 {
-    std::cout << start_x << " " << start_y << std::endl;
+    std::cout << "#####" << start_x << " " << start_y << std::endl;
     for (int i=0; i<n_var_points; i++)
-        std::cout << var_x[i] << " " << var_y[i] << std::endl;
-    std::cout << end_x << " " << end_y << std::endl;
+        std::cout << "#####" << var_x[i] << " " << var_y[i] << std::endl;
+    std::cout << "#####" << end_x << " " << end_y << std::endl;
 }
     
 
