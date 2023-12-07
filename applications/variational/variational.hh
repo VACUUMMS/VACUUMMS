@@ -45,6 +45,7 @@ class Variational2D
 
         void printValues();
         void iterate();
+        void iterateWork();
 
         ~Variational2D();
 
