@@ -32,37 +32,51 @@ Each variational point *p* is neighbored by a point before and a point after (on
 
 The direction of these derivatives is derived by rotating the (x, y, z) coordinate system such that the z-axis points in the direction **n** of the variational path at the variational point being evaluated. The parameters of this rotation are determined from mapping **k**, the unit vector in the z-direction to **n**.
 
-This mapping of the original coordinate system is done by finding a rotation axis **u** and an angle of rotation *theta* resulting in the unit vector **k** mapping to the unit vector **n**. The same rotation maps the **i** and **j** unit vectors (pointing along the original x and y axes) to vectors **directional_x** and  **directional_y**, mutually orthogonal to each other and to the variational path, forming a basis set that spans the perpendicular plane.
+This mapping of the original coordinate system is done by finding a rotation axis **u** and an angle of rotation *theta* resulting in the unit vector **k** mapping to the unit vector **n**. The same rotation maps the **i** and **j** unit vectors (pointing along the original x and y axes) to orthogonal vectors **directional_x** and  **directional_y**, forming a basis set that spans the plane perpendicular to the variational path at the point of interest.
 
-The cross product **k** X **n** emits an axis of rotation from **k** to **n** and the sine of an angle *theta* between them:
+The axis of rotation **u** can be taken from the cross product:
 
-​		|**k** X **n**| = |**k**||**n**|sin(*theta*) = sin(*theta*)
+ ~~**k** X **n** emits an axis of rotation **u** from **k** to **n** plus a signed quantity *phi*, -1 < *phi* < 1 which for small angles, is equal to the sine of the angle between **k** and **n**:~~
 
-											 |	 i	 j	 k	 |
-			u = k X n = |k||n|sin(theta) =	 |	 0	 0	 1	 |
-											 |	n_x	n_y	n_z	 | 
+​		~~|**k** X **n**| = |**k**||**n**||*phi*|;~~
 
-**u** is the unit vector pointing in the direction of the cross product:
+~~The sign of phi depends on the direction of rotation; positive from **k** to **n**, and changing its sign is equivalent to swapping rows in the determinant below:~~
+
+					 |	 i	 j	 k	 |
+			k X n =	 |	 0	 0	 1	 |
+					 |	n_x	n_y	n_z	 | 
+
+~~**u** is a unit vector pointing in the direction of the cross product:~~
 
 ​		**u** = **k** X **n** / |**k** X **n**|
 
-and a value of *theta* can be extracted *via* the arcsine function. Since more than one value of *theta* can produce the given sine value, the value must be refined. Depending on the sign of the dot product **k * n**, one of the following applies:
+The value of *theta* can most efficiently be extracted from the dot product:
 
-Dot product is positive (-PI/2 < *theta* < PI/2):
+​		**k** * **n** = |**k**||**n**|cos(*theta*)
 
-​		*theta* = *arcsin*(|**k** X **n**|)
+​		theta = arccos(**k * n**)
 
-Dot product is negative and:
+~~A value of *theta* can be extracted from *phi* *via* the arcsine function. Since more than one value of *phi* can produce the given sine value, the value must be selected according to the sign of the dot product **k * n**:~~
 
-​		Cross product is positive:
+~~Dot product is zero or positive (-PI/2 <= *theta* <= PI/2):~~
 
-​				*theta* = *PI* - *arcsin*(|**k** X **n**|)
+​		~~*theta* = *arcsin*( *phi* )~~
 
-​		Cross product is negative:
+~~Dot product is negative and:~~
 
-​				*theta* = -*PI* - *arcsin*(|**k** X **n**|)
+​		~~Cross product is positive (PI/2 < *theta* < PI):~~
 
-Thus the quaternion-based mapping of the rotation is:
+​				~~*theta* = *PI* - *arcsin*( *phi* )~~
+
+​		~~Cross product is negative (-PI < *theta* < -PI/2) :~~
+
+​				~~*theta* = -*PI* - *arcsin*( *phi* )~~
+
+~~These rules define a continuous set of values for the angle *theta* as is expected.~~
+
+This gives values of theta ranging from -PI/2 to PI/2. For rotations larger/smaller than this range, the direction of rotation is accounted for by an inverted sign in the value of the cross product, i.e. a rotation angle greater or less than this range is described by a rotation about an axis pointing in the opposite direction. 
+
+The angle *theta* and the axis **u** define the following quaternion-based mapping of the rotation:
 
 ​		***q** = cos(theta/2) + **u** sin(theta/2)*
 
@@ -72,7 +86,7 @@ where **v** is the original vector and **v'** is the vector in the rotated coord
 
 ​		**p_n+1** = **p_n** + *alpha* * ***grad*** E(**p_n**)
 
-### Example 1
+#### Example of rotation
 
 Consider a variational point where the variational curve points in the direction (1,1,1). Let *a* = *sqrt(*3*)*/3 and b = sqrt(2). The unit vector **n** is thus (*a, a, a*). Mapping **v** = **k** (unit vector in z-direction) to **v' = n** means evaluating the cross product determinant:
 
@@ -82,11 +96,17 @@ Consider a variational point where the variational curve points in the direction
 
 The magnitude of which is:
 
-​		|**k** X **n**| = *sqrt( -a* * -*a* + *a* * *a* ) = *a sqrt*(2) = *ab*			
+​		|**k** X **n**| = *sqrt( -a* * -*a* + *a* * *a* ) = *a sqrt*(2) = *ab*
 
-Since the dot product **k** * **n** is *a*, which is positive, the value for *theta* can be taken directly from the arcsine (dagger: there is an additional step if the dot product is negative):
+~~Since the dot product **k** * **n** is *a*, which is positive, the value for *theta* can be taken directly from the arcsine:~~
 
-​		*theta* = *arcsin ( ab )* = 0.955.
+The value of theta is taken from the dot product:
+
+​		~~*theta* = *arcsin ( ab )* = 0.955.~~
+
+​		**k * n** = a
+
+​		*theta* = *arccos(a)* = 0.955.
 
 and the rotation vector **u** is:
 
@@ -108,41 +128,40 @@ And as a sanity check, rotating the unit vector **k** should return the original
 
 ​		**qkq*** = 0.577**i** + 0.577**j** + 0.576**k** ~ (*a, a, a*)
 
-### Example 2
+#### Example 2 of rotation
 
 Consider a variational point where the variational curve points in the direction **n** = (0,1,0) (parallel to y-axis). Mapping **v** = **k** (unit vector in z-direction) to **v'** = **n** means evaluating the cross product determinant:
 
 					|	i	j	k	|
-		k X n = 	|	0	0	1	|	=	(-1, 0, 0)
+			k X n =	|	0	0	1	|	=	(-1, 0, 0)
 					|	0	1	0	| 
 
-The magnitude of which is:
+In this case, the dot product **k * n** = 0, so:
 
-		|k X n| = 1				
-
-thus:
-
-		theta = arcsin(k X n) = arcsin(-1) = - pi/2
+			theta = arccos(0) = PI/2
+			(WAS theta = arcsin(phi) = arcsin(-1) = - PI/2)
 
 and:
 
-		u = k X n / |k X n| = (-1, 0, 0) = -i
+			u = k X n / |k X n| = (-1, 0, 0) = -i
 
 Thus giving the rotation quaternion conjugate pair:
 
-		q = cos(pi/4) - i sin(pi/4) = (sqrt(2)/2) (1 - i)
-		q* = cos(pi/4) + i sin(pi/4) = (sqrt(2)/2) (1 + i)
+		q = cos(PI/4) - i sin(PI/4) = (sqrt(2)/2) (1 - i)
+		q* = cos(PI/4) + i sin(PI/4) = (sqrt(2)/2) (1 + i)
 
 Applying this to the vector **v** = (1, 0, 0):
 
 ```	**v'** = **qvq*** = (sqrt(2)/2) * (sqrt(2)/2) (1 - i) (i) (1 + i)
-	v' = qvq* = (sqrt(2)/2) * (sqrt(2)/2) (1 - i) (i) (1 + i)
+	v' = qvq* = (sqrt(2)/2) (1 - i) (i) (sqrt(2)/2) (1 + i)
+			  = (1/2) (1 - i) (i) (1 + i)
 	          = (1/2) (i - (-1))(1 + i)
+	          = (1/2) (i + 1)(1 + i)
               = (1/2) (i + (-1) + 1 + i)
               = i
 ```
 
-
+Rotating **v** = **k** to **v'** = **j** around **-i** means that **v** = **i**  rotates to itself, as is expected. 
 
 # Prerequisites
 
