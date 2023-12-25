@@ -4,49 +4,63 @@ The variational module is an extension to VACUUMMS that allows for finding the p
 
 <image of general problem>
 
+## Overview
+
 Taking the set of pairs of Voronoi vertices (in lieu of CESA cavity centers, which are nearly identical but which lack the implicit pairing of Voronoi edges) as input. The following protocol is applied for each edge:
 
-- End points and an energy function (or molecular configuration) are taken as input. A set of evenly spaced points (the variational points) is created between these endpoints, comprising the variational path. 
+- End points and an insertion energy function (or molecular configuration) are taken as input. A set of evenly spaced points (the variational points) is created between these endpoints, comprising the variational path. 
 
-- An iterative gradient descent is performed for each of the variational points, nudging each point to a lower energy. This nudging is perpendicular to the variational path, and is determined by evaluating directional derivatives of the energy in the plane (or line in 2D) perpendicular to the path:
+- An gradient descent is performed for the variational curve by calculating insertion energy gradients for each of the variational points, then shifting the entire variational curve to the updated points. The gradients are calculated in the plane perpendicular to the variational path at each variational point, using directional derivatives of the energy:
 
   <image of perpendicular>
 
-  The direction of these derivatives is derived by rotating the (x, y, z) system such that the z-axis points in the direction of the variational path at the variational point being evaluated. The parameters of the rotation are determined from mapping z, such that the same rotation maps unit vectors pointing along the x and y axes to mutually orthogonal vectors, orthogonal to the variational path at that point. The **gradient** of the energy function in the plane spanned by the resulting vectors is calculated and used to generate the perturbation of the variational point. (see section on quaternion info)
-
-- Calling the `iterate()` function causes this process is repeated for each of the variational points along the curve, each being evaluated individually before updating the entire curve to the perturbed points. 
+  Calling the `iterate()` function causes this process to be repeated for the set of variational points along the variational curve, each being evaluated individually before updating the entire curve to the perturbed points. Thus the entire curve is shifted simultaneously.
 
 - Since these perturbations invariably cause an uneven stretching of the curve, a `rebalancePoints()` method is provided that performs an adaptive re-spacing of points evenly along the variational curve:
 
   <image of respacing>
 
-- Convergence criteria have not yet been implemented. A likely candidate is when mean-square-displacement of variational points falls below a threshold value with each successive iteration, or alternatively, a fixed number of iterations is performed. 
+- Convergence criteria of the curve to the variational limit have not yet been implemented. A likely candidate is when it is determined that mean-square-displacement of variational points falls below a threshold value with each successive iteration, or alternatively, a fixed number of iterations is performed. 
 
-## Quaternion form for gradient descent in perpendicular plane
+## Calculation of gradient in perpendicular plane
 
-Each variational point *p* is neighbored by a point before and a point after (one of being the start or end point of the variational curve itself for the first and last variational points, respectively). These two neighboring points are used to define an axis perpendicular (within numerical approximation) to the variational curve at the variational point of interest. Let these points be represented as **p_fore** and **p_aft** and the unit vector tangent to the variational curve as **n**:
+Each variational point *p* is neighbored by a point before and a point after (one of being the start or end point of the variational curve itself for the first and last variational points, respectively). These two neighboring points are used to define an axis perpendicular (within numerical approximation) to the variational curve at the variational point of interest. Let these points be represented as **p_fore** and **p_aft** and the unit vector **n** tangent to the variational curve as:
 
 ​		**n = (p_aft - p_fore)** /  **| p_aft - p_fore |**  
 
 ​		<image of this>
 
-as the axis about which the base coordinate system is rotated through an angle *theta* resulting in the unit vector **k** mapping to **n**. In this way, the **i** and **j** unit vectors map to unit vectors orthogonal to the variational curve, as well as orthogonal to one another, thereby providing a basis set that spans the plane perpendicular to the variational curve. In this plane, a step of gradient descent is performed for each variational point. Only after all of the perturbations have been calculated for each individual point is the entire curve updated. 
+The direction of these derivatives is derived by rotating the (x, y, z) coordinate system such that the z-axis points in the direction **n** of the variational path at the variational point being evaluated. The parameters of this rotation are determined from mapping **k**, the unit vector in the z-direction to **n**.
 
-The cross product **k** X **n** describes the rotation from **k** to **n** through an angle *theta* around the axis **u**:
+This mapping of the original coordinate system is done by finding a rotation axis **u** and an angle of rotation *theta* resulting in the unit vector **k** mapping to the unit vector **n**. The same rotation maps the **i** and **j** unit vectors (pointing along the original x and y axes) to vectors **directional_x** and  **directional_y**, mutually orthogonal to each other and to the variational path, forming a basis set that spans the perpendicular plane.
 
-​		**k** X **n** = |**k**||**n**|sin(*theta*)
+The cross product **k** X **n** emits an axis of rotation from **k** to **n** and the sine of an angle *theta* between them:
 
-										 |	 i	 j	 k	 |
-			k X n = |k||n|sin(theta) =	 |	 0	 0	 1	 |
-										 |	n_x	n_y	n_z	 | 
+​		|**k** X **n**| = |**k**||**n**|sin(*theta*) = sin(*theta*)
+
+											 |	 i	 j	 k	 |
+			u = k X n = |k||n|sin(theta) =	 |	 0	 0	 1	 |
+											 |	n_x	n_y	n_z	 | 
 
 **u** is the unit vector pointing in the direction of the cross product:
 
 ​		**u** = **k** X **n** / |**k** X **n**|
 
-and *theta* is extracted *via* the arcsine function, with the dot-product **k** * **n** preserving the sense (+/-) of rotation:
+and a value of *theta* can be extracted *via* the arcsine function. Since more than one value of *theta* can produce the given sine value, the value must be refined. Depending on the sign of the dot product **k * n**, one of the following applies:
 
-​		*theta* = *arcsin*[ ( |**k** X **n**| /|**k**||**n**| ) ( **k** * **n** /|**k** * **n**| ) ] 
+Dot product is positive (-PI/2 < *theta* < PI/2):
+
+​		*theta* = *arcsin*(|**k** X **n**|)
+
+Dot product is negative and:
+
+​		Cross product is positive:
+
+​				*theta* = *PI* - *arcsin*(|**k** X **n**|)
+
+​		Cross product is negative:
+
+​				*theta* = -*PI* - *arcsin*(|**k** X **n**|)
 
 Thus the quaternion-based mapping of the rotation is:
 
