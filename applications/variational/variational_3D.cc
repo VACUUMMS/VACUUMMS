@@ -118,6 +118,36 @@ void Variational3D::iterate()
         else aft_z = end_z;
 
 //FTW This is where to dig in with my quaternions
+        // tangent_* here is the vector tangent to the curve S at the point of interest
+        float tangent_x = aft_x - fore_x;
+        float tangent_y = aft_y - fore_y;
+        float tangent_z = aft_z - fore_z;
+
+        // use the k vector to find the mapping/rotation theta, and axis u
+        
+        // dot product
+        // k = (0,0,1), and k dot tangent is just tangent_z, so no operation is necessary?
+
+        // cross product gives the angle
+        // k X tangent = |k| |tangent| sin(theta) 
+        // theta = arcsin(|k X tangent|/|tangent|) since |k| = 1
+        // and u is [-tangent_y, tangent_x, 0]
+
+        // the quaternion versor is thus: q  = cos(theta/2) + u sin (theta/2)
+        // with conjugate:                q* = cos(theta/2) - u sin (theta/2)
+
+        // so the vectors (1, 0, 0) and (0, 1, 0) become:
+        // (bunch of math here)
+    
+
+    
+
+
+
+
+
+
+        
         // sample directional derivative (direction perpendicular to curve)
 
         // get direction perpendicular, negative reciprocal of slope

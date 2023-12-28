@@ -1,8 +1,8 @@
 # VACUUMMS variational module
 
-The variational module is an extension to VACUUMMS that allows for finding the paths of least energy along the insertion energy landscape. 
+The variational module is an extension to VACUUMMS that allows for finding the paths of least insertion energy along the insertion energy landscape. 
 
-<image of general problem>
+![](variational.png)
 
 ## Overview
 
@@ -10,15 +10,17 @@ Taking the set of pairs of Voronoi vertices (in lieu of CESA cavity centers, whi
 
 - End points and an insertion energy function (or molecular configuration) are taken as input. A set of evenly spaced points (the variational points) is created between these endpoints, comprising the variational path. 
 
+  ![variational points](/home/frankwillmore/VACUUMMS/applications/variational/variational points.png)
+
 - An gradient descent is performed for the variational curve by calculating insertion energy gradients for each of the variational points, then shifting the entire variational curve to the updated points. The gradients are calculated in the plane perpendicular to the variational path at each variational point, using directional derivatives of the energy:
 
-  <image of perpendicular>
+  <image of perpendicular>![variational perpendicular](/home/frankwillmore/VACUUMMS/applications/variational/variational perpendicular.png)
 
   Calling the `iterate()` function causes this process to be repeated for the set of variational points along the variational curve, each being evaluated individually before updating the entire curve to the perturbed points. Thus the entire curve is shifted simultaneously.
 
 - Since these perturbations invariably cause an uneven stretching of the curve, a `rebalancePoints()` method is provided that performs an adaptive re-spacing of points evenly along the variational curve:
 
-  <image of respacing>
+  <image of respacing>![variational respace](/home/frankwillmore/VACUUMMS/applications/variational/variational respace.png)
 
 - Convergence criteria of the curve to the variational limit have not yet been implemented. A likely candidate is when it is determined that mean-square-displacement of variational points falls below a threshold value with each successive iteration, or alternatively, a fixed number of iterations is performed. 
 
@@ -28,9 +30,7 @@ Each variational point *p* is neighbored by a point before and a point after (on
 
 ​		**n = (p_aft - p_fore)** /  **| p_aft - p_fore |**  
 
-​		<image of this>
-
-The direction of these derivatives is derived by rotating the (x, y, z) coordinate system such that the z-axis points in the direction **n** of the variational path at the variational point being evaluated. The parameters of this rotation are determined from mapping **k**, the unit vector in the z-direction to **n**.
+![](/home/frankwillmore/VACUUMMS/applications/variational/variational n.png)The direction of these derivatives is derived by rotating the (x, y, z) coordinate system such that the z-axis points in the direction **n** of the variational path at the variational point being evaluated. The parameters of this rotation are determined from mapping **k**, the unit vector in the z-direction to **n**.
 
 This mapping of the original coordinate system is done by finding a rotation axis **u** and an angle of rotation *theta* resulting in the unit vector **k** mapping to the unit vector **n**. The same rotation maps the **i** and **j** unit vectors (pointing along the original x and y axes) to orthogonal vectors **directional_x** and  **directional_y**, forming a basis set that spans the plane perpendicular to the variational path at the point of interest.
 
@@ -46,9 +46,11 @@ The axis of rotation **u** can be taken from the cross product:
 			k X n =	 |	 0	 0	 1	 |
 					 |	n_x	n_y	n_z	 | 
 
-~~**u** is a unit vector pointing in the direction of the cross product:~~
+where **u** is a unit vector pointing in the direction of the cross product:
 
 ​		**u** = **k** X **n** / |**k** X **n**|
+
+![variational cross](/home/frankwillmore/VACUUMMS/applications/variational/variational cross.png)
 
 The value of *theta* can most efficiently be extracted from the dot product:
 
@@ -56,25 +58,7 @@ The value of *theta* can most efficiently be extracted from the dot product:
 
 ​		theta = arccos(**k * n**)
 
-~~A value of *theta* can be extracted from *phi* *via* the arcsine function. Since more than one value of *phi* can produce the given sine value, the value must be selected according to the sign of the dot product **k * n**:~~
-
-~~Dot product is zero or positive (-PI/2 <= *theta* <= PI/2):~~
-
-​		~~*theta* = *arcsin*( *phi* )~~
-
-~~Dot product is negative and:~~
-
-​		~~Cross product is positive (PI/2 < *theta* < PI):~~
-
-​				~~*theta* = *PI* - *arcsin*( *phi* )~~
-
-​		~~Cross product is negative (-PI < *theta* < -PI/2) :~~
-
-​				~~*theta* = -*PI* - *arcsin*( *phi* )~~
-
-~~These rules define a continuous set of values for the angle *theta* as is expected.~~
-
-This gives values of theta ranging from -PI/2 to PI/2. For rotations larger/smaller than this range, the direction of rotation is accounted for by an inverted sign in the value of the cross product, i.e. a rotation angle greater or less than this range is described by a rotation about an axis pointing in the opposite direction. 
+This gives values of theta ranging from -PI/2 to PI/2. For rotations larger/smaller than this range, the direction of rotation emerges as an inverted sign in the value of the cross product, i.e. a rotation angle greater or less than values in this range is described by a rotation about an axis pointing in the opposite direction. 
 
 The angle *theta* and the axis **u** define the following quaternion-based mapping of the rotation:
 
@@ -98,11 +82,7 @@ The magnitude of which is:
 
 ​		|**k** X **n**| = *sqrt( -a* * -*a* + *a* * *a* ) = *a sqrt*(2) = *ab*
 
-~~Since the dot product **k** * **n** is *a*, which is positive, the value for *theta* can be taken directly from the arcsine:~~
-
 The value of theta is taken from the dot product:
-
-​		~~*theta* = *arcsin ( ab )* = 0.955.~~
 
 ​		**k * n** = a
 
@@ -118,7 +98,7 @@ Thus giving the rotation quaternion conjugate pair:
 
 ​		**q*** = *cos*(*theta/2*) - **u** sin(*theta/2*) = 0.888 + 0.325**i** - 0.325**j**
 
-Rotating the **i** and **j** vectors gives directionals:
+Rotating the **i** and **j** vectors gives the directionals to be used for the gradient:
 
 ​		**directional_x** =  **qiq*** = 0.788**i** + 0.212**j** + 0.577**k**
 
@@ -139,7 +119,6 @@ Consider a variational point where the variational curve points in the direction
 In this case, the dot product **k * n** = 0, so:
 
 			theta = arccos(0) = PI/2
-			(WAS theta = arcsin(phi) = arcsin(-1) = - PI/2)
 
 and:
 
@@ -161,15 +140,19 @@ Applying this to the vector **v** = (1, 0, 0):
               = i
 ```
 
-Rotating **v** = **k** to **v'** = **j** around **-i** means that **v** = **i**  rotates to itself, as is expected. 
+Rotating **v** = **k** to **v'** = **j** around **-i** means that **v** = **i** rotates to itself, as is expected. 
+
+
 
 # Prerequisites
 
-The variational module requires the voronoi module (which in turn requires voro++) to be installed. This integration is handled by CMake and/or spack, but does require that voro++ be available. 
+Enabling the variational module requires the voronoi module (which in turn requires voro++) to be installed. This integration is handled by CMake and/or spack, but does require that voro++ be available. 
+
+
 
 # Developer overview
 
-The variational module is written in C++, and makes use of existing VACUUMMS code via *'extern "C" '* declarations. Relevant classes are Variational2D and Variational3D which take a set of endpoints, number of variational points to be used, and either a molecular configuration or alternatively, a pointer to a function of x, y, (and z in 3D case) and returns a scalar energy value.
+The variational module is written in C++, and makes use of some existing VACUUMMS code via *'extern "C" '* declarations. Relevant classes are Variational2D and Variational3D which take a set of endpoints, number of variational points to be used, and either a molecular configuration or alternatively, a pointer to a function of x, y, (and z in 3D case) and returns a scalar energy value.
 
 
 ```
