@@ -46,6 +46,7 @@ void Configuration::dumpContents()
         printf("%f\t%f\t%f\t%f\t%f\n", records[i].x, records[i].y, records[i].z, records[i].sigma, records[i].epsilon);
 }
 
+/*
 float Configuration::insertionEnergy2D(float x, float y)
 {
 printf("Calculating insertion energy at %0.012f, %0.012f\n", x,y);
@@ -60,8 +61,10 @@ printf("Calculating insertion energy at %0.012f, %0.012f\n", x,y);
     }
     return total;
 }
+*/
 
-float Configuration::insertionEnergy3D(float x, float y, float z)
+//float Configuration::insertionEnergy3D(float x, float y, float z)
+float Configuration::insertionEnergy(float x, float y, float z)
 {
     float total = 0.0;
     for (int i=0; i<records.size(); i++)

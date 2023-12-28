@@ -5,8 +5,7 @@ int main()
 {
     char filename[] = "x.gfg";
     Configuration c = Configuration(filename);
-//    std::cout << c << std::endl;
     c.dumpContents();
 
-    std::cout << "insertion energy: " << c.insertionEnergy2D(0.0,0.0) << std::endl;
+    std::cout << "insertion energy: " << c.insertionEnergy(0.0, 0.0, 0.0) << std::endl;
 }

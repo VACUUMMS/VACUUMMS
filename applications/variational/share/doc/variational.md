@@ -10,7 +10,7 @@ Taking the set of pairs of Voronoi vertices (in lieu of CESA cavity centers, whi
 
 - End points and an insertion energy function (or molecular configuration) are taken as input. A set of evenly spaced points (the variational points) is created between these endpoints, comprising the variational path. 
 
-  ![variational points](/home/frankwillmore/VACUUMMS/applications/variational/variational points.png)
+  ![variational points](variational points.png)
 
 - An gradient descent is performed for the variational curve by calculating insertion energy gradients for each of the variational points, then shifting the entire variational curve to the updated points. The gradients are calculated in the plane perpendicular to the variational path at each variational point, using directional derivatives of the energy:
 

@@ -30,7 +30,8 @@ class Configuration
         Configuration(char *filename);
         Configuration();
         void dumpContents();
-        float insertionEnergy2D(float x, float y);
-        float insertionEnergy3D(float x, float y, float z);
+//        float insertionEnergy2D(float x, float y);
+//        float insertionEnergy3D(float x, float y, float z);
+        float insertionEnergy(float x, float y, float z);
 };
 
