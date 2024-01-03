@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "variational.hh"
+#include "quaternion.hh"
 
 // These are provided and initialized in constants.o
 //extern float epsilon;
@@ -33,6 +34,7 @@ void Variational3D::init(float _start_x,
 
     var_x = new float[n_var_points];
     var_y = new float[n_var_points];
+    var_z = new float[n_var_points];
 
     // initialize set of points
     
@@ -104,71 +106,76 @@ void Variational3D::iterate()
 
     for (int i=0; i<n_var_points; i++)
     {
-        if (i>0) fore_x = var_x[i-1];
-        else fore_x = start_x;
-        if (i+1<n_var_points) aft_x = var_x[i+1];
-        else aft_x = end_x;
-        if (i>0) fore_y = var_y[i-1];
-        else fore_y = start_y;
-        if (i+1<n_var_points) aft_y = var_y[i+1];
-        else aft_y = end_y;
-        if (i>0) fore_z = var_z[i-1];
-        else fore_z = start_z;
-        if (i+1<n_var_points) aft_z = var_z[i+1];
-        else aft_z = end_z;
+        if (i>0)
+        {
+            fore_x = var_x[i-1];
+            fore_y = var_y[i-1];
+            fore_z = var_z[i-1];
+        }
+        else 
+        {
+            fore_x = start_x;
+            fore_y = start_y;
+            fore_z = start_z;
+        }
 
-//FTW This is where to dig in with my quaternions
+        if (i+1<n_var_points) 
+        {
+            aft_x = var_x[i+1];
+            aft_y = var_y[i+1];
+            aft_z = var_z[i+1];
+        }
+        else
+        {
+            aft_x = end_x;
+            aft_y = end_y;
+            aft_z = end_z;
+        }
+
         // tangent_* here is the vector tangent to the curve S at the point of interest
         float tangent_x = aft_x - fore_x;
         float tangent_y = aft_y - fore_y;
         float tangent_z = aft_z - fore_z;
 
-        // use the k vector to find the mapping/rotation theta, and axis u
-        
-        // dot product
-        // k = (0,0,1), and k dot tangent is just tangent_z, so no operation is necessary?
+        float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
+        float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
 
-        // cross product gives the angle
-        // k X tangent = |k| |tangent| sin(theta) 
-        // theta = arcsin(|k X tangent|/|tangent|) since |k| = 1
-        // and u is [-tangent_y, tangent_x, 0]
+        // variables to receive the values of the rotated i and j unit vectors
+        float i_x, i_y, i_z; 
+        rotate_vector(1, 0, 0, theta, u_x, u_y, u_z, &i_x, &i_y, &i_z);
+        float j_x, j_y, j_z; 
+        rotate_vector(0, 1, 0, theta, u_x, u_y, u_z, &j_x, &j_y, &j_z);
+        // the directional vectors are ostensibly normalized
 
-        // the quaternion versor is thus: q  = cos(theta/2) + u sin (theta/2)
-        // with conjugate:                q* = cos(theta/2) - u sin (theta/2)
-
-        // so the vectors (1, 0, 0) and (0, 1, 0) become:
-        // (bunch of math here)
-    
-
-    
-
-
-
-
-
-
-        
-        // sample directional derivative (direction perpendicular to curve)
+        // sample directional derivatives (directions perpendicular to curve)
 
         // get direction perpendicular, negative reciprocal of slope
-        float directional_y = -(aft_x - fore_x);
-        float directional_x = (aft_y - fore_y);
+        // float directional_y = -(aft_x - fore_x);
+        // float directional_x = (aft_y - fore_y);
 
-        // normalize the direction vector
-        float directional_magnitude = sqrt(directional_x*directional_x + directional_y*directional_y);
-        directional_x /= directional_magnitude;
-        directional_y /= directional_magnitude;
-
-//FTW
-        std::cout << "direction for var point " << i << ": (" << var_x[i] << ", " << var_y[i] << "):(" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
+//        std::cout << "direction for var point " << i << ": (" << var_x[i] << ", " << var_y[i] << "):(" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
 
         // resize the direction vector to machine epsilon
-        directional_x *= sqrt_epsilon;
-        directional_y *= sqrt_epsilon;
+        // directional_x *= sqrt_epsilon;
+        // directional_y *= sqrt_epsilon;
 
-printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
-printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
+        // resize the directionals as deltas
 
+        i_x *= sqrt_epsilon;
+        i_y *= sqrt_epsilon;
+        i_z *= sqrt_epsilon;
+
+        j_x *= sqrt_epsilon;
+        j_y *= sqrt_epsilon;
+        j_z *= sqrt_epsilon;
+
+//printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
+//printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
+
+        // energy at var[i], and at directional points
+        float energy_center, energy_i, energy_j;
+        
+/*
         // sample energy to evaluate derivative
         float sample_left_x = var_x[i] - directional_x;
         float sample_left_y = var_y[i] - directional_y;
@@ -176,30 +183,40 @@ printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
         float sample_right_x = var_x[i] + directional_x;
         float sample_right_y = var_y[i] + directional_y;
         float sample_right_z = var_z[i] + directional_z;
-
-        float energy_left;
-        float energy_right;
+*/
+        //float energy_left;
+        //float energy_right;
 
         if (use_configuration_energy)
         {
-            energy_left = configuration->insertionEnergy2D(sample_left_x, sample_left_y);
-            energy_right = configuration->insertionEnergy2D(sample_right_x, sample_right_y);
+            // energy_left = configuration->insertionEnergy2D(sample_left_x, sample_left_y);
+            // energy_right = configuration->insertionEnergy2D(sample_right_x, sample_right_y);
+            energy_center = configuration->insertionEnergy(var_x[i], var_y[i], var_z[i]);
+            energy_i = configuration->insertionEnergy(var_x[i] + i_x, var_y[i] + i_y, var_z[i] + i_z);
+            energy_j = configuration->insertionEnergy(var_x[i] + j_x, var_y[i] + j_y, var_z[i] + j_z);
         }
         else 
         {
-            energy_left = energy_function(sample_left_x, sample_left_y, sample_left_z);
-            energy_right = energy_function(sample_right_x, sample_right_y, sample_right_z);
+            printf("using non-configuration energy function not implemented.\n");
+            exit(1);
         }
 
-printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
+//printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
         // Not using alpha step size, just nudging. may need to normalize step size somehow
         // dE = (dE/dx)dx + (dE/dy)dy
-        float dE = energy_right - energy_left;
+//        float dE = energy_right - energy_left;
 //std::cout << "dE = " << dE << "\n";
 
+        float dE_i = energy_i - energy_center;
+        float dE_j = energy_j - energy_center;
+
         // update position
-        new_x[i] = var_x[i] - alpha * dE * directional_x;
-        new_y[i] = var_y[i] - alpha * dE * directional_y;
+//        new_x[i] = var_x[i] - alpha * dE * directional_x;
+//        new_y[i] = var_y[i] - alpha * dE * directional_y;
+
+        new_x[i] = var_x[i] - alpha * (dE_i * i_x + dE_j * j_x);
+        new_y[i] = var_y[i] - alpha * (dE_i * i_y + dE_j * j_y);
+        new_z[i] = var_z[i] - alpha * (dE_i * i_z + dE_j * j_z);
     }
 
     // FTW: After full pass, copy the updates back.
@@ -207,11 +224,14 @@ printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
     {
         var_x[i] = new_x[i];
         var_y[i] = new_y[i];
+        var_z[i] = new_z[i];
     }
 }
 
 float Variational3D::rebalancePoints3D()
 {
+
+printf("FTW: entering rebalancePoints3D()\n");
     // get the total length of curve
     float prev_x = start_x;
     float prev_y = start_y;
@@ -243,6 +263,7 @@ float Variational3D::rebalancePoints3D()
     float new_segment_length = curve_length / (n_var_points + 1);
 
 
+printf("FTW: starting respace in rebalancePoints3D()\n");
     // now the respace
     float cursor_x = start_x;
     float cursor_y = start_y;
@@ -317,6 +338,8 @@ float Variational3D::rebalancePoints3D()
             i++; // move to next new point
         }            
     }
+ 
+printf("FTW checking new curve\n");
 
     // check new curve length, add distance to each variational point
     float new_curve_length = 0;
@@ -337,6 +360,7 @@ float Variational3D::rebalancePoints3D()
         prev_y = new_var_y[i];
         prev_z = new_var_z[i];
     }
+printf("FTW adding last piece \n");
 
     // add the last piece
     new_curve_length += sqrt(
@@ -347,6 +371,8 @@ float Variational3D::rebalancePoints3D()
     
     float shrinkage = new_curve_length / curve_length;
 
+printf("FTW preparing to copy out \n");
+
     // copy out
     for (int i=0; i<n_var_points; i++)
     {
@@ -355,5 +381,6 @@ float Variational3D::rebalancePoints3D()
         var_z[i] = new_var_z[i];
     }
    
+printf("FTW returning \n");
     return shrinkage;
 }

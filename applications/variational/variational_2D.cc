@@ -137,8 +137,10 @@ printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
 
         if (use_configuration_energy)
         {
-            energy_left = configuration->insertionEnergy2D(sample_left_x, sample_left_y);
-            energy_right = configuration->insertionEnergy2D(sample_right_x, sample_right_y);
+            //energy_left = configuration->insertionEnergy2D(sample_left_x, sample_left_y);
+            //energy_right = configuration->insertionEnergy2D(sample_right_x, sample_right_y);
+            energy_left = configuration->insertionEnergy(sample_left_x, sample_left_y, 0);
+            energy_right = configuration->insertionEnergy(sample_right_x, sample_right_y, 0);
         }
         else 
         {
