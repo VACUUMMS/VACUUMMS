@@ -16,6 +16,9 @@ quaternion.o: quaternion.hh quaternion.cc
 
 # Tests
 
+test_variational_FCC: test_variational_FCC.cc 
+	g++ -g -O0 test_variational_FCC.cc configuration.o -o test_variational_FCC
+
 test_configuration: configuration.o
 	g++ -g -O0 test_configuration.cc configuration.o -o test_configuration
 
