@@ -243,7 +243,7 @@ printf("Got delta = (%f, %f, %f)\n", delta_x, delta_y, delta_z);
 float Variational3D::rebalancePoints3D()
 {
 
-printf("FTW: entering rebalancePoints3D()\n");
+//printf("FTW: entering rebalancePoints3D()\n");
 
     // get the total length of curve
     float prev_x = start_x;
@@ -273,9 +273,9 @@ printf("FTW: entering rebalancePoints3D()\n");
                   + (end_z - prev_z) * (end_z - prev_z)
                     );
     // Cut each new segment along old path to this length
-    float new_segment_length = curve_length / (n_var_points + 1);
+    float new_segment_length = curve_length / (n_var_points + 1.0);
 
-printf("FTW: starting respace in rebalancePoints3D()\n");
+//printf("FTW: starting respace in rebalancePoints3D()\n");
     // now the respace
     float cursor_x = start_x;
     float cursor_y = start_y;
@@ -290,12 +290,13 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
     float new_var_y[n_var_points];
     float new_var_z[n_var_points];
 
-// something in this loop is corrupting the stack
+// something in this loop is corrupting the stack, probably overstepping array bounds (i or old_point?)
     for (int i=0; i<n_var_points; ) 
     {
         // grab old segments until there's enough to cut at least one new one
+        // and while not EOL (end of line)
         // while (remainder_x < new_segment_length)
-        while (remainder < new_segment_length)
+        while ((remainder < new_segment_length) && (old_point <= n_var_points))
         {
             float segment_x, segment_y, segment_z;
             if (old_point < n_var_points) 
@@ -304,11 +305,17 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
                 segment_y = var_y[old_point] - cursor_y;
                 segment_z = var_z[old_point] - cursor_z;
             }
-            else 
+            else if (old_point == n_var_points)
             {
                 segment_x = end_x - cursor_x;
                 segment_y = end_y - cursor_y;
                 segment_z = end_z - cursor_z;
+            }
+            else
+            {
+                // This should never be reached.
+                printf("rebalancePoints(): no more old segments to add, but not enough to cut new one.\n");
+                exit(1);
             }
             remainder_x += segment_x;
             remainder_y += segment_y;
@@ -316,6 +323,10 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
             remainder = sqrt(remainder_x*remainder_x 
                         + remainder_y*remainder_y 
                         + remainder_z*remainder_z);
+// this is accessing past array bounds? moving cursor to bad point, but not using it?
+// but only for old_point == n_var_points, which is handled by delivering the end_x, end_y, end_z, so should be OK
+//printf("adding old point %d to grow segment by (%f, %f, %f)\n", old_point, segment_x, segment_y, segment_z);
+//printf("remainder is now = %f\n", remainder);
             cursor_x = var_x[old_point];
             cursor_y = var_y[old_point];
             cursor_z = var_z[old_point];
@@ -323,8 +334,9 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
         }
         
         // now cut new segments until there's not enough left
-        // need to cover case equality of segment lengths, so adding it here
-        while (new_segment_length <= remainder)
+        // need to cover case of equality of segment lengths, so adding it here or above
+        // while (new_segment_length <= remainder)
+        while ((new_segment_length <= remainder) && (i <= n_var_points)) // this should run stop adding points, even with remaining segment. 
         {
             // get projections of new_segment_length onto x, y directions
             float delta_x = (remainder_x / remainder) * new_segment_length;
@@ -336,11 +348,15 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
                 new_var_y[i] = start_y + delta_y;
                 new_var_z[i] = start_z + delta_z;
             }
-            else
+            else if (i < n_var_points)
             {
                 new_var_x[i] = new_var_x[i-1] + delta_x;
                 new_var_y[i] = new_var_y[i-1] + delta_y;
                 new_var_z[i] = new_var_z[i-1] + delta_z;
+            }
+            else if (i == n_var_points)
+            {
+                // last piece ends at end_x, end_y, end_z
             }
             remainder_x -= delta_x;
             remainder_y -= delta_y;
@@ -348,16 +364,20 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
             remainder = sqrt(remainder_x*remainder_x 
                         + remainder_y*remainder_y
                         + remainder_z*remainder_z);
+//printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, new_var_x[i], new_var_y[i], new_var_z[i]);
+//printf("after cutting, remainder is now = %f\n", remainder);
             i++; // move to next new point
 
-if (i >= n_var_points) printf("index i=%d going out of range\n", i);
-if (old_point >= n_var_points) printf("index old_point=%d going out of range\n", old_point);
+//if (i >= n_var_points) printf("index i=%d going out of range\n", i);
+//if (old_point >= n_var_points) printf("index old_point=%d going out of range\n", old_point);
 
         }            
     }
+
+//printf("after adding and cutting all points, segment remainder = %f\n", remainder);
  
 //FTW pseudo
-printf("FTW checking new curve\n");
+//printf("FTW checking new curve\n");
 
     // check new curve length, add distance to each variational point
     float new_curve_length = 0;
@@ -378,7 +398,7 @@ printf("FTW checking new curve\n");
         prev_y = new_var_y[i];
         prev_z = new_var_z[i];
     }
-printf("FTW adding last piece \n");
+//printf("FTW adding last piece \n");
 
     // add the last piece
     new_curve_length += sqrt(
@@ -389,7 +409,7 @@ printf("FTW adding last piece \n");
     
     float shrinkage = new_curve_length / curve_length;
 
-printf("FTW preparing to copy out \n");
+//printf("FTW preparing to copy out \n");
 
     // copy out
     for (int i=0; i<n_var_points; i++)
@@ -399,6 +419,6 @@ printf("FTW preparing to copy out \n");
         var_z[i] = new_var_z[i];
     }
    
-printf("FTW returning \n");
+//printf("FTW returning \n");
     return shrinkage;
 }

@@ -43,16 +43,19 @@ int main(int argc, char** argv)
     printf("done. \n\n");
 
 
-/*
     printf("iterating %d times:\n\n", n_iter);
     for (int i=0; i < n_iter; i++) 
     {
-        printf("iterating:\n\n");
+        printf("###############################################################################################################\n");
+        printf("iteration %d:\n\n", i);
         v.iterate();
         v.printValues();
+        printf("###############################################################################################################\n");
         printf("rebalancing:\n\n");
-        v.rebalancePoints3D();
+        float shrinkage=v.rebalancePoints3D();
+        printf("Shrinkage: %f\n", shrinkage);
         v.printValues();
+        printf("###############################################################################################################\n");
     }
 
     printf("dumping Variational3D object: %p\n", &v);
@@ -65,10 +68,11 @@ int main(int argc, char** argv)
 //    printf("pseudo-rebalancing:\n\n");
 //    v.pseudoRebalance();
 
-    printf("after rebalancing:\n\n");
-    printf("dumping Variational3D object: %p\n", &v);
-    v.printValues();
-    printf("done. \n\n");
-*/
+//    printf("after rebalancing:\n\n");
+//    printf("dumping Variational3D object: %p\n", &v);
+
+//    v.printValues();
+//    printf("done. \n\n");
+
 }
 
