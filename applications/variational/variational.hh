@@ -108,5 +108,6 @@ class Variational3D
         ~Variational3D();
 
         float rebalancePoints3D();
+//        float pseudoRebalance();
 
 };

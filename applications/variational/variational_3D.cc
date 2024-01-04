@@ -102,7 +102,7 @@ void Variational3D::iterate()
     float fore_y, aft_y;
     float fore_z, aft_z;
 
-    float alpha = 100.0; // nudge size?
+    float alpha = 0.1; // nudge size?
 
     for (int i=0; i<n_var_points; i++)
     {
@@ -137,14 +137,19 @@ void Variational3D::iterate()
         float tangent_y = aft_y - fore_y;
         float tangent_z = aft_z - fore_z;
 
+//printf("got tangent vector (%f, %f, %f)\n", tangent_x, tangent_y, tangent_z);
+
         float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
         float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
+//printf("got theta = %f and axis u = (%f, %f, %f)\n ", theta, u_x, u_y, u_z);
 
         // variables to receive the values of the rotated i and j unit vectors
         float i_x, i_y, i_z; 
         rotate_vector(1, 0, 0, theta, u_x, u_y, u_z, &i_x, &i_y, &i_z);
+//printf("i rotates to (%f, %f, %f)\n", i_x, i_y, i_z);
         float j_x, j_y, j_z; 
         rotate_vector(0, 1, 0, theta, u_x, u_y, u_z, &j_x, &j_y, &j_z);
+//printf("j rotates to (%f, %f, %f)\n", j_x, j_y, j_z);
         // the directional vectors are ostensibly normalized
 
         // sample directional derivatives (directions perpendicular to curve)
@@ -164,10 +169,12 @@ void Variational3D::iterate()
         i_x *= sqrt_epsilon;
         i_y *= sqrt_epsilon;
         i_z *= sqrt_epsilon;
+//printf("i resized to (%f, %f, %f)\n", i_x, i_y, i_z);
 
         j_x *= sqrt_epsilon;
         j_y *= sqrt_epsilon;
         j_z *= sqrt_epsilon;
+//printf("j resized to (%f, %f, %f)\n", j_x, j_y, j_z);
 
 //printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
 //printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
@@ -214,9 +221,14 @@ void Variational3D::iterate()
 //        new_x[i] = var_x[i] - alpha * dE * directional_x;
 //        new_y[i] = var_y[i] - alpha * dE * directional_y;
 
-        new_x[i] = var_x[i] - alpha * (dE_i * i_x + dE_j * j_x);
-        new_y[i] = var_y[i] - alpha * (dE_i * i_y + dE_j * j_y);
-        new_z[i] = var_z[i] - alpha * (dE_i * i_z + dE_j * j_z);
+        float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
+        float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
+        float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
+printf("Got delta = (%f, %f, %f)\n", delta_x, delta_y, delta_z);
+
+        new_x[i] = var_x[i] + delta_x; 
+        new_y[i] = var_y[i] + delta_y;
+        new_z[i] = var_z[i] + delta_z;
     }
 
     // FTW: After full pass, copy the updates back.
@@ -232,6 +244,7 @@ float Variational3D::rebalancePoints3D()
 {
 
 printf("FTW: entering rebalancePoints3D()\n");
+
     // get the total length of curve
     float prev_x = start_x;
     float prev_y = start_y;
@@ -262,7 +275,6 @@ printf("FTW: entering rebalancePoints3D()\n");
     // Cut each new segment along old path to this length
     float new_segment_length = curve_length / (n_var_points + 1);
 
-
 printf("FTW: starting respace in rebalancePoints3D()\n");
     // now the respace
     float cursor_x = start_x;
@@ -278,6 +290,7 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
     float new_var_y[n_var_points];
     float new_var_z[n_var_points];
 
+// something in this loop is corrupting the stack
     for (int i=0; i<n_var_points; ) 
     {
         // grab old segments until there's enough to cut at least one new one
@@ -336,9 +349,14 @@ printf("FTW: starting respace in rebalancePoints3D()\n");
                         + remainder_y*remainder_y
                         + remainder_z*remainder_z);
             i++; // move to next new point
+
+if (i >= n_var_points) printf("index i=%d going out of range\n", i);
+if (old_point >= n_var_points) printf("index old_point=%d going out of range\n", old_point);
+
         }            
     }
  
+//FTW pseudo
 printf("FTW checking new curve\n");
 
     // check new curve length, add distance to each variational point

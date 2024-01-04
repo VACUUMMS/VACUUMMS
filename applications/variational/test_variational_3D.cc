@@ -51,8 +51,8 @@ int main(int argc, char** argv)
     v.printValues();
     printf("done. \n\n");
 
-    printf("rebalancing:\n\n");
-    v.rebalancePoints3D();
+    printf("skipping rebalancing:\n\n");
+//    v.rebalancePoints3D();
     printf("dumping Variational3D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
