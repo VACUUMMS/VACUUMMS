@@ -102,7 +102,8 @@ void Variational3D::iterate()
     float fore_y, aft_y;
     float fore_z, aft_z;
 
-    float alpha = 0.1; // nudge size?
+    float alpha = 0.01; // nudge size?
+    float beta = 0.1; // when step size is too large, multiply by beta
 
     for (int i=0; i<n_var_points; i++)
     {
@@ -224,7 +225,17 @@ void Variational3D::iterate()
         float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
         float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
         float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
-printf("Got delta = (%f, %f, %f)\n", delta_x, delta_y, delta_z);
+        float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
+        float delta = sqrt(delta_sq);
+printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta);
+
+// try rescaling if delta is too big?
+//        if (delta_sq > alpha) 
+//        {
+//            delta_x *= beta;
+//            delta_y *= beta;
+//            delta_z *= beta;
+//        }
 
         new_x[i] = var_x[i] + delta_x; 
         new_y[i] = var_y[i] + delta_y;
@@ -290,6 +301,9 @@ float Variational3D::rebalancePoints3D()
     float new_var_y[n_var_points];
     float new_var_z[n_var_points];
 
+    int all_segments_added = 0;
+    float curve_so_far = 0;
+
 // something in this loop is corrupting the stack, probably overstepping array bounds (i or old_point?)
     for (int i=0; i<n_var_points; ) 
     {
@@ -310,9 +324,11 @@ float Variational3D::rebalancePoints3D()
                 segment_x = end_x - cursor_x;
                 segment_y = end_y - cursor_y;
                 segment_z = end_z - cursor_z;
+                all_segments_added = 1;
             }
             else
             {
+//FTW this is the condition I'm hitting but not this code.
                 // This should never be reached.
                 printf("rebalancePoints(): no more old segments to add, but not enough to cut new one.\n");
                 exit(1);
@@ -325,8 +341,8 @@ float Variational3D::rebalancePoints3D()
                         + remainder_z*remainder_z);
 // this is accessing past array bounds? moving cursor to bad point, but not using it?
 // but only for old_point == n_var_points, which is handled by delivering the end_x, end_y, end_z, so should be OK
-//printf("adding old point %d to grow segment by (%f, %f, %f)\n", old_point, segment_x, segment_y, segment_z);
-//printf("remainder is now = %f\n", remainder);
+printf("adding old point %d to grow segment by (%f, %f, %f)\n", old_point, segment_x, segment_y, segment_z);
+printf("remainder is now = %f\n", remainder);
             cursor_x = var_x[old_point];
             cursor_y = var_y[old_point];
             cursor_z = var_z[old_point];
@@ -354,32 +370,44 @@ float Variational3D::rebalancePoints3D()
                 new_var_y[i] = new_var_y[i-1] + delta_y;
                 new_var_z[i] = new_var_z[i-1] + delta_z;
             }
-            else if (i == n_var_points)
+/*            else if (i == n_var_points)
             {
+                // this should never be reached
+                printf("reached unreachable condition i == n_var_points. \n");
+                exit(1);
                 // last piece ends at end_x, end_y, end_z
             }
+*/
+
+            // subtract the last piece from remainder since it's been cut
             remainder_x -= delta_x;
             remainder_y -= delta_y;
             remainder_z -= delta_z;
             remainder = sqrt(remainder_x*remainder_x 
                         + remainder_y*remainder_y
                         + remainder_z*remainder_z);
-//printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, new_var_x[i], new_var_y[i], new_var_z[i]);
-//printf("after cutting, remainder is now = %f\n", remainder);
+
             i++; // move to next new point
 
-//if (i >= n_var_points) printf("index i=%d going out of range\n", i);
-//if (old_point >= n_var_points) printf("index old_point=%d going out of range\n", old_point);
+            //FTW try this to catch short curve
+            if ((i < n_var_points) && all_segments_added && (remainder < new_segment_length))
+            {
+                printf("reached unreachable condition: remainder = %f < new_segment_length = %f \n", remainder, new_segment_length);
+                printf("all segments added, but not sufficient to span curve. i = %d\n", i);
+                exit(1);
+            } 
+
+printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, new_var_x[i], new_var_y[i], new_var_z[i]);
+printf("after cutting new segment i = %d of length %f, remainder is now = %f\n", i, new_segment_length, remainder);
+
+curve_so_far+=sqrt(delta_x*delta_x+delta_y*delta_y+delta_z*delta_z);
+printf("curve_so_far/curve_length: %f/%f = %f\n", curve_so_far, curve_length, curve_so_far/curve_length);
 
         }            
     }
 
-//printf("after adding and cutting all points, segment remainder = %f\n", remainder);
  
-//FTW pseudo
-//printf("FTW checking new curve\n");
-
-    // check new curve length, add distance to each variational point
+    // check new curve length, add distance to each variational point to get shrinkage
     float new_curve_length = 0;
     prev_x = start_x;
     prev_y = start_y;
