@@ -57,6 +57,7 @@ class Variational3D
 {
     private:
 
+        float alpha = 0.01;
         float start_x; 
         float start_y; 
         float start_z; 
@@ -101,6 +102,7 @@ class Variational3D
                       int n_var_points, 
                       Configuration *c);
 
+        void setAlpha(float _alpha);
         void printValues();
         void iterate();
         void iterateWork();
@@ -108,6 +110,5 @@ class Variational3D
         ~Variational3D();
 
         float rebalancePoints3D();
-//        float pseudoRebalance();
 
 };

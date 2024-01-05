@@ -19,10 +19,12 @@ float start_z = 0.5;
 float end_x = 0.5;
 float end_y = 0.5;
 float end_z = 0.5;
+float alpha = 0.1;
 
 int main(int argc, char** argv)
 {
     setCommandLineParameters(argc, argv);
+    getFloatParam((char*)"-alpha", &alpha);
     getIntParam((char*)"-n_iter", &n_iter);
     getIntParam((char*)"-n_var_points", &n_var_points);
 
@@ -34,6 +36,7 @@ int main(int argc, char** argv)
     printf("done. \n\n");
 
     Variational3D v = Variational3D(start_x, start_y, start_z, end_x, end_y, end_z, n_var_points, &c);
+    v.setAlpha(alpha);
     printf("dumping new Variational3D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
