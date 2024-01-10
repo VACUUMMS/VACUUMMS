@@ -37,7 +37,7 @@ view_docs: share/doc/variational.md
 clean:
 	rm -f test_rebalance_1D test_rebalance_2D test_rebalance_3D test_configuration test_variational_2D *.o a.out
 
-vis:
+vis: test_variational_FCC
 	./test_variational_FCC -alpha 0.05 -n_iter 2500 -n_var_points 25 |grep "####" |tail -27 | head -26 |sed -e "s/#####//" | awk '{print $$1"\t"$$2"\t"$$3"\t0.05\t0"}' > fcc.vis
 
 pov: vis
@@ -49,4 +49,4 @@ pov: vis
 	povray fcc_right.pov 
 
 vis-clean:
-	rm -f fcc.vis fcc.pov fcc_top.pov fcc_right.pov
+	rm -f fcc.vis fcc.pov fcc_top.pov fcc_right.pov fcc_top.png fcc_right.png

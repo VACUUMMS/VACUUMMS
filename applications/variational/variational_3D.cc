@@ -255,148 +255,95 @@ printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE
     }
 }
 
+//########################################## rebalance ###########################################//
 float Variational3D::rebalancePoints3D()
 {
+    float curve_length;
 
-//printf("FTW: entering rebalancePoints3D()\n");
+    float new_forward_var_x[n_var_points];
+    float new_forward_var_y[n_var_points];
+    float new_forward_var_z[n_var_points];
 
-    // get the total length of curve
-    float prev_x = start_x;
-    float prev_y = start_y;
-    float prev_z = start_z;
-    float curve_length = 0;
+    curve_length = respaceKernel(n_var_points, start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
+printf("original forward curve_length = %f\n", curve_length);
+/*
+*/
 
-    // add distance to each variational point
-    for (int i=0; i < n_var_points; i++)
+/**/
+    // now run it backward
+
+    float backward_var_x_in[n_var_points];
+    float backward_var_y_in[n_var_points];
+    float backward_var_z_in[n_var_points];
+    
+    float backward_var_x_out[n_var_points];
+    float backward_var_y_out[n_var_points];
+    float backward_var_z_out[n_var_points];
+    
+/*
+    //for (int i=0; i<n_var_points; i++) printf("before: backward_var_in = (%f, %f, %f)\n", backward_var_x_in[i], backward_var_y_in[i], backward_var_z_in[i]);
+printf("--------------------------\n");
+    for (int i=0; i<n_var_points; i++) printf("before: var[%d] = (%f, %f, %f)\n", i, var_x[i], var_y[i], var_z[i]);
+printf("--------------------------\n");
+*/
+    // flip the curve
+    for (int i=0; i<n_var_points; i++)
     {
-        curve_length += sqrt(
-                        (var_x[i] - prev_x) * (var_x[i] - prev_x) 
-                      + (var_y[i] - prev_y) * (var_y[i] - prev_y)
-                      + (var_z[i] - prev_z) * (var_z[i] - prev_z)
-                        );
-
-        // update for next iteration
-        prev_x = var_x[i]; 
-        prev_y = var_y[i];
-        prev_z = var_z[i];
+        backward_var_x_in[i] = var_x[n_var_points - i - 1];
+        backward_var_y_in[i] = var_y[n_var_points - i - 1];
+        backward_var_z_in[i] = var_z[n_var_points - i - 1];
     }
 
-    // add the last piece
-    curve_length += sqrt(
-                    (end_x - prev_x) * (end_x - prev_x) 
-                  + (end_y - prev_y) * (end_y - prev_y)
-                  + (end_z - prev_z) * (end_z - prev_z)
-                    );
-    // Cut each new segment along old path to this length
-    float new_segment_length = curve_length / (n_var_points + 1.0);
+/*
+printf("--------------------------\n");
+    for (int i=0; i<n_var_points; i++) printf("backward_var_in = (%f, %f, %f)\n", backward_var_x_in[i], backward_var_y_in[i], backward_var_z_in[i]);
+printf("--------------------------\n");
+*/
 
-//printf("FTW: starting respace in rebalancePoints3D()\n");
-    // now the respace
-    float cursor_x = start_x;
-    float cursor_y = start_y;
-    float cursor_z = start_z;
-    float remainder_x = 0;         
-    float remainder_y = 0;         
-    float remainder_z = 0;         
-    float remainder = 0;
-    int old_point = 0;
+    curve_length = respaceKernel(n_var_points, end_x, end_y, end_z, start_x, start_y, start_z, backward_var_x_in, backward_var_y_in, backward_var_z_in, backward_var_x_out, backward_var_y_out, backward_var_z_out);
 
+    // and flip it back
+    float new_backward_var_x[n_var_points];
+    float new_backward_var_y[n_var_points];
+    float new_backward_var_z[n_var_points];
+    
+    for (int i=0; i<n_var_points; i++)
+    {
+        new_backward_var_x[i] = backward_var_x_out[n_var_points - i - 1];
+        new_backward_var_y[i] = backward_var_y_out[n_var_points - i - 1];
+        new_backward_var_z[i] = backward_var_z_out[n_var_points - i - 1];
+    }
+/**/
+
+// should match
+printf("original backward curve_length = %f\n", curve_length);
+
+    // combine the results
     float new_var_x[n_var_points];
     float new_var_y[n_var_points];
     float new_var_z[n_var_points];
 
-    int all_segments_added = 0;
-//    float curve_so_far = 0;
-
-    for (int i=0; i<n_var_points; ) 
+    for (int i=0; i<n_var_points; i++) 
     {
-        // grab old segments until there's enough curve to cut at least one new segment
-        while ((remainder < new_segment_length) && (old_point <= n_var_points))
-        {
-            float segment_x, segment_y, segment_z;
-            if (old_point < n_var_points) 
-            {
-                segment_x = var_x[old_point] - cursor_x;
-                segment_y = var_y[old_point] - cursor_y;
-                segment_z = var_z[old_point] - cursor_z;
-            }
-            else if (old_point == n_var_points)
-            {
-                segment_x = end_x - cursor_x;
-                segment_y = end_y - cursor_y;
-                segment_z = end_z - cursor_z;
-                all_segments_added = 1;
-            }
-            remainder_x += segment_x;
-            remainder_y += segment_y;
-            remainder_z += segment_z;
-            remainder = sqrt(remainder_x*remainder_x +
-                             remainder_y*remainder_y +
-                             remainder_z*remainder_z);
 /*
-printf("adding old point %d to grow segment by (%f, %f, %f)\n", old_point, segment_x, segment_y, segment_z);
-printf("remainder is now = %f\n", remainder);
+        new_var_x[i] = new_forward_var_x[i];
+        new_var_y[i] = new_forward_var_y[i];
+        new_var_z[i] = new_forward_var_z[i];
+
+        new_var_x[i] = new_backward_var_x[i];
+        new_var_y[i] = new_backward_var_y[i];
+        new_var_z[i] = new_backward_var_z[i];
 */
-            cursor_x = var_x[old_point];
-            cursor_y = var_y[old_point];
-            cursor_z = var_z[old_point];
-            old_point++;
-        }
-        
-        // now cut new segments until there's not enough left
-        //while ((new_segment_length <= remainder) && (i <= n_var_points)) // this should run stop adding points, even with remaining segment. 
-        while ((new_segment_length <= remainder) && (i < n_var_points)) // this should run stop adding points, even with remaining segment. 
-        {
-            // get projections of new_segment_length onto x, y directions
-            float delta_x = (remainder_x / remainder) * new_segment_length;
-            float delta_y = (remainder_y / remainder) * new_segment_length;
-            float delta_z = (remainder_z / remainder) * new_segment_length;
-            if (i==0) 
-            {
-                new_var_x[i] = start_x + delta_x;
-                new_var_y[i] = start_y + delta_y;
-                new_var_z[i] = start_z + delta_z;
-            }
-            else if (i < n_var_points)
-            {
-                new_var_x[i] = new_var_x[i-1] + delta_x;
-                new_var_y[i] = new_var_y[i-1] + delta_y;
-                new_var_z[i] = new_var_z[i-1] + delta_z;
-            }
-
-            // subtract the last piece from remainder since it's been cut
-            remainder_x -= delta_x;
-            remainder_y -= delta_y;
-            remainder_z -= delta_z;
-            remainder = sqrt(remainder_x*remainder_x 
-                        + remainder_y*remainder_y
-                        + remainder_z*remainder_z);
-
-            i++; // move to next new point
-
-            //FTW try this to catch short curve. All old segments were added but still not enough rope to cut last variational point
-            if ((i < n_var_points) && all_segments_added && (remainder < new_segment_length))
-            {
-                printf("reached unreachable condition: remainder = %f < new_segment_length = %f \n", remainder, new_segment_length);
-                printf("all segments added, but not sufficient to span curve. i = %d\n", i);
-                exit(1);
-            } 
-
-//printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, new_var_x[i], new_var_y[i], new_var_z[i]);
-//printf("after cutting new segment i = %d of length %f, remainder is now = %f\n", i, new_segment_length, remainder);
-
-//curve_so_far+=sqrt(delta_x*delta_x+delta_y*delta_y+delta_z*delta_z);
-//printf("curve_so_far/curve_length: %f/%f = %f\n", curve_so_far, curve_length, curve_so_far/curve_length);
-
-        }            
+        new_var_x[i] = 0.5 * (new_forward_var_x[i] + new_backward_var_x[i]);
+        new_var_y[i] = 0.5 * (new_forward_var_y[i] + new_backward_var_y[i]);
+        new_var_z[i] = 0.5 * (new_forward_var_z[i] + new_backward_var_z[i]);
     }
 
- 
-    // check new curve length, add distance to each variational point to get shrinkage
+    // check new combined curve length, add distance to each variational point to get shrinkage
     float new_curve_length = 0;
-    prev_x = start_x;
-    prev_y = start_y;
-    prev_z = start_z;
+    float prev_x = start_x;
+    float prev_y = start_y;
+    float prev_z = start_z;
     
     for (int i=0; i < n_var_points; i++)
     {
@@ -411,7 +358,6 @@ printf("remainder is now = %f\n", remainder);
         prev_y = new_var_y[i];
         prev_z = new_var_z[i];
     }
-//printf("FTW adding last piece \n");
 
     // add the last piece
     new_curve_length += sqrt(
@@ -422,8 +368,6 @@ printf("remainder is now = %f\n", remainder);
     
     float shrinkage = new_curve_length / curve_length;
 
-//printf("FTW preparing to copy out \n");
-
     // copy out
     for (int i=0; i<n_var_points; i++)
     {
@@ -432,6 +376,144 @@ printf("remainder is now = %f\n", remainder);
         var_z[i] = new_var_z[i];
     }
    
-//printf("FTW returning \n");
     return shrinkage;
+}
+
+//#################################################### factoring to Kernel #################################//
+
+float Variational3D::respaceKernel(int _n_var_points, float _start_x, float _start_y, float _start_z, 
+                                   float _end_x, float _end_y, float _end_z,
+                                   float _var_x[], float _var_y[], float _var_z[], 
+                                   float _new_var_x[], float _new_var_y[], float _new_var_z[])
+{
+    // get the total length of curve
+    float prev_x = _start_x;
+    float prev_y = _start_y;
+    float prev_z = _start_z;
+    float curve_length = 0;
+
+    // add distance to each variational point
+    for (int i=0; i < _n_var_points; i++)
+    {
+        curve_length += sqrt(
+                        (_var_x[i] - prev_x) * (_var_x[i] - prev_x) 
+                      + (_var_y[i] - prev_y) * (_var_y[i] - prev_y)
+                      + (_var_z[i] - prev_z) * (_var_z[i] - prev_z)
+                        );
+
+        // update for next iteration
+        prev_x = _var_x[i]; 
+        prev_y = _var_y[i];
+        prev_z = _var_z[i];
+    }
+
+    // add the last piece
+    curve_length += sqrt(
+                    (_end_x - prev_x) * (_end_x - prev_x) 
+                  + (_end_y - prev_y) * (_end_y - prev_y)
+                  + (_end_z - prev_z) * (_end_z - prev_z)
+                    );
+    // Cut each new segment along old path to this length
+    float new_segment_length = curve_length / (_n_var_points + 1.0);
+printf("In respaceKernel, got curve length of %f\n", curve_length);
+
+//printf("FTW: starting respace in rebalancePoints3D()\n");
+    // now the respace
+    float cursor_x = _start_x;
+    float cursor_y = _start_y;
+    float cursor_z = _start_z;
+    float remainder_x = 0;         
+    float remainder_y = 0;         
+    float remainder_z = 0;         
+    float remainder = 0;
+    int old_point = 0;
+
+    int all_segments_added = 0;
+
+    for (int i=0; i<_n_var_points; ) 
+    {
+        // grab old segments until there's enough curve to cut at least one new segment
+        while ((remainder < new_segment_length) && (old_point <= _n_var_points))
+        {
+            float segment_x, segment_y, segment_z;
+            if (old_point < _n_var_points) 
+            {
+                segment_x = _var_x[old_point] - cursor_x;
+                segment_y = _var_y[old_point] - cursor_y;
+                segment_z = _var_z[old_point] - cursor_z;
+            }
+            else if (old_point == _n_var_points)
+            {
+                segment_x = _end_x - cursor_x;
+                segment_y = _end_y - cursor_y;
+                segment_z = _end_z - cursor_z;
+                all_segments_added = 1;
+            }
+//printf("got segment = (%f, %f, %f)\n", segment_x, segment_y, segment_z);
+            remainder_x += segment_x;
+            remainder_y += segment_y;
+            remainder_z += segment_z;
+//printf("got remainders = (%f, %f, %f)\n", remainder_x, remainder_y, remainder_z);
+            remainder = sqrt(remainder_x*remainder_x +
+                             remainder_y*remainder_y +
+                             remainder_z*remainder_z);
+/*
+printf("adding old point %d to grow segment by (%f, %f, %f)\n", old_point, segment_x, segment_y, segment_z);
+printf("remainder is now = %f\n", remainder);
+*/
+            cursor_x = _var_x[old_point];
+            cursor_y = _var_y[old_point];
+            cursor_z = _var_z[old_point];
+            old_point++;
+        }
+        
+        // now cut new segments until there's not enough left
+        //while ((new_segment_length <= remainder) && (i <= n_var_points)) // this should run stop adding points, even with remaining segment. 
+        while ((new_segment_length <= remainder) && (i < _n_var_points)) // this should run stop adding points, even with remaining segment. 
+        {
+            // get projections of new_segment_length onto x, y directions
+            float delta_x = (remainder_x / remainder) * new_segment_length;
+            float delta_y = (remainder_y / remainder) * new_segment_length;
+            float delta_z = (remainder_z / remainder) * new_segment_length;
+            if (i==0) 
+            {
+                _new_var_x[i] = _start_x + delta_x;
+                _new_var_y[i] = _start_y + delta_y;
+                _new_var_z[i] = _start_z + delta_z;
+            }
+            else if (i < _n_var_points)
+            {
+                _new_var_x[i] = _new_var_x[i-1] + delta_x;
+                _new_var_y[i] = _new_var_y[i-1] + delta_y;
+                _new_var_z[i] = _new_var_z[i-1] + delta_z;
+            }
+
+            // subtract the last piece from remainder since it's been cut
+            remainder_x -= delta_x;
+            remainder_y -= delta_y;
+            remainder_z -= delta_z;
+            remainder = sqrt(remainder_x*remainder_x 
+                        + remainder_y*remainder_y
+                        + remainder_z*remainder_z);
+
+            i++; // move to next new point
+
+            //FTW try this to catch short curve. All old segments were added but still not enough rope to cut last variational point
+            if ((i < _n_var_points) && all_segments_added && (remainder < new_segment_length))
+            {
+                printf("reached unreachable condition: remainder = %f < new_segment_length = %f \n", remainder, new_segment_length);
+                printf("all segments added, but not sufficient to span curve. i = %d\n", i);
+                exit(1);
+            } 
+
+printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, _new_var_x[i], _new_var_y[i], _new_var_z[i]);
+printf("after cutting new segment i = %d of length %f, remainder is now = %f\n", i, new_segment_length, remainder);
+
+//curve_so_far+=sqrt(delta_x*delta_x+delta_y*delta_y+delta_z*delta_z);
+//printf("curve_so_far/curve_length: %f/%f = %f\n", curve_so_far, curve_length, curve_so_far/curve_length);
+
+        }            
+    }
+ 
+    return curve_length;
 }

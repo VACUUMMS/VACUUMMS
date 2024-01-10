@@ -45,6 +45,10 @@ int main(int argc, char** argv)
     v.rebalancePoints3D();
     printf("done. \n\n");
 
+    printf("dumping new Variational3D object: %p\n", &v);
+    v.printValues();
+    printf("done. \n\n");
+
 
     printf("iterating %d times:\n\n", n_iter);
     for (int i=0; i < n_iter; i++) 
