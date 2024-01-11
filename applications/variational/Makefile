@@ -49,4 +49,7 @@ pov: vis
 	povray fcc_right.pov 
 
 vis-clean:
-	rm -f fcc.vis fcc.pov fcc_top.pov fcc_right.pov fcc_top.png fcc_right.png
+	rm -f fcc.vis fcc.pov fcc_top.pove fcc_top.pov fcc_right.pove fcc_right.pov fcc_top.png fcc_right.png
+
+veryclean: vis-clean clean
+

@@ -42,7 +42,8 @@ int main(int argc, char** argv)
     printf("done. \n\n");
 
     printf("rebalancing:\n\n");
-    v.rebalancePoints3D();
+    float shrinkage=v.rebalancePoints3D();
+    printf("Shrinkage: %f\n", shrinkage);
     printf("done. \n\n");
 
     printf("dumping new Variational3D object: %p\n", &v);

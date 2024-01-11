@@ -68,15 +68,12 @@ class Variational3D
         Configuration *configuration;
         float(*energy_function)(float x, float y, float z);
 
-//        float respaceKernel(int _n_var_points, float _start_x, float _start_y, float _start_z, 
-//                                float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[], 
-//                                float _new_var_x[], float _new_var_y[], float _new_var_z[]);
+        float respaceKernel(/*int _n_var_points,*/ float _start_x, float _start_y, float _start_z, 
+                           float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[], 
+                           float _new_var_x[], float _new_var_y[], float _new_var_z[]);
 
+        float calculateCurveLength(float _start_x, float _start_y, float _start_z, float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[]);
 
-        float respaceKernel(int _n_var_points, float _start_x, float _start_y, float _start_z,
-                            float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[], 
-                            float _new_var_x[], float _new_var_y[], float _new_var_z[]);
-#
         bool use_configuration_energy;
 
         float* var_x;
