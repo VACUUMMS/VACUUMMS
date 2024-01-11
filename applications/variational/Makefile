@@ -38,7 +38,7 @@ clean:
 	rm -f test_rebalance_1D test_rebalance_2D test_rebalance_3D test_configuration test_variational_2D *.o a.out
 
 vis: test_variational_FCC
-	./test_variational_FCC -alpha 0.05 -n_iter 2500 -n_var_points 25 |grep "####" |tail -27 | head -26 |sed -e "s/#####//" | awk '{print $$1"\t"$$2"\t"$$3"\t0.05\t0"}' > fcc.vis
+	./test_variational_FCC -alpha 0.086 -n_iter 25000 -n_var_points 25 |grep "####" |tail -27 | head -26 |sed -e "s/#####//" | awk '{print $$1"\t"$$2"\t"$$3"\t0.05\t0"}' > fcc.vis
 
 pov: vis
 	vis2pov < fcc.vis  -camera 0.25 0.25 1.5 > fcc_top.pov 

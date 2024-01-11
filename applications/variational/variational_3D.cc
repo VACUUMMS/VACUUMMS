@@ -397,9 +397,9 @@ float Variational3D::respaceKernel(/*int _n_var_points,*/ float _start_x, float 
     int old_point = 0;
 
     int all_segments_added = 0;
-
     for (int new_point=0; new_point</*_*/n_var_points; ) 
     {
+int something_happened = 0;
         // grab old segments until there's enough curve to cut at least one new segment
         while ((remainder < new_segment_length) && (old_point <= /*_*/n_var_points))
         {
@@ -427,6 +427,7 @@ float Variational3D::respaceKernel(/*int _n_var_points,*/ float _start_x, float 
             cursor_y = _var_y[old_point];
             cursor_z = _var_z[old_point];
             old_point++;
+            something_happened++;
         }
         
         // now cut new segments until there's not enough left
@@ -459,17 +460,31 @@ float Variational3D::respaceKernel(/*int _n_var_points,*/ float _start_x, float 
                         + remainder_z*remainder_z);
 
             new_point++; // move to next new point
+            something_happened++;
 
+/*
             //FTW try this to catch short curve. All old segments were added but still not enough rope to cut last variational point
-            if ((new_point < /*_*/n_var_points) && all_segments_added && (remainder < new_segment_length))
+            if ((new_point < n_var_points) && all_segments_added && (remainder < new_segment_length))
             {
                 printf("reached unreachable condition: remainder = %f < new_segment_length = %f \n", remainder, new_segment_length);
                 printf("all segments added, but not sufficient to span curve. i = %d\n", new_point);
+                printf("consider checking / reducing the value of alpha = %f\n", alpha);
                 exit(1);
             } 
+*/
+
 //printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, _new_var_x[i], _new_var_y[i], _new_var_z[i]);
 //printf("after cutting new segment i = %d of length %f, remainder is now = %f\n", i, new_segment_length, remainder);
+
         }            
+        if (!something_happened)
+        {
+            printf("Next to last point of curve cannot be set. Wedged, exiting.\n");
+            printf("new_point = %d, old_point = %d, all_segments_added = %d\n", new_point, old_point, all_segments_added);
+            printf("remainder = %f, new_segment_length = %f\n", remainder, new_segment_length);
+            printf("consider checking / reducing the value of alpha = %f\n", alpha);
+            exit(1);
+        }
     }
 
     // curve has been cut, so calculate the new length
