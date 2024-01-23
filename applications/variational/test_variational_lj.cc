@@ -13,18 +13,19 @@ int n_var_points = 5;
 int update = 1;
 float *var_x, *var_y;
 
-float sigma = 0.5;
+float sigma = 0.707106781186548;
 float epsilon = 1.0;
 
 // delete atoms and calc path
-//  6 0.317301    0.825600    0.805090    1.0 1.0
-// 24 1.691121    1.815592    1.190474    1.0 1.0
-float start_x = 0.317301;
-float start_y = 0.825600;
-float start_z = 0.805090;
-float end_x = 1.691121;
-float end_y = 1.815592;
-float end_z = 1.190474;
+// 2.554920	1.927518	1.946361	1.0	1.0
+// 0.622468	0.276067	0.880539	1.0	1.0
+
+float start_x = 2.554920;
+float start_y = 1.927518;
+float start_z = 1.946361;
+float end_x = 0.622468;
+float end_y = 0.276067;
+float end_z = 0.880539;
 
 float alpha = 0.1;
 float alpha_max = 1.0;
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 
     char filename[] = "lj.gfg";
     Configuration c = Configuration(filename);
-    c.setBoxDimensions(2,2,2);
+    c.setBoxDimensions(2.82842712474619,2.82842712474619,2.82842712474619);
 
     printf("dumping configuration:\n");
     c.dumpContents();
