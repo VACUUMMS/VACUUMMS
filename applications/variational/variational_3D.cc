@@ -5,8 +5,8 @@
 #include "quaternion.hh"
 
 // These are provided and initialized in constants.o
-//extern float epsilon;
-//extern float sqrt_epsilon;
+//extern float machine_epsilon;
+//extern float machine_sqrt_epsilon;
 
 
 // prototype only
@@ -179,19 +179,19 @@ void Variational3D::iterate()
 //        std::cout << "direction for var point " << i << ": (" << var_x[i] << ", " << var_y[i] << "):(" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
 
         // resize the direction vector to machine epsilon
-        // directional_x *= sqrt_epsilon;
-        // directional_y *= sqrt_epsilon;
+        // directional_x *= sqrt_machine_epsilon;
+        // directional_y *= sqrt_machine_epsilon;
 
         // resize the directionals as deltas
 
-        i_x *= sqrt_epsilon;
-        i_y *= sqrt_epsilon;
-        i_z *= sqrt_epsilon;
+        i_x *= sqrt_machine_epsilon;
+        i_y *= sqrt_machine_epsilon;
+        i_z *= sqrt_machine_epsilon;
 //printf("i resized to (%f, %f, %f)\n", i_x, i_y, i_z);
 
-        j_x *= sqrt_epsilon;
-        j_y *= sqrt_epsilon;
-        j_z *= sqrt_epsilon;
+        j_x *= sqrt_machine_epsilon;
+        j_y *= sqrt_machine_epsilon;
+        j_z *= sqrt_machine_epsilon;
 //printf("j resized to (%f, %f, %f)\n", j_x, j_y, j_z);
 
 //printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
@@ -591,13 +591,13 @@ fprintf(stdout, "Attempting iteration with alpha = %f\n", alpha);
 
         // resize the directionals as deltas
 
-        i_x *= sqrt_epsilon;
-        i_y *= sqrt_epsilon;
-        i_z *= sqrt_epsilon;
+        i_x *= sqrt_machine_epsilon;
+        i_y *= sqrt_machine_epsilon;
+        i_z *= sqrt_machine_epsilon;
 
-        j_x *= sqrt_epsilon;
-        j_y *= sqrt_epsilon;
-        j_z *= sqrt_epsilon;
+        j_x *= sqrt_machine_epsilon;
+        j_y *= sqrt_machine_epsilon;
+        j_z *= sqrt_machine_epsilon;
 
         // energy at var[i], and at directional points
         float energy_center, energy_i, energy_j;
@@ -737,7 +737,14 @@ float delta_max = 0.01;
     }
 
 //float alpha_max = 0.1;
-    if (alpha < alpha_max) fprintf(stdout, "successful update and rebalance. increasing alpha: %f * %f = %f\n", alpha, beta, alpha *= beta); // success, so increase alpha
+    fprintf(stdout, "successful update and rebalance. ");
+    float new_alpha = alpha * beta;
+    if (new_alpha < alpha_max)
+    {
+        fprintf(stdout, "Increasing alpha: %f * %f = %f\n", alpha, beta, new_alpha); // success, so increase alpha
+        alpha = new_alpha;
+    }
+    fprintf(stdout, "\n");
    
     return shrinkage;
 

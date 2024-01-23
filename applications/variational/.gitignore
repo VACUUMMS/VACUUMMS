@@ -1,5 +1,6 @@
 x.dat
 test_variational_FCC
+test_variational_random
 test_rebalance_1D
 test_rebalance_2D
 test_rebalance_3D
@@ -10,3 +11,6 @@ test_configuration
 *.swp
 a.out
 #
+*.pove
+*.png
+*.vis

@@ -13,16 +13,16 @@ int n_var_points = 5;
 int update = 1;
 float *var_x, *var_y;
 
-float sigma = 1;
-float epsion = 1;
+float sigma = 0.5;
+float epsilon = 1.0;
 
 // delete atoms and calc path
-float start_x = 0; 
-float start_y = 1;
-float start_z = 1;
+float start_x = 0.0; 
+float start_y = 1.0;
+float start_z = 1.0;
 float end_x = 1.5;
 float end_y = 1.5;
-float end_z = 1;
+float end_z = 1.0;
 
 /* original edge, not in voronoi
 float start_x = 0; 
@@ -43,8 +43,8 @@ float end_y = 0.5;
 float end_z = 0.0;
 */
 
-float alpha = 0.01;
-float alpha_max = 0.01;
+float alpha = 0.1;
+float alpha_max = 1.0;
 
 int main(int argc, char** argv)
 {
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     getIntParam((char*)"-n_iter", &n_iter);
     getIntParam((char*)"-n_var_points", &n_var_points);
 
-    char filename[] = "fcc2.gfg";
+    char filename[] = "fcc.gfg";
     Configuration c = Configuration(filename);
     c.setBoxDimensions(2,2,2);
 

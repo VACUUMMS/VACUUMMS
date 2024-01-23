@@ -1,8 +1,8 @@
 // variational.hh
 #include "configuration.hh"
 
-extern const float epsilon;
-extern const float sqrt_epsilon;
+extern const float machine_epsilon;
+extern const float sqrt_machine_epsilon;
 
 class Variational2D
 {

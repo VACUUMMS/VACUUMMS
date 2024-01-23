@@ -1,6 +1,6 @@
 // constants.cc
 #include "variational.hh"
 
-const float epsilon =  5.96e-08;
-const float sqrt_epsilon = 0.000244131112315;
+const float machine_epsilon =  5.96e-08;
+const float sqrt_machine_epsilon = 0.000244131112315;
 
