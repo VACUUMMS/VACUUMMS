@@ -19,6 +19,8 @@ void Variational3D::init(float _start_x,
                     float _end_x, 
                     float _end_y, 
                     float _end_z, 
+                    float _sigma, 
+                    float _epsilon, 
                     int _n_var_points)
 {
     // grab the passed values
@@ -28,6 +30,8 @@ void Variational3D::init(float _start_x,
     end_x = _end_x; 
     end_y = _end_y; 
     end_z = _end_z; 
+    sigma = _sigma; 
+    epsilon = _epsilon; 
     n_var_points = _n_var_points;
 
     // start constructing 
@@ -46,6 +50,7 @@ void Variational3D::init(float _start_x,
     }
 }
 
+/*
 Variational3D::Variational3D(float _start_x, 
                              float _start_y, 
                              float _start_z, 
@@ -60,6 +65,7 @@ Variational3D::Variational3D(float _start_x,
     configuration = nullptr;
     energy_function = _energy_function;
 }
+*/
 
 Variational3D::Variational3D(float _start_x, 
                              float _start_y, 
@@ -67,10 +73,12 @@ Variational3D::Variational3D(float _start_x,
                              float _end_x, 
                              float _end_y, 
                              float _end_z, 
+                             float _sigma, 
+                             float _epsilon, 
                              int _n_var_points, 
                              Configuration *_configuration)
 {
-    init(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _n_var_points);
+    init(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _sigma, _epsilon, _n_var_points);
     use_configuration_energy = true;
     configuration = _configuration;
     energy_function = nullptr;
@@ -95,6 +103,11 @@ void Variational3D::printValues()
 void Variational3D::setAlpha(float _alpha)
 {
     alpha = _alpha;
+}
+
+void Variational3D::setAlphaMax(float _alpha_max)
+{
+    alpha_max = _alpha_max;
 }
 
 void Variational3D::iterate()
@@ -203,9 +216,9 @@ void Variational3D::iterate()
         {
             // energy_left = configuration->insertionEnergy2D(sample_left_x, sample_left_y);
             // energy_right = configuration->insertionEnergy2D(sample_right_x, sample_right_y);
-            energy_center = configuration->insertionEnergy(var_x[i], var_y[i], var_z[i]);
-            energy_i = configuration->insertionEnergy(var_x[i] + i_x, var_y[i] + i_y, var_z[i] + i_z);
-            energy_j = configuration->insertionEnergy(var_x[i] + j_x, var_y[i] + j_y, var_z[i] + j_z);
+            energy_center = configuration->insertionEnergy(var_x[i], var_y[i], var_z[i], sigma, epsilon);
+            energy_i = configuration->insertionEnergy(var_x[i] + i_x, var_y[i] + i_y, var_z[i] + i_z, sigma, epsilon);
+            energy_j = configuration->insertionEnergy(var_x[i] + j_x, var_y[i] + j_y, var_z[i] + j_z, sigma, epsilon);
         }
         else 
         {
@@ -258,13 +271,17 @@ printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE
 //########################################## rebalance ###########################################//
 float Variational3D::rebalancePoints3D()
 {
-    float curve_length;
+    float original_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
 
     float new_forward_var_x[n_var_points];
     float new_forward_var_y[n_var_points];
     float new_forward_var_z[n_var_points];
 
-    curve_length = respaceKernel(/*n_var_points,*/ start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
+    int status;
+    status = respaceKernel(/*n_var_points,*/ start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
+    if (status != 0) exit(status);
+
+    float forward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
     // now run it backward
 
@@ -296,7 +313,8 @@ printf("--------------------------\n");
 printf("--------------------------\n");
 */
 
-    curve_length = respaceKernel(/*n_var_points,*/ end_x, end_y, end_z, start_x, start_y, start_z, backward_var_x_in, backward_var_y_in, backward_var_z_in, backward_var_x_out, backward_var_y_out, backward_var_z_out);
+    status = respaceKernel(/*n_var_points,*/ end_x, end_y, end_z, start_x, start_y, start_z, backward_var_x_in, backward_var_y_in, backward_var_z_in, backward_var_x_out, backward_var_y_out, backward_var_z_out);
+    if (status != 0) exit(status);
 
     // and flip it back
     float new_backward_var_x[n_var_points];
@@ -309,10 +327,11 @@ printf("--------------------------\n");
         new_backward_var_y[i] = backward_var_y_out[n_var_points - i - 1];
         new_backward_var_z[i] = backward_var_z_out[n_var_points - i - 1];
     }
-/**/
+
+    float backward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
 // should match
-printf("original backward curve_length = %f\n", curve_length);
+printf("original backward curve_length = %f\n", backward_curve_length);
 
     // combine the results
     float new_var_x[n_var_points];
@@ -336,7 +355,9 @@ printf("original backward curve_length = %f\n", curve_length);
     }
 
     // check new combined curve length, add distance to each variational point to get shrinkage
-    float new_curve_length = 0;
+    float new_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_var_x, new_var_y, new_var_z);
+
+/*
     float prev_x = start_x;
     float prev_y = start_y;
     float prev_z = start_z;
@@ -361,8 +382,8 @@ printf("original backward curve_length = %f\n", curve_length);
                       + (end_y - prev_y) * (end_y - prev_y)
                       + (end_z - prev_z) * (end_z - prev_z)
                         );
-    
-    float shrinkage = new_curve_length / curve_length;
+ */   
+    float shrinkage = new_curve_length / original_curve_length;
 
     // copy out
     for (int i=0; i<n_var_points; i++)
@@ -376,11 +397,11 @@ printf("original backward curve_length = %f\n", curve_length);
 }
 
 //#################################################### factoring to Kernel #################################//
-
-float Variational3D::respaceKernel(/*int _n_var_points,*/ float _start_x, float _start_y, float _start_z, 
-                                   float _end_x, float _end_y, float _end_z,
-                                   float _var_x[], float _var_y[], float _var_z[], 
-                                   float _new_var_x[], float _new_var_y[], float _new_var_z[])
+// return value is 0 if successful, 1 if not successful
+int Variational3D::respaceKernel(float _start_x, float _start_y, float _start_z, 
+                                 float _end_x, float _end_y, float _end_z,
+                                 float _var_x[], float _var_y[], float _var_z[], 
+                                 float _new_var_x[], float _new_var_y[], float _new_var_z[])
 {
     float curve_length = calculateCurveLength(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _var_x, _var_y, _var_z);
     // Cut each new segment along old path to this length
@@ -432,7 +453,7 @@ int something_happened = 0;
         
         // now cut new segments until there's not enough left
         //while ((new_segment_length <= remainder) && (i <= n_var_points)) // this should run stop adding points, even with remaining segment. 
-        while ((new_segment_length <= remainder) && (new_point < /*_*/n_var_points)) // this should run stop adding points, even with remaining segment. 
+        while ((new_segment_length <= remainder) && (new_point < n_var_points)) // this should run stop adding points, even with remaining segment. 
         {
             // get projections of new_segment_length onto x, y directions
             float delta_x = (remainder_x / remainder) * new_segment_length;
@@ -444,7 +465,7 @@ int something_happened = 0;
                 _new_var_y[new_point] = _start_y + delta_y;
                 _new_var_z[new_point] = _start_z + delta_z;
             }
-            else if (new_point < /*_*/n_var_points)
+            else if (new_point < n_var_points)
             {
                 _new_var_x[new_point] = _new_var_x[new_point-1] + delta_x;
                 _new_var_y[new_point] = _new_var_y[new_point-1] + delta_y;
@@ -461,36 +482,20 @@ int something_happened = 0;
 
             new_point++; // move to next new point
             something_happened++;
-
-/*
-            //FTW try this to catch short curve. All old segments were added but still not enough rope to cut last variational point
-            if ((new_point < n_var_points) && all_segments_added && (remainder < new_segment_length))
-            {
-                printf("reached unreachable condition: remainder = %f < new_segment_length = %f \n", remainder, new_segment_length);
-                printf("all segments added, but not sufficient to span curve. i = %d\n", new_point);
-                printf("consider checking / reducing the value of alpha = %f\n", alpha);
-                exit(1);
-            } 
-*/
-
-//printf("cutting new segment to generate point %d at (%f, %f, %f)\n", i, _new_var_x[i], _new_var_y[i], _new_var_z[i]);
-//printf("after cutting new segment i = %d of length %f, remainder is now = %f\n", i, new_segment_length, remainder);
-
         }            
+
         if (!something_happened)
         {
-            printf("Next to last point of curve cannot be set. Wedged, exiting.\n");
+            printf("Curve cannot be set. Wedged, exiting.\n");
             printf("new_point = %d, old_point = %d, all_segments_added = %d\n", new_point, old_point, all_segments_added);
             printf("remainder = %f, new_segment_length = %f\n", remainder, new_segment_length);
             printf("consider checking / reducing the value of alpha = %f\n", alpha);
-            exit(1);
+            return 1;
         }
     }
 
-    // curve has been cut, so calculate the new length
-    curve_length = calculateCurveLength(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _new_var_x, _new_var_y, _new_var_z);
-    return curve_length;
-}
+    return 0;
+} // respaceKernel()
 
 
 float Variational3D::calculateCurveLength(float _start_x, float _start_y, float _start_z, float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[])
@@ -525,3 +530,216 @@ float Variational3D::calculateCurveLength(float _start_x, float _start_y, float 
 
     return curve_length;
 }
+
+
+float Variational3D::adaptiveIterateAndUpdate()
+{
+    float curve_length = Variational3D::calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
+    float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
+
+attempt_iteration:
+
+fprintf(stdout, "Attempting iteration with alpha = %f\n", alpha);
+    
+    float fore_x, aft_x;
+    float fore_y, aft_y;
+    float fore_z, aft_z;
+
+    float beta = 1.1; // adaptive parameter, increase/decrease alpha by this factor
+
+    for (int i=0; i<n_var_points; i++)
+    {
+        if (i>0)
+        {
+            fore_x = var_x[i-1];
+            fore_y = var_y[i-1];
+            fore_z = var_z[i-1];
+        }
+        else 
+        {
+            fore_x = start_x;
+            fore_y = start_y;
+            fore_z = start_z;
+        }
+
+        if (i+1<n_var_points) 
+        {
+            aft_x = var_x[i+1];
+            aft_y = var_y[i+1];
+            aft_z = var_z[i+1];
+        }
+        else
+        {
+            aft_x = end_x;
+            aft_y = end_y;
+            aft_z = end_z;
+        }
+
+        // tangent_* here is the vector tangent to the curve S at the point of interest
+        float tangent_x = aft_x - fore_x;
+        float tangent_y = aft_y - fore_y;
+        float tangent_z = aft_z - fore_z;
+
+        float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
+        float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
+
+        // variables to receive the values of the rotated i and j unit vectors
+        float i_x, i_y, i_z; 
+        rotate_vector(1, 0, 0, theta, u_x, u_y, u_z, &i_x, &i_y, &i_z);
+        float j_x, j_y, j_z; 
+        rotate_vector(0, 1, 0, theta, u_x, u_y, u_z, &j_x, &j_y, &j_z);
+
+        // resize the directionals as deltas
+
+        i_x *= sqrt_epsilon;
+        i_y *= sqrt_epsilon;
+        i_z *= sqrt_epsilon;
+
+        j_x *= sqrt_epsilon;
+        j_y *= sqrt_epsilon;
+        j_z *= sqrt_epsilon;
+
+        // energy at var[i], and at directional points
+        float energy_center, energy_i, energy_j;
+        
+        if (use_configuration_energy)
+        {
+            energy_center = configuration->insertionEnergy(var_x[i], var_y[i], var_z[i], sigma, epsilon);
+            energy_i = configuration->insertionEnergy(var_x[i] + i_x, var_y[i] + i_y, var_z[i] + i_z, sigma, epsilon);
+            energy_j = configuration->insertionEnergy(var_x[i] + j_x, var_y[i] + j_y, var_z[i] + j_z, sigma, epsilon);
+        }
+        else 
+        {
+            printf("using non-configuration energy function not implemented.\n");
+            exit(1);
+        }
+
+        float dE_i = energy_i - energy_center;
+        float dE_j = energy_j - energy_center;
+
+        float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
+        float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
+        float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
+        float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
+        float delta = sqrt(delta_sq);
+
+fprintf(stdout, "Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta); //FTW
+float delta_max = 0.01;
+
+        if (delta > delta_max)
+        {
+            printf("delta = %f > delta_max = %f, rescaling.\n", delta, delta_max);
+            delta_x *= (delta_max/delta);
+            delta_y *= (delta_max/delta);
+            delta_z *= (delta_max/delta);
+        }
+
+        new_x[i] = var_x[i] + delta_x; 
+        new_y[i] = var_y[i] + delta_y;
+        new_z[i] = var_z[i] + delta_z;
+    }
+
+/* hold off on update until the rebalance is OK
+    // FTW: After full pass, copy the updates back.
+    for (int i=0; i<n_var_points; i++)
+    {
+        var_x[i] = new_x[i];
+        var_y[i] = new_y[i];
+        var_z[i] = new_z[i];
+    }
+*/
+
+// end of iterate part, have new_x, new_y, and new_z to carry forward
+
+//########################################## rebalance ###########################################//
+
+    // run it forward
+
+    float new_forward_var_x[n_var_points];
+    float new_forward_var_y[n_var_points];
+    float new_forward_var_z[n_var_points];
+
+    int forward_status = respaceKernel(start_x, start_y, start_z, end_x, end_y, end_z, new_x, new_y, new_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
+
+    if (forward_status != 0) 
+    {
+//        alpha /= beta;
+        fprintf(stdout, "forward respace failed, shrinking alpha = %f to %f and re-running.\n", alpha, alpha/=beta);
+        goto attempt_iteration;
+    }
+
+    // now run it backward
+
+    float backward_var_x_in[n_var_points];
+    float backward_var_y_in[n_var_points];
+    float backward_var_z_in[n_var_points];
+    
+    float backward_var_x_out[n_var_points];
+    float backward_var_y_out[n_var_points];
+    float backward_var_z_out[n_var_points];
+    
+    // flip the curve
+    for (int i=0; i<n_var_points; i++)
+    {
+//        backward_var_x_in[i] = var_x[n_var_points - i - 1];
+//        backward_var_y_in[i] = var_y[n_var_points - i - 1];
+//        backward_var_z_in[i] = var_z[n_var_points - i - 1];
+        backward_var_x_in[i] = new_x[n_var_points - i - 1];
+        backward_var_y_in[i] = new_y[n_var_points - i - 1];
+        backward_var_z_in[i] = new_z[n_var_points - i - 1];
+    }
+
+    int backward_status = respaceKernel(end_x, end_y, end_z, start_x, start_y, start_z, backward_var_x_in, backward_var_y_in, backward_var_z_in, backward_var_x_out, backward_var_y_out, backward_var_z_out);
+
+    if (backward_status != 0) 
+    {
+        fprintf(stdout, "backward respace failed, shrinking alpha = %f to %f and re-running.\n", alpha, alpha/=beta);
+        goto attempt_iteration;
+    }
+
+    // and flip it back
+    float new_backward_var_x[n_var_points];
+    float new_backward_var_y[n_var_points];
+    float new_backward_var_z[n_var_points];
+    
+    for (int i=0; i<n_var_points; i++)
+    {
+        new_backward_var_x[i] = backward_var_x_out[n_var_points - i - 1];
+        new_backward_var_y[i] = backward_var_y_out[n_var_points - i - 1];
+        new_backward_var_z[i] = backward_var_z_out[n_var_points - i - 1];
+    }
+
+//assert(forward_curve_length ~ backward_curve_length) ?? FTW
+
+    // combine the forward and backward results
+    float respace_var_x[n_var_points];
+    float respace_var_y[n_var_points];
+    float respace_var_z[n_var_points];
+
+    for (int i=0; i<n_var_points; i++) 
+    {
+        respace_var_x[i] = 0.5 * (new_forward_var_x[i] + new_backward_var_x[i]);
+        respace_var_y[i] = 0.5 * (new_forward_var_y[i] + new_backward_var_y[i]);
+        respace_var_z[i] = 0.5 * (new_forward_var_z[i] + new_backward_var_z[i]);
+    }
+
+    float new_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, respace_var_x, respace_var_y, respace_var_z);
+
+    float shrinkage = new_curve_length / curve_length;
+
+// FTW make sure this part is ready
+    // copy out
+    for (int i=0; i<n_var_points; i++)
+    {
+        var_x[i] = respace_var_x[i];
+        var_y[i] = respace_var_y[i];
+        var_z[i] = respace_var_z[i];
+    }
+
+//float alpha_max = 0.1;
+    if (alpha < alpha_max) fprintf(stdout, "successful update and rebalance. increasing alpha: %f * %f = %f\n", alpha, beta, alpha *= beta); // success, so increase alpha
+   
+    return shrinkage;
+
+} // adaptiveIterateAndUpdate()
+

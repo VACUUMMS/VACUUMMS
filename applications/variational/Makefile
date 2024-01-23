@@ -18,6 +18,9 @@ quaternion.o: quaternion.hh quaternion.cc
 
 test_variational_FCC: test_variational_FCC.cc variational_3D.o constants.o configuration.o quaternion.o
 	g++ -g -O0 test_variational_FCC.cc -o test_variational_FCC variational_3D.o configuration.o constants.o quaternion.o -o test_variational_FCC -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
+
+test_variational_random: test_variational_random.cc variational_3D.o configuration.o constants.o quaternion.o
+	g++ -g -O0 test_variational_random.cc -o test_variational_random variational_3D.o configuration.o constants.o quaternion.o -o test_variational_random -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 test_configuration: configuration.o
 	g++ -g -O0 test_configuration.cc configuration.o -o test_configuration
 
@@ -40,6 +43,16 @@ clean:
 vis: test_variational_FCC
 	./test_variational_FCC -alpha 0.086 -n_iter 25000 -n_var_points 25 |grep "####" |tail -27 | head -26 |sed -e "s/#####//" | awk '{print $$1"\t"$$2"\t"$$3"\t0.05\t0"}' > fcc.vis
 
+random-vis: test_variational_random
+	./test_variational_random -alpha 0.001 -n_iter 25000 -n_var_points 125 |grep "####" |tail -127 | head -126 |sed -e "s/#####//" | awk '{print $$1"\t"$$2"\t"$$3"\t0.05\t0"}' > random.vis
+
+random-pov: random.vis
+	replicate_gfg -mirror_depth 2 -box 1 1 1 < rando.gfg > rando2.gfg
+	vis2pov < random.vis  -camera 2.5 2.5 1.5 > random.pov 
+	gfg2pov -no_header < rando2.gfg -phong 1 >> random.pov 
+	sed -ie "s/look_at <0,0,0>/look_at <0.25, 0.25, 0>/" random.pov
+	povray -W1920 -H1080 random.pov 
+
 pov: vis
 	vis2pov < fcc.vis  -camera 0.25 0.25 1.5 > fcc_top.pov 
 	sed -ie "s/look_at <0,0,0>/look_at <0.25, 0.25, 0>/" fcc_top.pov
@@ -47,6 +60,10 @@ pov: vis
 	vis2pov < fcc.vis  -camera 1.31 -0.81 0.5 > fcc_right.pov 
 	sed -ie "s/look_at <0,0,0>/look_at <0.25, 0.25, 0.5>/" fcc_right.pov
 	povray fcc_right.pov 
+
+fcc2:
+	
+	
 
 vis-clean:
 	rm -f fcc.vis fcc.pov fcc_top.pove fcc_top.pov fcc_right.pove fcc_right.pov fcc_top.png fcc_right.png

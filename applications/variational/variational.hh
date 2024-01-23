@@ -57,7 +57,11 @@ class Variational3D
 {
     private:
 
+        // step size regulators
         float alpha = 0.01;
+        float alpha_max = 0.01;
+        float beta = 1.1; // alpha adjustment parameter
+    
         float start_x; 
         float start_y; 
         float start_z; 
@@ -65,12 +69,18 @@ class Variational3D
         float end_y; 
         float end_z; 
         int n_var_points;
+
+        // parameters for inserted particle
+        float sigma; 
+        float epsilon;
+
         Configuration *configuration;
         float(*energy_function)(float x, float y, float z);
 
-        float respaceKernel(/*int _n_var_points,*/ float _start_x, float _start_y, float _start_z, 
-                           float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[], 
-                           float _new_var_x[], float _new_var_y[], float _new_var_z[]);
+//        float respaceKernel(/*int _n_var_points,*/ float _start_x, float _start_y, float _start_z, 
+        int respaceKernel(float _start_x, float _start_y, float _start_z, 
+                          float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[], 
+                          float _new_var_x[], float _new_var_y[], float _new_var_z[]);
 
         float calculateCurveLength(float _start_x, float _start_y, float _start_z, float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[]);
 
@@ -88,8 +98,11 @@ class Variational3D
              float end_x, 
              float end_y, 
              float end_z, 
+             float sigma,
+             float epsilon,
              int n_var_points);
 
+/*
         Variational3D(float start_x, 
                       float start_y, 
                       float start_z, 
@@ -98,6 +111,7 @@ class Variational3D
                       float end_z, 
                       int n_var_points, 
                       float(*energy_function)(float x, float y, float z));
+*/
 
         Variational3D(float start_x, 
                       float start_y, 
@@ -105,13 +119,17 @@ class Variational3D
                       float end_x, 
                       float end_y, 
                       float end_z, 
+                      float sigma,
+                      float epsilon,
                       int n_var_points, 
                       Configuration *c);
 
         void setAlpha(float _alpha);
+        void setAlphaMax(float _alpha_max);
         void printValues();
         void iterate();
         void iterateWork();
+        float adaptiveIterateAndUpdate();
 
         ~Variational3D();
 
