@@ -19,6 +19,9 @@ quaternion.o: quaternion.hh quaternion.cc
 test_variational_FCC: test_variational_FCC.cc variational_3D.o constants.o configuration.o quaternion.o
 	g++ -g -O0 test_variational_FCC.cc -o test_variational_FCC variational_3D.o configuration.o constants.o quaternion.o -o test_variational_FCC -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
+test_variational_lj: test_variational_lj.cc variational_3D.o constants.o configuration.o quaternion.o
+	g++ -g -O0 test_variational_lj.cc -o test_variational_lj variational_3D.o configuration.o constants.o quaternion.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
+
 test_variational_random: test_variational_random.cc variational_3D.o configuration.o constants.o quaternion.o
 	g++ -g -O0 test_variational_random.cc -o test_variational_random variational_3D.o configuration.o constants.o quaternion.o -o test_variational_random -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 test_configuration: configuration.o
@@ -48,6 +51,16 @@ fcc: fcc.gfg test_variational_FCC
 	gfg2voro -povray -box 2 2 2 < fcc.gfg > fcc_voro.pov
 	sed -ie "s/,r/, 0.0025 texture{ pigment {color Yellow } }/" fcc_voro.pov
 	povray -W3840 -H2160 fcc.pov
+
+lj: lj.gfg test_variational_lj
+	./test_variational_lj -n_iter 12500 -n_var_points 125 |grep "#####" |tail -127 | sed -e "s/#####//" > lj_var.out
+	awk '{print $$1"\t"$$2"\t"$$3"\t0.01\t1.0"}' < lj_var.out > lj_var.gfg
+	gfg2pov -no_header -color Green < lj_var.gfg > lj_var.pov 
+	gfg2pov -no_header < lj.gfg -transmit 0.7 -phong 1 > lj_atoms.pov 
+	gfg2voro -povray -box 2 2 2 < lj.gfg > lj_voro.pov
+	sed -ie "s/,r/, 0.0025 texture{ pigment {color Yellow } }/" lj_voro.pov
+	povray -W3840 -H2160 lj.pov
+
 
 vis-clean:
 	rm -f fcc.pove fcc.png fcc_var.pov fcc_atoms.pov fcc_voro.pov fcc_var.out facc_var.gfg 
