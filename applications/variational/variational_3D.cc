@@ -750,3 +750,17 @@ float delta_max = 0.01;
 
 } // adaptiveIterateAndUpdate()
 
+float* Variational3D::getX()
+{
+    return var_x;
+}
+
+float* Variational3D::getY()
+{
+    return var_y;
+}
+
+float* Variational3D::getZ()
+{
+    return var_z;
+}

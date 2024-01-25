@@ -32,5 +32,11 @@ class Configuration
         void dumpContents();
         float insertionEnergy(float x, float y, float z, float sigma, float epsilon);
         void setBoxDimensions(float _box_x, float _box_y, float _box_z);
+        void setMirrorDepth(int _mirror_depth);
+
+        ConfigurationRecord recordAt(int i);
+        void deleteRecordAt(int i);
+        int getSize();
 };
+
 

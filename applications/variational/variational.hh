@@ -124,6 +124,10 @@ class Variational3D
                       int n_var_points, 
                       Configuration *c);
 
+        float* getX();
+        float* getY();
+        float* getZ();
+
         void setAlpha(float _alpha);
         void setAlphaMax(float _alpha_max);
         void printValues();

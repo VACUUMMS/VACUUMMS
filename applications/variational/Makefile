@@ -61,9 +61,14 @@ lj: lj.gfg test_variational_lj
 	sed -ie "s/,r/, 0.0025 texture{ pigment {color Yellow } }/" lj_voro.pov
 	povray -W3840 -H2160 lj.pov
 
+ljx.gfg:
+	ljx -N 32 -box 3.174802103936399 3.174802103936399 3.174802103936399 -end_mcs 10000 |tail -34 | head -32 | awk '{print $3"\t"$4"\t"$5"\t1.0\t1.0"}' > ljx.gfg 
 
 vis-clean:
 	rm -f fcc.pove fcc.png fcc_var.pov fcc_atoms.pov fcc_voro.pov fcc_var.out facc_var.gfg 
 
 veryclean: vis-clean clean
+
+lj_all: lj.gfg lj_all.cc variational_3D.o constants.o configuration.o quaternion.o
+	g++ -g -O0 lj_all.cc -o lj_all variational_3D.o configuration.o constants.o quaternion.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 

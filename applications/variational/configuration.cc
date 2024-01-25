@@ -96,3 +96,23 @@ void Configuration::setBoxDimensions(float _box_x, float _box_y, float _box_z)
     box_y = _box_y;
     box_z = _box_z;
 }
+
+void Configuration::setMirrorDepth(int _mirror_depth)
+{
+    mirror_depth = _mirror_depth;
+}
+
+ConfigurationRecord Configuration::recordAt(int i)
+{
+    return records[i];
+}
+
+void Configuration::deleteRecordAt(int i)
+{
+    records.erase(records.begin() + i);
+}
+
+int Configuration::getSize()
+{
+    return records.size();
+}
