@@ -72,3 +72,7 @@ veryclean: vis-clean clean
 lj_all: lj.gfg lj_all.cc variational_3D.o constants.o configuration.o quaternion.o
 	g++ -g -O0 lj_all.cc -o lj_all variational_3D.o configuration.o constants.o quaternion.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/
 
+random.gfg:
+	python -c "for i in range(10):from random import random; print(str(random()) + '\t' + str(random()) + '\t' + str(random()) +'\t0.25\t1.0')" > random.gfg
+
+
