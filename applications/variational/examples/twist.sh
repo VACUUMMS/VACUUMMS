@@ -1,5 +1,5 @@
+# take the template and use it to generate and render all of the frames
 for i in {0..359}
-#for i in {0..1}
 do
     number=$(printf "%03d" ${i})
     filename=$(printf "pov/lj-${number}.pov")

@@ -19,6 +19,7 @@ double box_x = 0.0;
 double box_y = 0.0;
 double box_z = 0.0;
 
+// Gradient descent scaling parameter alpha
 float alpha = 0.1;
 float alpha_max = 0.5;
 
@@ -34,7 +35,7 @@ int main(int argc, char** argv)
     getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
     getIntParam((char*)"-mirror_depth", &mirror_depth);
 
-    char filename[] = "lj.gfg";
+    char filename[] = "ljx.gfg";
     Configuration c = Configuration(filename);
     c.setBoxDimensions(box_x, box_y, box_z);
     c.setMirrorDepth(mirror_depth);
@@ -42,11 +43,6 @@ int main(int argc, char** argv)
     printf("dumping original configuration:\n");
     c.dumpContents();
     printf("done. \n\n");
-
-/*
-// FTW try for known pair
-// int i=4; int j=5;
-*/
 
     // loop over all pairs in the configuration
     int configuration_size = c.getSize();
@@ -73,8 +69,6 @@ int main(int argc, char** argv)
             {
                 printf("adaptive iteration %d:\n\n", iter);
                 v.adaptiveIterateAndUpdate();
-//                v.printValues();
-//                printf("######################################################################################\n");
             }
 
             printf("dumping Variational3D object: %p\n", &v);

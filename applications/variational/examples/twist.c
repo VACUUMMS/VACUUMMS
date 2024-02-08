@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
+// Generate the camera_light-%03d.pov files which will be included in the templates
 void main()
 {
     char filename[256], camera[256], light[256];
