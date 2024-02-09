@@ -1,27 +1,29 @@
 #include <vector>
+#include <stdio.h>
+#include <vacuumms/types.h>
 
 class ConfigurationRecord
 {
     public:
 
-        float x;
-        float y;
-        float z;
-        float sigma;
-        float epsilon;
-//        float sigma_6;
-//        float sigma_12;
+        vacuumms_float x;
+        vacuumms_float y;
+        vacuumms_float z;
+        vacuumms_float sigma;
+        vacuumms_float epsilon;
+//        vacuumms_float sigma_6;
+//        vacuumms_float sigma_12;
 
-        ConfigurationRecord(float _x, float _y, float _z, float _sigma, float _epsilon);
+        ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon);
 };
 
 class Configuration
 {
         std::vector<ConfigurationRecord> records;
 
-        float box_x;
-        float box_y;
-        float box_z;
+        vacuumms_float box_x;
+        vacuumms_float box_y;
+        vacuumms_float box_z;
 
         int mirror_depth = 1;
     
@@ -31,8 +33,8 @@ class Configuration
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
         Configuration();
         void dumpContents();
-        float insertionEnergy(float x, float y, float z, float sigma, float epsilon);
-        void setBoxDimensions(float _box_x, float _box_y, float _box_z);
+        vacuumms_float insertionEnergy(vacuumms_float x, vacuumms_float y, vacuumms_float z, vacuumms_float sigma, vacuumms_float epsilon);
+        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
         void setMirrorDepth(int _mirror_depth);
 
         ConfigurationRecord recordAt(int i);

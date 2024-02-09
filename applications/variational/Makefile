@@ -6,13 +6,13 @@ variational_3D.o: variational_3D.cc constants.o quaternion.o
 	g++ -g -O0 -c variational_3D.cc constants.o -o variational_3D.o 
 
 constants.o: constants.cc
-	g++ -g -O0 -c constants.cc 
+	g++ -g -O0 -c constants.cc -I/home/frankwillmore/VACUUMMS/include
 
 configuration.o: configuration.hh configuration.cc
-	g++ -g -O0 -c configuration.cc 
+	g++ -g -O0 -c configuration.cc -I/home/frankwillmore/VACUUMMS/include
 
 quaternion.o: quaternion.hh quaternion.cc
-	g++ -g -O0 -c quaternion.cc 
+	g++ -g -O0 -c quaternion.cc -I/home/frankwillmore/VACUUMMS/include
 
 # Tests
 

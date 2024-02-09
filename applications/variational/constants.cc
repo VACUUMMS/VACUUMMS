@@ -1,6 +1,7 @@
 // constants.cc
 #include "variational.hh"
+#include <vacuumms/types.h>
 
-const float machine_epsilon =  5.96e-08;
-const float sqrt_machine_epsilon = 0.000244131112315;
+const vacuumms_float machine_epsilon =  5.96e-08;
+const vacuumms_float sqrt_machine_epsilon = 0.000244131112315;
 

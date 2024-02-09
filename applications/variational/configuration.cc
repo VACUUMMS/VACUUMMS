@@ -1,8 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include "configuration.hh"
+#include "vacuumms/types.h"
 
-ConfigurationRecord::ConfigurationRecord(float _x, float _y, float _z, float _sigma, float _epsilon)
+ConfigurationRecord::ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon)
 {
     x = _x;
     y = _y;
@@ -20,7 +21,7 @@ Configuration::Configuration()
 Configuration::Configuration(char *filename)
 {
     FILE* infile = fopen(filename, "r");
-    float x, y, z, sigma, epsilon;
+    vacuumms_float x, y, z, sigma, epsilon;
     records = std::vector<ConfigurationRecord>();    
 
     while (!feof(infile))
@@ -32,12 +33,12 @@ Configuration::Configuration(char *filename)
 
 Configuration::Configuration(FILE *pipe)
 {
-    float x, y, z, sigma, epsilon;
+    vacuumms_float x, y, z, sigma, epsilon;
     records = std::vector<ConfigurationRecord>();    
 
     while (!feof(pipe))
     {
-        fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
+        fscanf(pipe, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
         records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
     }
 }
@@ -66,33 +67,33 @@ printf("Calculating insertion energy at %0.012f, %0.012f\n", x,y);
 */
 
 //float Configuration::insertionEnergy3D(float x, float y, float z)
-float Configuration::insertionEnergy(float x, float y, float z, float sigma, float epsilon)
+vacuumms_float Configuration::insertionEnergy(vacuumms_float x, vacuumms_float y, vacuumms_float z, vacuumms_float sigma, vacuumms_float epsilon)
 {
 //printf("IN: sigma = %f, epsilon = %f\n", sigma, epsilon);
-    float total = 0.0;
+    vacuumms_float total = 0.0;
     for (int box_i=-mirror_depth; box_i<=mirror_depth; box_i++)
         for (int box_j=-mirror_depth; box_j<=mirror_depth; box_j++)
             for (int box_k=-mirror_depth; box_k<=mirror_depth; box_k++)
                 for (int i=0; i<records.size(); i++)
                 {
-                    float test_x = box_i * box_x + records[i].x;
-                    float test_y = box_j * box_y + records[i].y;
-                    float test_z = box_k * box_z + records[i].z;
-                    float r_sq = (test_x - x) * (test_x - x)
+                    vacuumms_float test_x = box_i * box_x + records[i].x;
+                    vacuumms_float test_y = box_j * box_y + records[i].y;
+                    vacuumms_float test_z = box_k * box_z + records[i].z;
+                    vacuumms_float r_sq = (test_x - x) * (test_x - x)
                                + (test_y - y) * (test_y - y)
                                + (test_z - z) * (test_z - z);
 
                     // Lorentz-Berthelot combining rules for sigma and epsilon
-                    float sigma_ij = 0.5 * (sigma + records[i].sigma);
-                    float sigma_sq = sigma_ij * sigma_ij;
-                    float epsilon_ij = sqrt(epsilon * records[i].epsilon);
+                    vacuumms_float sigma_ij = 0.5 * (sigma + records[i].sigma);
+                    vacuumms_float sigma_sq = sigma_ij * sigma_ij;
+                    vacuumms_float epsilon_ij = sqrt(epsilon * records[i].epsilon);
 
 //printf("sigma_ij = %f, epsilon_ij = %f\n", sigma_ij, epsilon_ij);
 
-                    float sigma_6 = sigma_sq * sigma_sq * sigma_sq;
-                    float sigma_12 = sigma_6 * sigma_6;
-                    float r_6 = r_sq * r_sq * r_sq;
-                    float r_12 = r_6 * r_6;
+                    vacuumms_float sigma_6 = sigma_sq * sigma_sq * sigma_sq;
+                    vacuumms_float sigma_12 = sigma_6 * sigma_6;
+                    vacuumms_float r_6 = r_sq * r_sq * r_sq;
+                    vacuumms_float r_12 = r_6 * r_6;
                     // total += (1.0/r_12 - 1.0/r_6);
 
                     total += 4 * epsilon_ij * (sigma_12/r_12 - sigma_6/r_6);
@@ -100,7 +101,7 @@ float Configuration::insertionEnergy(float x, float y, float z, float sigma, flo
     return total;
 }
 
-void Configuration::setBoxDimensions(float _box_x, float _box_y, float _box_z)
+void Configuration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
 {
     box_x = _box_x;
     box_y = _box_y;

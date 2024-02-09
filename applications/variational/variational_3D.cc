@@ -1,26 +1,28 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include <vacuumms/types.h>
+
 #include "variational.hh"
 #include "quaternion.hh"
 
 // These are provided and initialized in constants.o
-//extern float machine_epsilon;
-//extern float machine_sqrt_epsilon;
+//extern vacuumms_float machine_epsilon;
+//extern vacuumms_float machine_sqrt_epsilon;
 
 
 // prototype only
-//float (*energy)(float x, float y);
+//vacuumms_float (*energy)(vacuumms_float x, vacuumms_float y);
 
 
-void Variational3D::init(float _start_x, 
-                    float _start_y, 
-                    float _start_z, 
-                    float _end_x, 
-                    float _end_y, 
-                    float _end_z, 
-                    float _sigma, 
-                    float _epsilon, 
+void Variational3D::init(vacuumms_float _start_x, 
+                    vacuumms_float _start_y, 
+                    vacuumms_float _start_z, 
+                    vacuumms_float _end_x, 
+                    vacuumms_float _end_y, 
+                    vacuumms_float _end_z, 
+                    vacuumms_float _sigma, 
+                    vacuumms_float _epsilon, 
                     int _n_var_points)
 {
     // grab the passed values
@@ -36,9 +38,9 @@ void Variational3D::init(float _start_x,
 
     // start constructing 
 
-    var_x = new float[n_var_points];
-    var_y = new float[n_var_points];
-    var_z = new float[n_var_points];
+    var_x = new vacuumms_float[n_var_points];
+    var_y = new vacuumms_float[n_var_points];
+    var_z = new vacuumms_float[n_var_points];
 
     // initialize set of points
     
@@ -51,14 +53,14 @@ void Variational3D::init(float _start_x,
 }
 
 /*
-Variational3D::Variational3D(float _start_x, 
-                             float _start_y, 
-                             float _start_z, 
-                             float _end_x, 
-                             float _end_y, 
-                             float _end_z, 
+Variational3D::Variational3D(vacuumms_float _start_x, 
+                             vacuumms_float _start_y, 
+                             vacuumms_float _start_z, 
+                             vacuumms_float _end_x, 
+                             vacuumms_float _end_y, 
+                             vacuumms_float _end_z, 
                              int _n_var_points, 
-                             float(*_energy_function)(float x, float y, float z))
+                             vacuumms_float(*_energy_function)(vacuumms_float x, vacuumms_float y, vacuumms_float z))
 {
     init(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _n_var_points);
     use_configuration_energy = false;
@@ -67,14 +69,14 @@ Variational3D::Variational3D(float _start_x,
 }
 */
 
-Variational3D::Variational3D(float _start_x, 
-                             float _start_y, 
-                             float _start_z, 
-                             float _end_x, 
-                             float _end_y, 
-                             float _end_z, 
-                             float _sigma, 
-                             float _epsilon, 
+Variational3D::Variational3D(vacuumms_float _start_x, 
+                             vacuumms_float _start_y, 
+                             vacuumms_float _start_z, 
+                             vacuumms_float _end_x, 
+                             vacuumms_float _end_y, 
+                             vacuumms_float _end_z, 
+                             vacuumms_float _sigma, 
+                             vacuumms_float _epsilon, 
                              int _n_var_points, 
                              Configuration *_configuration)
 {
@@ -100,17 +102,17 @@ void Variational3D::printValues()
     std::cout << "#####" << end_x << " " << end_y << " " << end_z << std::endl;
 }
     
-void Variational3D::setAlpha(float _alpha)
+void Variational3D::setAlpha(vacuumms_float _alpha)
 {
     alpha = _alpha;
 }
 
-void Variational3D::setAlphaMax(float _alpha_max)
+void Variational3D::setAlphaMax(vacuumms_float _alpha_max)
 {
     alpha_max = _alpha_max;
 }
 
-void Variational3D::setDeltaMax(float _delta_max)
+void Variational3D::setDeltaMax(vacuumms_float _delta_max)
 {
     delta_max = _delta_max;
 }
@@ -118,14 +120,14 @@ void Variational3D::setDeltaMax(float _delta_max)
 void Variational3D::iterate()
 {
     // FTW: need to make a full pass before updating!!!
-    float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
+    vacuumms_float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
     // looking along direction of line, point before and point after
-    float fore_x, aft_x;
-    float fore_y, aft_y;
-    float fore_z, aft_z;
+    vacuumms_float fore_x, aft_x;
+    vacuumms_float fore_y, aft_y;
+    vacuumms_float fore_z, aft_z;
 
-    //float alpha = 0.01; // nudge size?
-    float beta = 0.1; // when step size is too large, multiply by beta
+    //vacuumms_float alpha = 0.01; // nudge size?
+    vacuumms_float beta = 0.1; // when step size is too large, multiply by beta
 
     for (int i=0; i<n_var_points; i++)
     {
@@ -156,21 +158,21 @@ void Variational3D::iterate()
         }
 
         // tangent_* here is the vector tangent to the curve S at the point of interest
-        float tangent_x = aft_x - fore_x;
-        float tangent_y = aft_y - fore_y;
-        float tangent_z = aft_z - fore_z;
+        vacuumms_float tangent_x = aft_x - fore_x;
+        vacuumms_float tangent_y = aft_y - fore_y;
+        vacuumms_float tangent_z = aft_z - fore_z;
 
 //printf("got tangent vector (%f, %f, %f)\n", tangent_x, tangent_y, tangent_z);
 
-        float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
-        float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
+        vacuumms_float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
+        vacuumms_float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
 //printf("got theta = %f and axis u = (%f, %f, %f)\n ", theta, u_x, u_y, u_z);
 
         // variables to receive the values of the rotated i and j unit vectors
-        float i_x, i_y, i_z; 
+        vacuumms_float i_x, i_y, i_z; 
         rotate_vector(1, 0, 0, theta, u_x, u_y, u_z, &i_x, &i_y, &i_z);
 //printf("i rotates to (%f, %f, %f)\n", i_x, i_y, i_z);
-        float j_x, j_y, j_z; 
+        vacuumms_float j_x, j_y, j_z; 
         rotate_vector(0, 1, 0, theta, u_x, u_y, u_z, &j_x, &j_y, &j_z);
 //printf("j rotates to (%f, %f, %f)\n", j_x, j_y, j_z);
         // the directional vectors are ostensibly normalized
@@ -178,8 +180,8 @@ void Variational3D::iterate()
         // sample directional derivatives (directions perpendicular to curve)
 
         // get direction perpendicular, negative reciprocal of slope
-        // float directional_y = -(aft_x - fore_x);
-        // float directional_x = (aft_y - fore_y);
+        // vacuumms_float directional_y = -(aft_x - fore_x);
+        // vacuumms_float directional_x = (aft_y - fore_y);
 
 //        std::cout << "direction for var point " << i << ": (" << var_x[i] << ", " << var_y[i] << "):(" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
 
@@ -203,19 +205,19 @@ void Variational3D::iterate()
 //printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
 
         // energy at var[i], and at directional points
-        float energy_center, energy_i, energy_j;
+        vacuumms_float energy_center, energy_i, energy_j;
         
 /*
         // sample energy to evaluate derivative
-        float sample_left_x = var_x[i] - directional_x;
-        float sample_left_y = var_y[i] - directional_y;
-        float sample_left_z = var_z[i] - directional_z;
-        float sample_right_x = var_x[i] + directional_x;
-        float sample_right_y = var_y[i] + directional_y;
-        float sample_right_z = var_z[i] + directional_z;
+        vacuumms_float sample_left_x = var_x[i] - directional_x;
+        vacuumms_float sample_left_y = var_y[i] - directional_y;
+        vacuumms_float sample_left_z = var_z[i] - directional_z;
+        vacuumms_float sample_right_x = var_x[i] + directional_x;
+        vacuumms_float sample_right_y = var_y[i] + directional_y;
+        vacuumms_float sample_right_z = var_z[i] + directional_z;
 */
-        //float energy_left;
-        //float energy_right;
+        //vacuumms_float energy_left;
+        //vacuumms_float energy_right;
 
         if (use_configuration_energy)
         {
@@ -234,21 +236,21 @@ void Variational3D::iterate()
 //printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
         // Not using alpha step size, just nudging. may need to normalize step size somehow
         // dE = (dE/dx)dx + (dE/dy)dy
-//        float dE = energy_right - energy_left;
+//        vacuumms_float dE = energy_right - energy_left;
 //std::cout << "dE = " << dE << "\n";
 
-        float dE_i = energy_i - energy_center;
-        float dE_j = energy_j - energy_center;
+        vacuumms_float dE_i = energy_i - energy_center;
+        vacuumms_float dE_j = energy_j - energy_center;
 
         // update position
 //        new_x[i] = var_x[i] - alpha * dE * directional_x;
 //        new_y[i] = var_y[i] - alpha * dE * directional_y;
 
-        float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
-        float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
-        float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
-        float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
-        float delta = sqrt(delta_sq);
+        vacuumms_float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
+        vacuumms_float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
+        vacuumms_float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
+        vacuumms_float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
+        vacuumms_float delta = sqrt(delta_sq);
 
         char *debug = getenv("VACUUMMS_DEBUG");
         if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta);
@@ -276,29 +278,29 @@ void Variational3D::iterate()
 }
 
 //########################################## rebalance ###########################################//
-float Variational3D::rebalancePoints3D()
+vacuumms_float Variational3D::rebalancePoints3D()
 {
-    float original_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
+    vacuumms_float original_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
 
-    float new_forward_var_x[n_var_points];
-    float new_forward_var_y[n_var_points];
-    float new_forward_var_z[n_var_points];
+    vacuumms_float new_forward_var_x[n_var_points];
+    vacuumms_float new_forward_var_y[n_var_points];
+    vacuumms_float new_forward_var_z[n_var_points];
 
     int status;
     status = respaceKernel(/*n_var_points,*/ start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
     if (status != 0) exit(status);
 
-    float forward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
+    vacuumms_float forward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
     // now run it backward
 
-    float backward_var_x_in[n_var_points];
-    float backward_var_y_in[n_var_points];
-    float backward_var_z_in[n_var_points];
+    vacuumms_float backward_var_x_in[n_var_points];
+    vacuumms_float backward_var_y_in[n_var_points];
+    vacuumms_float backward_var_z_in[n_var_points];
     
-    float backward_var_x_out[n_var_points];
-    float backward_var_y_out[n_var_points];
-    float backward_var_z_out[n_var_points];
+    vacuumms_float backward_var_x_out[n_var_points];
+    vacuumms_float backward_var_y_out[n_var_points];
+    vacuumms_float backward_var_z_out[n_var_points];
     
 /*
     //for (int i=0; i<n_var_points; i++) printf("before: backward_var_in = (%f, %f, %f)\n", backward_var_x_in[i], backward_var_y_in[i], backward_var_z_in[i]);
@@ -324,9 +326,9 @@ printf("--------------------------\n");
     if (status != 0) exit(status);
 
     // and flip it back
-    float new_backward_var_x[n_var_points];
-    float new_backward_var_y[n_var_points];
-    float new_backward_var_z[n_var_points];
+    vacuumms_float new_backward_var_x[n_var_points];
+    vacuumms_float new_backward_var_y[n_var_points];
+    vacuumms_float new_backward_var_z[n_var_points];
     
     for (int i=0; i<n_var_points; i++)
     {
@@ -335,16 +337,16 @@ printf("--------------------------\n");
         new_backward_var_z[i] = backward_var_z_out[n_var_points - i - 1];
     }
 
-    float backward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
+    vacuumms_float backward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
     // should match
     char *debug = getenv("VACUUMMS_DEBUG");
     if (debug != NULL) printf("original backward curve_length = %f\n", backward_curve_length);
 
     // combine the results
-    float new_var_x[n_var_points];
-    float new_var_y[n_var_points];
-    float new_var_z[n_var_points];
+    vacuumms_float new_var_x[n_var_points];
+    vacuumms_float new_var_y[n_var_points];
+    vacuumms_float new_var_z[n_var_points];
 
     for (int i=0; i<n_var_points; i++) 
     {
@@ -363,12 +365,12 @@ printf("--------------------------\n");
     }
 
     // check new combined curve length, add distance to each variational point to get shrinkage
-    float new_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_var_x, new_var_y, new_var_z);
+    vacuumms_float new_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_var_x, new_var_y, new_var_z);
 
 /*
-    float prev_x = start_x;
-    float prev_y = start_y;
-    float prev_z = start_z;
+    vacuumms_float prev_x = start_x;
+    vacuumms_float prev_y = start_y;
+    vacuumms_float prev_z = start_z;
     
     for (int i=0; i < n_var_points; i++)
     {
@@ -391,7 +393,7 @@ printf("--------------------------\n");
                       + (end_z - prev_z) * (end_z - prev_z)
                         );
  */   
-    float shrinkage = new_curve_length / original_curve_length;
+    vacuumms_float shrinkage = new_curve_length / original_curve_length;
 
     // copy out
     for (int i=0; i<n_var_points; i++)
@@ -406,23 +408,23 @@ printf("--------------------------\n");
 
 //#################################################### factoring to Kernel #################################//
 // return value is 0 if successful, 1 if not successful
-int Variational3D::respaceKernel(float _start_x, float _start_y, float _start_z, 
-                                 float _end_x, float _end_y, float _end_z,
-                                 float _var_x[], float _var_y[], float _var_z[], 
-                                 float _new_var_x[], float _new_var_y[], float _new_var_z[])
+int Variational3D::respaceKernel(vacuumms_float _start_x, vacuumms_float _start_y, vacuumms_float _start_z, 
+                                 vacuumms_float _end_x, vacuumms_float _end_y, vacuumms_float _end_z,
+                                 vacuumms_float _var_x[], vacuumms_float _var_y[], vacuumms_float _var_z[], 
+                                 vacuumms_float _new_var_x[], vacuumms_float _new_var_y[], vacuumms_float _new_var_z[])
 {
-    float curve_length = calculateCurveLength(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _var_x, _var_y, _var_z);
+    vacuumms_float curve_length = calculateCurveLength(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _var_x, _var_y, _var_z);
     // Cut each new segment along old path to this length
-    float new_segment_length = curve_length / (/*_*/n_var_points + 1.0);
+    vacuumms_float new_segment_length = curve_length / (/*_*/n_var_points + 1.0);
 
     // now the respace
-    float cursor_x = _start_x;
-    float cursor_y = _start_y;
-    float cursor_z = _start_z;
-    float remainder_x = 0;         
-    float remainder_y = 0;         
-    float remainder_z = 0;         
-    float remainder = 0;
+    vacuumms_float cursor_x = _start_x;
+    vacuumms_float cursor_y = _start_y;
+    vacuumms_float cursor_z = _start_z;
+    vacuumms_float remainder_x = 0;         
+    vacuumms_float remainder_y = 0;         
+    vacuumms_float remainder_z = 0;         
+    vacuumms_float remainder = 0;
     int old_point = 0;
 
     int all_segments_added = 0;
@@ -432,7 +434,7 @@ int something_happened = 0;
         // grab old segments until there's enough curve to cut at least one new segment
         while ((remainder < new_segment_length) && (old_point <= /*_*/n_var_points))
         {
-            float segment_x, segment_y, segment_z;
+            vacuumms_float segment_x, segment_y, segment_z;
             if (old_point < /*_*/n_var_points) 
             {
                 segment_x = _var_x[old_point] - cursor_x;
@@ -464,9 +466,9 @@ int something_happened = 0;
         while ((new_segment_length <= remainder) && (new_point < n_var_points)) // this should run stop adding points, even with remaining segment. 
         {
             // get projections of new_segment_length onto x, y directions
-            float delta_x = (remainder_x / remainder) * new_segment_length;
-            float delta_y = (remainder_y / remainder) * new_segment_length;
-            float delta_z = (remainder_z / remainder) * new_segment_length;
+            vacuumms_float delta_x = (remainder_x / remainder) * new_segment_length;
+            vacuumms_float delta_y = (remainder_y / remainder) * new_segment_length;
+            vacuumms_float delta_z = (remainder_z / remainder) * new_segment_length;
             if (new_point==0) 
             {
                 _new_var_x[new_point] = _start_x + delta_x;
@@ -506,13 +508,13 @@ int something_happened = 0;
 } // respaceKernel()
 
 
-float Variational3D::calculateCurveLength(float _start_x, float _start_y, float _start_z, float _end_x, float _end_y, float _end_z, float _var_x[], float _var_y[], float _var_z[])
+vacuumms_float Variational3D::calculateCurveLength(vacuumms_float _start_x, vacuumms_float _start_y, vacuumms_float _start_z, vacuumms_float _end_x, vacuumms_float _end_y, vacuumms_float _end_z, vacuumms_float _var_x[], vacuumms_float _var_y[], vacuumms_float _var_z[])
 {
     // get the total length of curve
-    float prev_x = _start_x;
-    float prev_y = _start_y;
-    float prev_z = _start_z;
-    float curve_length = 0;
+    vacuumms_float prev_x = _start_x;
+    vacuumms_float prev_y = _start_y;
+    vacuumms_float prev_z = _start_z;
+    vacuumms_float curve_length = 0;
 
     // add distance to each variational point
     for (int i=0; i < n_var_points; i++)
@@ -540,21 +542,21 @@ float Variational3D::calculateCurveLength(float _start_x, float _start_y, float 
 }
 
 
-float Variational3D::adaptiveIterateAndUpdate()
+vacuumms_float Variational3D::adaptiveIterateAndUpdate()
 {
-    float curve_length = Variational3D::calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
-    float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
+    vacuumms_float curve_length = Variational3D::calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
+    vacuumms_float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
 
 attempt_iteration:
 
     char *debug = getenv("VACUUMMS_DEBUG");
     if (debug != NULL) printf("Attempting iteration with alpha = %f\n", alpha);
     
-    float fore_x, aft_x;
-    float fore_y, aft_y;
-    float fore_z, aft_z;
+    vacuumms_float fore_x, aft_x;
+    vacuumms_float fore_y, aft_y;
+    vacuumms_float fore_z, aft_z;
 
-    float beta = 1.1; // adaptive parameter, increase/decrease alpha by this factor
+    vacuumms_float beta = 1.1; // adaptive parameter, increase/decrease alpha by this factor
 
     for (int i=0; i<n_var_points; i++)
     {
@@ -585,17 +587,17 @@ attempt_iteration:
         }
 
         // tangent_* here is the vector tangent to the curve S at the point of interest
-        float tangent_x = aft_x - fore_x;
-        float tangent_y = aft_y - fore_y;
-        float tangent_z = aft_z - fore_z;
+        vacuumms_float tangent_x = aft_x - fore_x;
+        vacuumms_float tangent_y = aft_y - fore_y;
+        vacuumms_float tangent_z = aft_z - fore_z;
 
-        float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
-        float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
+        vacuumms_float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
+        vacuumms_float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
 
         // variables to receive the values of the rotated i and j unit vectors
-        float i_x, i_y, i_z; 
+        vacuumms_float i_x, i_y, i_z; 
         rotate_vector(1, 0, 0, theta, u_x, u_y, u_z, &i_x, &i_y, &i_z);
-        float j_x, j_y, j_z; 
+        vacuumms_float j_x, j_y, j_z; 
         rotate_vector(0, 1, 0, theta, u_x, u_y, u_z, &j_x, &j_y, &j_z);
 
         // resize the directionals as deltas
@@ -609,7 +611,7 @@ attempt_iteration:
         j_z *= sqrt_machine_epsilon;
 
         // energy at var[i], and at directional points
-        float energy_center, energy_i, energy_j;
+        vacuumms_float energy_center, energy_i, energy_j;
         
         if (use_configuration_energy)
         {
@@ -623,14 +625,14 @@ attempt_iteration:
             exit(1);
         }
 
-        float dE_i = energy_i - energy_center;
-        float dE_j = energy_j - energy_center;
+        vacuumms_float dE_i = energy_i - energy_center;
+        vacuumms_float dE_j = energy_j - energy_center;
 
-        float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
-        float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
-        float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
-        float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
-        float delta = sqrt(delta_sq);
+        vacuumms_float delta_x = - alpha * (dE_i * i_x + dE_j * j_x);
+        vacuumms_float delta_y = - alpha * (dE_i * i_y + dE_j * j_y);
+        vacuumms_float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
+        vacuumms_float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
+        vacuumms_float delta = sqrt(delta_sq);
 
         char *debug = getenv("VACUUMMS_DEBUG");
         if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta); 
@@ -663,9 +665,9 @@ attempt_iteration:
 
     // run it forward
 
-    float new_forward_var_x[n_var_points];
-    float new_forward_var_y[n_var_points];
-    float new_forward_var_z[n_var_points];
+    vacuumms_float new_forward_var_x[n_var_points];
+    vacuumms_float new_forward_var_y[n_var_points];
+    vacuumms_float new_forward_var_z[n_var_points];
 
     int forward_status = respaceKernel(start_x, start_y, start_z, end_x, end_y, end_z, new_x, new_y, new_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
@@ -678,13 +680,13 @@ attempt_iteration:
 
     // now run it backward
 
-    float backward_var_x_in[n_var_points];
-    float backward_var_y_in[n_var_points];
-    float backward_var_z_in[n_var_points];
+    vacuumms_float backward_var_x_in[n_var_points];
+    vacuumms_float backward_var_y_in[n_var_points];
+    vacuumms_float backward_var_z_in[n_var_points];
     
-    float backward_var_x_out[n_var_points];
-    float backward_var_y_out[n_var_points];
-    float backward_var_z_out[n_var_points];
+    vacuumms_float backward_var_x_out[n_var_points];
+    vacuumms_float backward_var_y_out[n_var_points];
+    vacuumms_float backward_var_z_out[n_var_points];
     
     // flip the curve
     for (int i=0; i<n_var_points; i++)
@@ -706,9 +708,9 @@ attempt_iteration:
     }
 
     // and flip it back
-    float new_backward_var_x[n_var_points];
-    float new_backward_var_y[n_var_points];
-    float new_backward_var_z[n_var_points];
+    vacuumms_float new_backward_var_x[n_var_points];
+    vacuumms_float new_backward_var_y[n_var_points];
+    vacuumms_float new_backward_var_z[n_var_points];
     
     for (int i=0; i<n_var_points; i++)
     {
@@ -720,9 +722,9 @@ attempt_iteration:
 //assert(forward_curve_length ~ backward_curve_length) ?? FTW
 
     // combine the forward and backward results
-    float respace_var_x[n_var_points];
-    float respace_var_y[n_var_points];
-    float respace_var_z[n_var_points];
+    vacuumms_float respace_var_x[n_var_points];
+    vacuumms_float respace_var_y[n_var_points];
+    vacuumms_float respace_var_z[n_var_points];
 
     for (int i=0; i<n_var_points; i++) 
     {
@@ -731,9 +733,9 @@ attempt_iteration:
         respace_var_z[i] = 0.5 * (new_forward_var_z[i] + new_backward_var_z[i]);
     }
 
-    float new_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, respace_var_x, respace_var_y, respace_var_z);
+    vacuumms_float new_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, respace_var_x, respace_var_y, respace_var_z);
 
-    float shrinkage = new_curve_length / curve_length;
+    vacuumms_float shrinkage = new_curve_length / curve_length;
 
     // copy out
     for (int i=0; i<n_var_points; i++)
@@ -744,7 +746,7 @@ attempt_iteration:
     }
 
     fprintf(stdout, "successful update and rebalance. ");
-    float new_alpha = alpha * beta;
+    vacuumms_float new_alpha = alpha * beta;
     if (new_alpha < alpha_max)
     {
         char *debug = getenv("VACUUMMS_DEBUG");
@@ -758,17 +760,17 @@ attempt_iteration:
 
 } // adaptiveIterateAndUpdate()
 
-float* Variational3D::getX()
+vacuumms_float* Variational3D::getX()
 {
     return var_x;
 }
 
-float* Variational3D::getY()
+vacuumms_float* Variational3D::getY()
 {
     return var_y;
 }
 
-float* Variational3D::getZ()
+vacuumms_float* Variational3D::getZ()
 {
     return var_z;
 }
