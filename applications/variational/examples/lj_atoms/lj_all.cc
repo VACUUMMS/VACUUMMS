@@ -79,6 +79,12 @@ int main(int argc, char** argv)
 
             for (int point=0; point<n_var_points; point++) printf("###POV_%d-%d\t%f\t%f\t%f\n", i, j, var_x[point], var_y[point], var_z[point]); 
 
+            // draw as cylinders for a continuous trajectory
+            for (int point=0; point<n_var_points-1; point++) 
+                printf("###CYLINDER\tcylinder{<%f,%f,%f>, <%f,%f,%f>, 0.01 texture{ pigment {color Yellow } }}\n", var_x[point], var_y[point], var_z[point], var_x[point + 1], var_y[point + 1], var_z[point + 1]);
+
+//cylinder{<1.0493,0.0344035,0.224887>,<1.23868,0.77789,-0.232467>, 0.0025 texture{ pigment {color Yellow } }}
+
             printf("done. \n\n");
 
         } // end loop over (i,j) pairs

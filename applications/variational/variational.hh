@@ -61,6 +61,7 @@ class Variational3D
         float alpha = 0.01;
         float alpha_max = 0.01;
         float beta = 1.1; // alpha adjustment parameter
+        float delta_max = 0.01; // maximum step size
     
         float start_x; 
         float start_y; 
@@ -130,6 +131,7 @@ class Variational3D
 
         void setAlpha(float _alpha);
         void setAlphaMax(float _alpha_max);
+        void setDeltaMax(float _delta_max);
         void printValues();
         void iterate();
         void iterateWork();

@@ -20,12 +20,22 @@ Configuration::Configuration()
 Configuration::Configuration(char *filename)
 {
     FILE* infile = fopen(filename, "r");
-    //std::cout << "constructing Configuration from " << filename << " as " << infile << std::endl;
     float x, y, z, sigma, epsilon;
     records = std::vector<ConfigurationRecord>();    
-    //std::cout << "constructing Configuration.records as " << this << "." << &records << std::endl;
 
     while (!feof(infile))
+    {
+        fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
+        records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
+    }
+}
+
+Configuration::Configuration(FILE *pipe)
+{
+    float x, y, z, sigma, epsilon;
+    records = std::vector<ConfigurationRecord>();    
+
+    while (!feof(pipe))
     {
         fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
         records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));

@@ -28,6 +28,7 @@ class Configuration
     public:
 
         Configuration(char *filename);
+        Configuration(FILE *pipe); // allows stdin to be used to create pipeline
         Configuration();
         void dumpContents();
         float insertionEnergy(float x, float y, float z, float sigma, float epsilon);

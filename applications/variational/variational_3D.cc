@@ -110,6 +110,11 @@ void Variational3D::setAlphaMax(float _alpha_max)
     alpha_max = _alpha_max;
 }
 
+void Variational3D::setDeltaMax(float _delta_max)
+{
+    delta_max = _delta_max;
+}
+
 void Variational3D::iterate()
 {
     // FTW: need to make a full pass before updating!!!
@@ -244,7 +249,9 @@ void Variational3D::iterate()
         float delta_z = - alpha * (dE_i * i_z + dE_j * j_z);
         float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
         float delta = sqrt(delta_sq);
-printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta);
+
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta);
 
 // try rescaling if delta is too big?
 //        if (delta_sq > alpha) 
@@ -330,8 +337,9 @@ printf("--------------------------\n");
 
     float backward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
-// should match
-printf("original backward curve_length = %f\n", backward_curve_length);
+    // should match
+    char *debug = getenv("VACUUMMS_DEBUG");
+    if (debug != NULL) printf("original backward curve_length = %f\n", backward_curve_length);
 
     // combine the results
     float new_var_x[n_var_points];
@@ -539,7 +547,8 @@ float Variational3D::adaptiveIterateAndUpdate()
 
 attempt_iteration:
 
-fprintf(stdout, "Attempting iteration with alpha = %f\n", alpha);
+    char *debug = getenv("VACUUMMS_DEBUG");
+    if (debug != NULL) printf("Attempting iteration with alpha = %f\n", alpha);
     
     float fore_x, aft_x;
     float fore_y, aft_y;
@@ -623,9 +632,8 @@ fprintf(stdout, "Attempting iteration with alpha = %f\n", alpha);
         float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
         float delta = sqrt(delta_sq);
 
-fprintf(stdout, "Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta); //FTW
-float delta_max = 0.01;
-
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta); 
         if (delta > delta_max)
         {
             printf("delta = %f > delta_max = %f, rescaling.\n", delta, delta_max);
@@ -727,7 +735,6 @@ float delta_max = 0.01;
 
     float shrinkage = new_curve_length / curve_length;
 
-// FTW make sure this part is ready
     // copy out
     for (int i=0; i<n_var_points; i++)
     {
@@ -736,15 +743,16 @@ float delta_max = 0.01;
         var_z[i] = respace_var_z[i];
     }
 
-//float alpha_max = 0.1;
     fprintf(stdout, "successful update and rebalance. ");
     float new_alpha = alpha * beta;
     if (new_alpha < alpha_max)
     {
-        fprintf(stdout, "Increasing alpha: %f * %f = %f\n", alpha, beta, new_alpha); // success, so increase alpha
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL) printf("Increasing alpha: %f * %f = %f\n", alpha, beta, new_alpha); // success, so increase alpha
         alpha = new_alpha;
     }
-    fprintf(stdout, "\n");
+    char *debug = getenv("VACUUMMS_DEBUG");
+    if (debug != NULL) printf("\n");
    
     return shrinkage;
 

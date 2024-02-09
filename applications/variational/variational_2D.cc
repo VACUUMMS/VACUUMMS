@@ -123,8 +123,12 @@ void Variational2D::iterate()
         directional_x *= sqrt_epsilon;
         directional_y *= sqrt_epsilon;
 
-printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
-printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL)
+        {
+            printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
+            printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
+        }
 
         // sample energy to evaluate derivative
         float sample_left_x = var_x[i] - directional_x;
@@ -148,7 +152,8 @@ printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
             energy_right = energy_function(sample_right_x, sample_right_y);
         }
 
-printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL) printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
         // Not using alpha step size, just nudging. may need to normalize step size somehow
         // dE = (dE/dx)dx + (dE/dy)dy
         float dE = energy_right - energy_left;
