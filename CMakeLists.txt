@@ -7,9 +7,11 @@ option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
 option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
 option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
+option(BUILD_VARIATIONAL "variational calculation of energy paths" OFF)
 
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
+message("got value for BUILD_VARIATIONAL=${BUILD_VARIATIONAL}")
 
 # Find X11. Usually installed to system area, but when it's not, need to find it.
 find_package(X11)
