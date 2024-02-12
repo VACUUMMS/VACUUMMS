@@ -198,6 +198,15 @@ if (BUILD_CUDA_COMPONENTS)
     target_link_libraries(gfg2fvi PUBLIC ftw_general m ftw_cuda)
 endif()
 
+if (BUILD_VORONOI_UTILS)
+    add_executable(gfg2voro "${PROJECT_SOURCE_DIR}/utils/gfg2voro.cc")
+    #FTW: need to include the voro++ includes and linkage
+    message("using VOROPP_HOME set to >>>${VOROPP_HOME}<<<")
+
+    target_include_directories(gfg2voro PUBLIC "${VOROPP_HOME}/include/voro++")
+    target_link_libraries(gfg2voro PUBLIC ftw_general m voro++)
+endif()
+
 #add_executable(fvi2tiff "${PROJECT_SOURCE_DIR}/utils/fvi2tiff.c")
 #target_include_directories(fvi2tiff PUBLIC "${PROJECT_SOURCE_DIR}/include")
 #target_link_libraries(fvi2tiff PUBLIC ftw_general m pthread)
@@ -266,5 +275,11 @@ if (BUILD_CUDA_COMPONENTS)
     install(TARGETS
             gfg2fvi
             sgfg2fvi
+            DESTINATION bin)
+endif()
+
+if (BUILD_VORONOI_UTILS)
+    install(TARGETS
+            gfg2voro
             DESTINATION bin)
 endif()
