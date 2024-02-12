@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     printf("usage:      Replicates a periodic image to the depth specified\n");
     printf("            IN:   atoms as gfg\n");
     printf("            OUT:  atoms as gfg, with replicated images\n\n");
-    printf("            The defaults will return the original configuration. Set lower_bound to make copies to the 'left' of (0,0,0) \n")
+    printf("            The defaults will return the original configuration. Set lower_bound to make copies to the 'left' of (0,0,0) \n");
     printf("            \n");
     printf("		-box [ 0.0 ] [ 0.0 ] [ 0.0 ] \n");
     printf("		-mirror_depth [ 1 ] \n");

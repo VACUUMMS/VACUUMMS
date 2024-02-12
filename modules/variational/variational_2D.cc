@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <vacuumms/types.h>
+#include <vacuumms/constants.h>
 
-#include "variational.hh"
+#include <vacuumms/variational/variational.hh>
 
 // These are provided and initialized in constants.o
 //extern vacuumms_float epsilon;

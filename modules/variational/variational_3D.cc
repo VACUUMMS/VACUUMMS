@@ -3,8 +3,8 @@
 #include <math.h>
 #include <vacuumms/types.h>
 
-#include "variational.hh"
-#include "quaternion.hh"
+#include <vacuumms/variational/variational.hh>
+#include <vacuumms/variational/quaternion.hh>
 
 // These are provided and initialized in constants.o
 //extern vacuumms_float machine_epsilon;
@@ -252,8 +252,10 @@ void Variational3D::iterate()
         vacuumms_float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
         vacuumms_float delta = sqrt(delta_sq);
 
-        char *debug = getenv("VACUUMMS_DEBUG");
-        if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta);
+        {
+            char *debug = getenv("VACUUMMS_DEBUG");
+            if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta);
+        }
 
 // try rescaling if delta is too big?
 //        if (delta_sq > alpha) 
@@ -340,8 +342,10 @@ printf("--------------------------\n");
     vacuumms_float backward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
     // should match
-    char *debug = getenv("VACUUMMS_DEBUG");
-    if (debug != NULL) printf("original backward curve_length = %f\n", backward_curve_length);
+    {
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL) printf("original backward curve_length = %f\n", backward_curve_length);
+    }
 
     // combine the results
     vacuumms_float new_var_x[n_var_points];
@@ -549,8 +553,10 @@ vacuumms_float Variational3D::adaptiveIterateAndUpdate()
 
 attempt_iteration:
 
-    char *debug = getenv("VACUUMMS_DEBUG");
-    if (debug != NULL) printf("Attempting iteration with alpha = %f\n", alpha);
+    {
+        char *debug = getenv("VACUUMMS_DEBUG");
+        if (debug != NULL) printf("Attempting iteration with alpha = %f\n", alpha);
+    }
     
     vacuumms_float fore_x, aft_x;
     vacuumms_float fore_y, aft_y;
@@ -634,8 +640,11 @@ attempt_iteration:
         vacuumms_float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
         vacuumms_float delta = sqrt(delta_sq);
 
-        char *debug = getenv("VACUUMMS_DEBUG");
-        if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta); 
+        {
+            char *debug = getenv("VACUUMMS_DEBUG");
+            if (debug != NULL) printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", dE_i, dE_j, delta_x, delta_y, delta_z, delta); 
+        }
+
         if (delta > delta_max)
         {
             printf("delta = %f > delta_max = %f, rescaling.\n", delta, delta_max);

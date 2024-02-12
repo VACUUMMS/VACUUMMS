@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
-#include "variational.hh"
+#include <vacuumms/variational/variational.hh>
 
 extern "C" 
 {
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     getVectorParam((char*)"-start", &start_x, &start_y, &start_z);
     getVectorParam((char*)"-end", &end_x, &end_y, &end_z);
 
-    char filename[] = "lj.gfg";
+    char filename[] = "ljx.gfg";
     Configuration c = Configuration(filename);
     c.setBoxDimensions(box_x, box_y, box_z);
 

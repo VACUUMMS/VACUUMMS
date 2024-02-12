@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include "configuration.hh"
+#include <vacuumms/variational/configuration.hh>
 #include "vacuumms/types.h"
 
 ConfigurationRecord::ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon)
