@@ -12,6 +12,7 @@ add_library(ftw_general SHARED
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_config_parser.c
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_std.c
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_param.c
+      ${PROJECT_SOURCE_DIR}/libraries/ftw_general/constants.c
 )
 
 # This is removed in favor of explicitly adding with target_link_libraries
@@ -32,7 +33,7 @@ add_library(ftw_pov SHARED
     ${PROJECT_SOURCE_DIR}/libraries/ftw_pov/ftw_povheader.c
 )
 
-target_link_libraries(ftw_pov PUBLIC ftw_general)
+target_link_libraries(ftw_pov PUBLIC ftw_general m)
 
 set_target_properties(ftw_pov PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
