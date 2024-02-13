@@ -24,10 +24,12 @@ target_include_directories(vacuumms_variational PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
     )
 
-add_executable(test_variational_lj "${PROJECT_SOURCE_DIR}/modules/variational/test/test_variational_lj.cc")
-target_include_directories(test_variational_lj PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(test_variational_lj PUBLIC vacuumms_variational ftw_general m)
+#add_executable(test_variational_lj "${PROJECT_SOURCE_DIR}/modules/variational/test/test_variational_lj.cc")
+#target_include_directories(test_variational_lj PUBLIC "${PROJECT_SOURCE_DIR}/include")
+#target_link_libraries(test_variational_lj PUBLIC vacuumms_variational ftw_general m)
 
 install(TARGETS vacuumms_variational
         DESTINATION lib)
+
+add_subdirectory(test)
 

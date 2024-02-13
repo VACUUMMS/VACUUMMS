@@ -1,4 +1,5 @@
-#include "quaternion.hh"
+#include <vacuumms/types.h>
+#include <vacuumms/variational/quaternion.hh>
 
 int main()
 {
@@ -6,7 +7,6 @@ int main()
     float b = sqrt(2);
 
     float m_x = 0, m_y = 0, m_z = 1;
-    // float n_x = a, n_y = a, n_z = a;
     float n_x = 1, n_y = 0, n_z = 0;
 
     printf("rotating (%f, %f, %f) to (%f, %f, %f):\n", m_x, m_y, m_z, n_x, n_y, n_z);
