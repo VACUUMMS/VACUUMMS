@@ -13,6 +13,9 @@ class Variational2D
         vacuumms_float start_y; 
         vacuumms_float end_x; 
         vacuumms_float end_y; 
+        vacuumms_float sigma; 
+        vacuumms_float epsilon; 
+    
         int n_var_points;
         Configuration *configuration;
         vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y);
@@ -28,12 +31,16 @@ class Variational2D
              vacuumms_float start_y, 
              vacuumms_float end_x, 
              vacuumms_float end_y, 
+             vacuumms_float sigma, 
+             vacuumms_float epsilon, 
              int n_var_points);
 
         Variational2D(vacuumms_float start_x, 
                       vacuumms_float start_y, 
                       vacuumms_float end_x, 
                       vacuumms_float end_y, 
+                      vacuumms_float sigma, 
+                      vacuumms_float epsilon, 
                       int n_var_points, 
                       vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y));
 
@@ -41,6 +48,8 @@ class Variational2D
                       vacuumms_float start_y, 
                       vacuumms_float end_x, 
                       vacuumms_float end_y, 
+                      vacuumms_float sigma, 
+                      vacuumms_float epsilon, 
                       int n_var_points, 
                       Configuration *c);
 

@@ -3,12 +3,12 @@
 #include <math.h>
 #include <vacuumms/types.h>
 #include <vacuumms/constants.h>
-
 #include <vacuumms/variational/variational.hh>
+#include <vacuumms/variational/quaternion.hh>
 
 // These are provided and initialized in constants.o
-//extern vacuumms_float epsilon;
-//extern vacuumms_float sqrt_epsilon;
+//  extern vacuumms_float epsilon;
+//  extern vacuumms_float sqrt_epsilon;
 
 
 // prototype only
@@ -19,6 +19,8 @@ void Variational2D::init(vacuumms_float _start_x,
                     vacuumms_float _start_y, 
                     vacuumms_float _end_x, 
                     vacuumms_float _end_y, 
+                    vacuumms_float _sigma, 
+                    vacuumms_float _epsilon, 
                     int _n_var_points)
 {
     // grab the passed values
@@ -26,6 +28,8 @@ void Variational2D::init(vacuumms_float _start_x,
     start_y = _start_y; 
     end_x = _end_x; 
     end_y = _end_y; 
+    sigma = _sigma;
+    epsilon = _epsilon;
     n_var_points = _n_var_points;
 
     // std::cout << "constructing/initing Variational2D: " << this << std::endl;
@@ -49,10 +53,12 @@ Variational2D::Variational2D(vacuumms_float _start_x,
                              vacuumms_float _start_y, 
                              vacuumms_float _end_x, 
                              vacuumms_float _end_y, 
+                             vacuumms_float _sigma, 
+                             vacuumms_float _epsilon, 
                              int _n_var_points, 
                              vacuumms_float(*_energy_function)(vacuumms_float x, vacuumms_float y))
 {
-    init(_start_x, _start_y, _end_x, _end_y, _n_var_points);
+    init(_start_x, _start_y, _end_x, _end_y, sigma, epsilon, _n_var_points);
     use_configuration_energy = false;
     configuration = nullptr;
     energy_function = _energy_function;
@@ -62,10 +68,12 @@ Variational2D::Variational2D(vacuumms_float _start_x,
                              vacuumms_float _start_y, 
                              vacuumms_float _end_x, 
                              vacuumms_float _end_y, 
+                             vacuumms_float _sigma, 
+                             vacuumms_float _epsilon, 
                              int _n_var_points, 
                              Configuration *_configuration)
 {
-    init(_start_x, _start_y, _end_x, _end_y, _n_var_points);
+    init(_start_x, _start_y, _end_x, _end_y, _sigma, _epsilon, _n_var_points);
     use_configuration_energy = true;
     configuration = _configuration;
     energy_function = nullptr;
@@ -123,14 +131,14 @@ void Variational2D::iterate()
         std::cout << "direction for var point " << i << ": (" << var_x[i] << ", " << var_y[i] << "):(" << directional_x << ", " << directional_y << ")" << "\tmagnitude: " << sqrt(directional_x * directional_x + directional_y * directional_y) << std::endl;
 
         // resize the direction vector to machine epsilon
-        directional_x *= sqrt_epsilon;
-        directional_y *= sqrt_epsilon;
+        directional_x *= sqrt_machine_epsilon;
+        directional_y *= sqrt_machine_epsilon;
 
         char *debug = getenv("VACUUMMS_DEBUG");
         if (debug != NULL)
         {
             printf("using resized directional x,y: %f, %f\n", directional_x, directional_y);
-            printf("sqrt_epsilon = %0.012f\n", sqrt_epsilon);
+            printf("sqrt_epsilon = %0.012f\n", sqrt_machine_epsilon);
         }
 
         // sample energy to evaluate derivative
@@ -146,8 +154,8 @@ void Variational2D::iterate()
         {
             //energy_left = configuration->insertionEnergy2D(sample_left_x, sample_left_y);
             //energy_right = configuration->insertionEnergy2D(sample_right_x, sample_right_y);
-            energy_left = configuration->insertionEnergy(sample_left_x, sample_left_y, 0);
-            energy_right = configuration->insertionEnergy(sample_right_x, sample_right_y, 0);
+            energy_left = configuration->insertionEnergy(sample_left_x, sample_left_y, 0, sigma, epsilon);
+            energy_right = configuration->insertionEnergy(sample_right_x, sample_right_y, 0, sigma, epsilon);
         }
         else 
         {
@@ -155,8 +163,10 @@ void Variational2D::iterate()
             energy_right = energy_function(sample_right_x, sample_right_y);
         }
 
-        char *debug = getenv("VACUUMMS_DEBUG");
-        if (debug != NULL) printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
+        {
+            char *debug = getenv("VACUUMMS_DEBUG");
+            if (debug != NULL) printf("energy left/right: %.012f <--> %.012f\n", energy_left, energy_right);
+        }
         // Not using alpha step size, just nudging. may need to normalize step size somehow
         // dE = (dE/dx)dx + (dE/dy)dy
         vacuumms_float dE = energy_right - energy_left;

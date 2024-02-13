@@ -9,7 +9,7 @@ add_library(vacuumms_variational SHARED
       ${PROJECT_SOURCE_DIR}/modules/variational/configuration.cc
 #      ${PROJECT_SOURCE_DIR}/modules/variational/constants.cc
       ${PROJECT_SOURCE_DIR}/modules/variational/quaternion.cc
-#      ${PROJECT_SOURCE_DIR}/modules/variational/variational_2D.cc
+      ${PROJECT_SOURCE_DIR}/modules/variational/variational_2D.cc
       ${PROJECT_SOURCE_DIR}/modules/variational/variational_3D.cc
 )
 
