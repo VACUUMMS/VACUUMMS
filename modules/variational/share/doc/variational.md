@@ -120,8 +120,10 @@ and:
 
 Thus giving the rotation quaternion conjugate pair:
 
-			q = cos(PI/4) - i sin(PI/4) = (sqrt(2)/2) (1 - i)
-			q* = cos(PI/4) + i sin(PI/4) = (sqrt(2)/2) (1 + i)
+```	
+            q  = cos(PI/4) - i sin(PI/4) = (sqrt(2)/2) (1 - i)
+            q* = cos(PI/4) + i sin(PI/4) = (sqrt(2)/2) (1 + i)
+```	
 
 Applying this to the vector **v** = (1, 0, 0):
 
@@ -138,124 +140,8 @@ Applying this to the vector **v** = (1, 0, 0):
 Rotating **v** = **k** to **v'** = **j** around **-i** means that **v** = **i** rotates to itself, as is expected. 
 
 
-
 # Prerequisites
 
 Enabling the variational module requires the voronoi module (which in turn requires voro++) to be installed. This integration is handled by CMake and/or spack, but does require that voro++ be available. 
 
-
-
-# Developer overview
-
-The variational module is written in C++, and makes use of some existing VACUUMMS code via *'extern "C" '* declarations. Relevant classes are Variational2D and Variational3D which take a set of endpoints, number of variational points to be used, and either a molecular configuration or alternatively, a pointer to a function of x, y, (and z in 3D case) and returns a scalar energy value.
-
-
-```
-class Variational2D
-{
-    private:
-
-        float start_x;
-        float start_y;
-        float end_x;
-        float end_y;
-        int n_var_points;
-        Configuration *configuration;
-        float(*energy_function)(float x, float y);
-
-        bool use_configuration_energy;
-
-        float* var_x;
-        float* var_y;
-
-    public:
-
-        void init(float start_x,
-             float start_y,
-             float end_x,
-             float end_y,
-             int n_var_points);
-
-        Variational2D(float start_x,
-                      float start_y,
-                      float end_x,
-                      float end_y,
-                      int n_var_points,
-                      float(*energy_function)(float x, float y));
-
-        Variational2D(float start_x,
-                      float start_y,
-                      float end_x,
-                      float end_y,
-                      int n_var_points,
-                      Configuration *c);
-
-        void printValues();
-        void iterate();
-        void iterateWork();
-
-        ~Variational2D();
-
-        float rebalancePoints2D();
-
-};
-
-class Variational3D
-{
-    private:
-
-        float start_x;
-        float start_y;
-        float start_z;
-        float end_x;
-        float end_y;
-        float end_z;
-        int n_var_points;
-        Configuration *configuration;
-        float(*energy_function)(float x, float y, float z);
-
-        bool use_configuration_energy;
-
-        float* var_x;
-        float* var_y;
-        float* var_z;
-
-    public:
-
-        void init(float start_x,
-             float start_y,
-             float start_z,
-             float end_x,
-             float end_y,
-             float end_z,
-             int n_var_points);
-
-        Variational3D(float start_x,
-                      float start_y,
-                      float start_z,
-                      float end_x,
-                      float end_y,
-                      float end_z,
-                      int n_var_points,
-                      float(*energy_function)(float x, float y, float z));
-
-        Variational3D(float start_x,
-                      float start_y,
-                      float start_z,
-                      float end_x,
-                      float end_y,
-                      float end_z,
-                      int n_var_points,
-                      Configuration *c);
-
-        void printValues();
-        void iterate();
-        void iterateWork();
-
-        ~Variational3D();
-
-        float rebalancePoints3D();
-
-};
-```
-
+See the included examples for implementation. 
