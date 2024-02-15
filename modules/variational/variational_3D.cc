@@ -101,6 +101,9 @@ void Variational3D::setDeltaMax(vacuumms_float _delta_max)
 }
 
 
+/* note that iterate() does not adjust alpha value automatically,
+ * but adapativeIterateAndUpdate() does.
+ */
 void Variational3D::iterate()
 {
     debug = getenv("VACUUMMS_DEBUG");
@@ -467,6 +470,9 @@ vacuumms_float Variational3D::calculateCurveLength(vacuumms_float _start_x, vacu
 }
 
 
+/* note that iterate() does not adjust alpha value automatically,
+ * but adapativeIterateAndUpdate() does.
+ */
 vacuumms_float Variational3D::adaptiveIterateAndUpdate()
 {
     debug = getenv("VACUUMMS_DEBUG");

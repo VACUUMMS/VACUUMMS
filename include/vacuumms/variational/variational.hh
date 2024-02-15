@@ -121,17 +121,6 @@ class Variational3D
              vacuumms_float epsilon,
              int n_var_points);
 
-/*
-        Variational3D(vacuumms_float start_x, 
-                      vacuumms_float start_y, 
-                      vacuumms_float start_z, 
-                      vacuumms_float end_x, 
-                      vacuumms_float end_y, 
-                      vacuumms_float end_z, 
-                      int n_var_points, 
-                      vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y, vacuumms_float z));
-*/
-
         Variational3D(vacuumms_float start_x, 
                       vacuumms_float start_y, 
                       vacuumms_float start_z, 
