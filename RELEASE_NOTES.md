@@ -2,6 +2,12 @@
 
 ---
 
+## 1.2.0:
+
+- First release of the variational module
+- introduces support for voronoi generation
+- Starting to develop and use more includes (e.g. types.h)
+
 ## 1.1.4: 
 
 - Increase system size limit from 65536 atoms to 131072 atoms (largest data structure is still <~ 16MB, so no memory issues anticipated)
