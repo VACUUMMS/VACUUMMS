@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
-#include "variational.hh"
+#include <vacuumms/variational/variational.hh>
 
 extern "C" 
 {
