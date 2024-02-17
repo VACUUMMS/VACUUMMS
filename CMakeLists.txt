@@ -7,9 +7,13 @@ option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
 option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
 option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
+option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
+option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
 
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
+message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
+message("got value for BUILD_VORONOI_UTILS=${BUILD_VORONOI_UTILS}")
 
 # Find X11. Usually installed to system area, but when it's not, need to find it.
 find_package(X11)
@@ -52,10 +56,27 @@ if (BUILD_CUDA_COMPONENTS)
     find_package(CUDA)
 endif()
 
+# There's no find_package for voropp, so just add a path
+if (BUILD_VORONOI_UTILS)
+    # set paths here
+    add_library(voro++ SHARED IMPORTED)
+    message("Setting voropp paths... VOROPP_HOME=${VOROPP_HOME}")
+    #    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib")
+    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib/libvoro++.a")
+endif()
+
+# The standard stuff
 add_subdirectory(libraries)
-message("added subdirectory lbiraries")
+message("added subdirectory libraries")
 list(APPEND EXTRA_lIBS ftw_general )
 add_subdirectory(utils)
 add_subdirectory(applications)
+
+if (BUILD_VARIATIONAL_MODULE)
+    message("adding variational module")
+    list(APPEND EXTRA_lIBS vacuumms_variational)
+    add_subdirectory(modules/variational)
+endif()
+
 
 
