@@ -119,6 +119,12 @@ target_include_directories(vis PUBLIC
 )
 target_link_libraries(vis PUBLIC ftw_general m pthread X11)
 
+add_executable(tcv 
+    "${PROJECT_SOURCE_DIR}/applications/sv/tcv.cc" 
+)
+target_include_directories(tcv PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(tcv PUBLIC ftw_general m )
+
 
 # Cuda codes needing work (prolly just with CUDA): pmd pmdgpu fv/essence
 # Unknown status: eg size
