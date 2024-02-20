@@ -1,6 +1,6 @@
 # Generate a simulated LJ fluid configuration at density of 1 and temperature of 1
-#ljx.gfg:
-#       ljx -N 32 -box 3.174802103936399 3.174802103936399 3.174802103936399 -end_mcs 10000 |tail -34 | head -32 | awk '{print $3"\t"$4"\t"$5"\t1.0\t1.0"}' > ljx.gfg 
+ljx.gfg:
+	ljx -N 32 -box 3.174802103936399 3.174802103936399 3.174802103936399 -end_mcs 10000 |tail -34 | head -32 | awk '{print $3"\t"$4"\t"$5"\t1.0\t1.0"}' > ljx.gfg 
 
 lj_atoms.pov: ljx.gfg
 	gfg2pov -no_header < ljx.gfg -transmit 0.7 -phong 1 > lj_atoms.pov 
@@ -9,10 +9,13 @@ lj_voro.pov: ljx.gfg
 	gfg2voro -povray -box 3.174802103936399 3.174802103936399 3.174802103936399 < ljx.gfg > lj_voro.pov
 	sed -ie "s/,r/, 0.005000 texture{ pigment {color White } }/" lj_voro.pov
 
-lj_all: ljx.gfg lj_all.cc ../../variational_3D.o ../../constants.o ../../configuration.o ../../quaternion.o
-	g++ lj_all.cc -o lj_all ../../variational_3D.o ../../configuration.o ../../constants.o ../../quaternion.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/ -I../..
+#lj_all: ljx.gfg lj_all.cc ../../variational_3D.o ../../constants.o ../../configuration.o ../../quaternion.o
+#	g++ lj_all.cc -o lj_all ../../variational_3D.o ../../configuration.o ../../constants.o ../../quaternion.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/ -I../..
 
-lj_all.out: lj_all
+lj_all: lj_all.cc
+	g++ lj_all.cc -o lj_all -lvacuumms_variational -lftw_general -lm -I${VACUUMMS_HOME}/include -L${VACUUMMS_HOME}/lib
+
+lj_all.out: lj_all ljx.gfg
 	./lj_all -n_iter 12500 -n_var_points 125 -box 3.174802103936399 3.174802103936399 3.174802103936399 > lj_all.out
 
 # intermediate in .cav form

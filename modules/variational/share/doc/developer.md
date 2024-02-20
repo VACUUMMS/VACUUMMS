@@ -1,27 +1,20 @@
-// variational.hh
-#include "configuration.hh"
-#include <vacuumms/types.h>
+# Developer overview
 
-extern const vacuumms_float machine_epsilon;
-extern const vacuumms_float sqrt_machine_epsilon;
+The variational module is written in C++, and makes use of some existing VACUUMMS code via *'extern "C" '* declarations. Relevant classes are Variational2D and Variational3D which take a set of endpoints, number of variational points to be used, and either a molecular configuration or alternatively, a pointer to a function of x, y, (and z in 3D case) and returns a scalar energy value. See the included examples for implementation.
 
+
+```
 class Variational2D
 {
     private:
 
-        // step size regulators
-        vacuumms_float alpha = 0.01;
-        vacuumms_float alpha_max = 0.01;
-        vacuumms_float beta = 1.1; // alpha adjustment parameter
-        vacuumms_float delta_max = 0.01; // maximum step size
-    
         vacuumms_float start_x; 
         vacuumms_float start_y; 
         vacuumms_float end_x; 
         vacuumms_float end_y; 
         vacuumms_float sigma; 
         vacuumms_float epsilon; 
-
+    
         int n_var_points;
         Configuration *configuration;
         vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y);
@@ -66,14 +59,11 @@ class Variational2D
         ~Variational2D();
 
         vacuumms_float rebalancePoints2D();
-
 };
 
 class Variational3D
 {
     private:
-    
-        char *debug; // to be set if running in debug mode
 
         // step size regulators
         vacuumms_float alpha = 0.01;
@@ -96,7 +86,6 @@ class Variational3D
         Configuration *configuration;
         vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y, vacuumms_float z);
 
-//        vacuumms_float respaceKernel(/*int _n_var_points,*/ vacuumms_float _start_x, vacuumms_float _start_y, vacuumms_float _start_z, 
         int respaceKernel(vacuumms_float _start_x, vacuumms_float _start_y, vacuumms_float _start_z, 
                           vacuumms_float _end_x, vacuumms_float _end_y, vacuumms_float _end_z, vacuumms_float _var_x[], vacuumms_float _var_y[], vacuumms_float _var_z[], 
                           vacuumms_float _new_var_x[], vacuumms_float _new_var_y[], vacuumms_float _new_var_z[]);
@@ -147,5 +136,5 @@ class Variational3D
         ~Variational3D();
 
         vacuumms_float rebalancePoints3D();
-
 };
+```
