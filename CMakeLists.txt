@@ -78,5 +78,3 @@ if (BUILD_VARIATIONAL_MODULE)
     add_subdirectory(modules/variational)
 endif()
 
-
-
