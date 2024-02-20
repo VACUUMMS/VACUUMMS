@@ -123,7 +123,7 @@ add_executable(tcv
     "${PROJECT_SOURCE_DIR}/applications/sv/tcv.cc" 
 )
 target_include_directories(tcv PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(tcv PUBLIC ftw_general m )
+target_link_libraries(tcv PUBLIC vacuumms_cpp ftw_general m )
 
 
 # Cuda codes needing work (prolly just with CUDA): pmd pmdgpu fv/essence

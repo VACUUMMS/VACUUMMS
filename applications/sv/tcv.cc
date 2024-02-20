@@ -1,10 +1,11 @@
 /* tcv.cc */
 
-#define MAX_CAVITIES 1310720
-#define N_SUCCESSES 10000
+//#define MAX_CAVITIES 1310720
+//#define N_SUCCESSES 10000
 
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
+#include <vacuumms/cavity.hh>
 
 #include <vector>
 
@@ -18,152 +19,6 @@ extern "C"
 
 // In:  1 or more records in .cav format, box size on command line
 // Out: .dst (reports one single value for volume of all cavities) 
-
-
-class Cavity
-{
-    public:
-
-        vacuumms_float x;
-        vacuumms_float y;
-        vacuumms_float z;
-        vacuumms_float d;
-
-    Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _d)
-    {
-        x = _x;
-        y = _y;
-        z = _z;
-        d = _d;
-    }
-}; // end class Cavity
-
-
-class CavityConfiguration
-{
-    public:
-
-        std::vector<Cavity> records;
-
-        vacuumms_float box_x;
-        vacuumms_float box_y;
-        vacuumms_float box_z;
-
-        int mirror_depth = 1;
-
-        CavityConfiguration()
-        {
-            records = std::vector<Cavity>();
-        }
-    
-        CavityConfiguration(FILE *instream)
-        {
-            records = std::vector<Cavity>();
-            vacuumms_float x, y, z, d;
-
-            while (!feof(instream))
-            {
-                fscanf(instream, "%f\t%f\t%f\t%f\n", &x, &y, &z, &d);
-                records.push_back(Cavity(x, y, z, d));
-            }
-        }
-    
-        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
-        {
-            box_x = _box_x;
-            box_y = _box_y;
-            box_z = _box_z;
-        }
-
-        void setMirrorDepth(int _mirror_depth)
-        {
-            mirror_depth = _mirror_depth;
-        }
-
-        Cavity recordAt(int i)
-        {
-            return records[i];
-        }
-
-        void deleteRecordAt(int i)
-        {
-            records.erase(records.begin() + i);
-        }
-
-        int getSize()
-        {
-            return records.size();
-        }
-
-        int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz)
-        {
-            int i;
-            vacuumms_float dx, dy, dz, dd;
-
-            for (i=0; i<getSize(); i++)
-            {
-                // Check inclusion in each of the eight mirror box images:
-
-                // (0,0,0):
-                dx = records[i].x - tx;
-                dy = records[i].y - ty;
-                dz = records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (0,0,1):
-                dx = records[i].x - tx;
-                dy = records[i].y - ty;
-                dz = box_z + records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (0,1,0):
-                dx = records[i].x - tx;
-                dy = box_y + records[i].y - ty;
-                dz = records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (0,1,1):
-                dx = records[i].x - tx;
-                dy = box_y + records[i].y - ty;
-                dz = box_z + records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (1,0,0):
-                dx = box_x + records[i].x - tx;
-                dy = records[i].y - ty;
-                dz = records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (1,0,1):
-                dx = box_x + records[i].x - tx;
-                dy = records[i].y - ty;
-                dz = box_z + records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (1,1,0):
-                dx = box_x + records[i].x - tx;
-                dy = box_y + records[i].y - ty;
-                dz = records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-
-                // (1,1,1):
-                dx = box_x + records[i].x - tx;
-                dy = box_y + records[i].y - ty;
-                dz = box_z + records[i].z - tz;
-                dd = dx*dx + dy*dy + dz*dz;
-                if (4*dd < (records[i].d * records[i].d)) return 1;
-            }
- 
-            return 0;
-        }
-}; // end class CavityConfiguration
 
 
 int main(int argc, char* argv[])
