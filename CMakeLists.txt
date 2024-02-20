@@ -78,5 +78,9 @@ if (BUILD_VARIATIONAL_MODULE)
     add_subdirectory(modules/variational)
 endif()
 
-
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include" # source directory
+        DESTINATION "include" # target directory
+        FILES_MATCHING # install only matched files
+        PATTERN "*.h" # select header files
+)
 
