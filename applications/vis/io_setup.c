@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "io_setup.h"
+#include <io_setup.h>
 
 extern int number_of_molecules;
 extern double box_x, box_y, box_z;
