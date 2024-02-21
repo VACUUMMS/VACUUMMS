@@ -43,6 +43,22 @@ target_include_directories(ftw_pov PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
 )
 
+# vacuumms_cpp
+
+add_library(vacuumms_cpp SHARED
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/cavity.cc
+)
+
+target_link_libraries(vacuumms_cpp PUBLIC ftw_general m)
+
+set_target_properties(vacuumms_cpp PROPERTIES
+    POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
+    )
+
+target_include_directories(vacuumms_cpp PUBLIC
+    "${PROJECT_SOURCE_DIR}/include"
+)
+
 # optional libs
 
 if (BUILD_TIFF_UTILS)
@@ -75,7 +91,7 @@ if (BUILD_CUDA_COMPONENTS)
     )
 endif()
 
-install(TARGETS ftw_general ftw_pov
+install(TARGETS ftw_general ftw_pov vacuumms_cpp
         DESTINATION lib)
 
 if (BUILD_TIFF_UTILS)

@@ -9,13 +9,19 @@ class Variational2D
 {
     private:
 
+        // step size regulators
+        vacuumms_float alpha = 0.01;
+        vacuumms_float alpha_max = 0.01;
+        vacuumms_float beta = 1.1; // alpha adjustment parameter
+        vacuumms_float delta_max = 0.01; // maximum step size
+    
         vacuumms_float start_x; 
         vacuumms_float start_y; 
         vacuumms_float end_x; 
         vacuumms_float end_y; 
         vacuumms_float sigma; 
         vacuumms_float epsilon; 
-    
+
         int n_var_points;
         Configuration *configuration;
         vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y);
@@ -66,6 +72,8 @@ class Variational2D
 class Variational3D
 {
     private:
+    
+        char *debug; // to be set if running in debug mode
 
         // step size regulators
         vacuumms_float alpha = 0.01;
@@ -112,17 +120,6 @@ class Variational3D
              vacuumms_float sigma,
              vacuumms_float epsilon,
              int n_var_points);
-
-/*
-        Variational3D(vacuumms_float start_x, 
-                      vacuumms_float start_y, 
-                      vacuumms_float start_z, 
-                      vacuumms_float end_x, 
-                      vacuumms_float end_y, 
-                      vacuumms_float end_z, 
-                      int n_var_points, 
-                      vacuumms_float(*energy_function)(vacuumms_float x, vacuumms_float y, vacuumms_float z));
-*/
 
         Variational3D(vacuumms_float start_x, 
                       vacuumms_float start_y, 
