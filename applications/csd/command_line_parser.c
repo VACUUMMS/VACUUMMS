@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "command_line_parser.h"
+#include <ftw_command_line_parser.h>
 
 extern char *input_file_name;
 extern int n_bins;

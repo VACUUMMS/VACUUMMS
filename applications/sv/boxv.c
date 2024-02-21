@@ -7,7 +7,8 @@
 #include <ftw_rng2.h>
 #include <ftw_param.h>
 
-#include "boxv.h"
+void readInputStream();
+int checkInclusion(double x, double y, double z);
 
 // Reads a centered cluster and determines the volume of it.
 // Will deliver an erroneous result if cluster is not centered or percolates.
@@ -115,4 +116,5 @@ void readInputStream()
   
   V printf("%d cavities.\n", number_of_cavities);
 }
+
 

@@ -7,7 +7,9 @@
 #include <ftw_rng2.h>
 #include <ftw_param.h>
 
-#include "cv.h"
+void readInputStream();
+int checkInclusion(double x, double y, double z);
+void findMinimumBoxSize();
 
 // Reads a centered cluster and determines the volume of it.
 // Will deliver an erroneous result if cluster is not centered or percolates.
