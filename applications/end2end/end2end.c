@@ -5,7 +5,10 @@
 #include <stdio.h>
 #include <ftw_std.h>
 #include <ftw_param.h>
-#include "end2end.h"
+
+int getStraddleInfo();
+void readInputStream();
+void printCavities();
 
 // Reads a centered cluster and determines the end-to-end distance (span) of it.
 // Will deliver an erroneous result if cluster is not centered or percolates.
