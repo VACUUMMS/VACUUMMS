@@ -1,9 +1,8 @@
 /*************************************** ljx_main.c ********************************************/
 
-#include "ljx_main.h"
 #include "io_setup.h"
 #include "graphics.h"
-#include "command_line_parser.h"
+#include <ftw_command_line_parser.h>
 #include "energy.h"
 
 #include <stdio.h>
@@ -12,6 +11,15 @@
 #include <ftw_science.h>
 #include <ftw_std.h>
 #include <ftw_rng.h>
+
+void perturbSystem();
+void updatePosition();
+void perturbSystem();
+void attemptMove();
+void setInitialConditions();
+void initializeOutput();
+void generateOutput();
+void finalizeOutput();
 
 #ifndef MAX_NUMBER_MOLECULES
 #define MAX_NUMBER_MOLECULES 16384
@@ -153,3 +161,4 @@ void attemptMove()
 
   delta_energy *= 4;
 }
+
