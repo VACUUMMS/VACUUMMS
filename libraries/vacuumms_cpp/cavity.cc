@@ -22,6 +22,19 @@ CavityConfiguration::CavityConfiguration()
 {
     records = std::vector<Cavity>();
 }
+
+CavityConfiguration::CavityConfiguration(char *filename)
+{
+    FILE* instream=fopen(filename, "r");
+    records = std::vector<Cavity>();
+    vacuumms_float x, y, z, d;
+
+    while (!feof(instream))
+    {
+        fscanf(instream, "%f\t%f\t%f\t%f\n", &x, &y, &z, &d);
+        records.push_back(Cavity(x, y, z, d));
+    }
+}
     
 CavityConfiguration::CavityConfiguration(FILE *instream)
 {

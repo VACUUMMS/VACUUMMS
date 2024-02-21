@@ -47,6 +47,7 @@ class CavityConfiguration
         int mirror_depth = 1;
 
         CavityConfiguration();
+        CavityConfiguration(char *filename);
         CavityConfiguration(FILE *instream);
         void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
         void setMirrorDepth(int _mirror_depth);
