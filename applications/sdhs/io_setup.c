@@ -8,7 +8,14 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "io_setup.h"
+/* prototypes from old io_setup.h */
+void setInitialConditions();
+void generateUniqueId();
+void finalizeOutput();
+void initializeOutput();
+void generateOutput();
+void loadConfiguration();
+void readEnvironmentVariables();
 
 extern char *simulation_unique_identifier;
 extern double temperature;

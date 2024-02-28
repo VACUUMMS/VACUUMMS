@@ -7,9 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <energy.h>
 
-#include "io_setup.h"
-#include "energy.h"
+
+void setInitialConditions();
+void generateUniqueId();
+void initializeOutput();
+void generateOutput();
+void finalizeOutput();
+void loadConfiguration();
 
 extern char simulation_unique_identifier[];
 extern double temperature;
@@ -128,4 +134,5 @@ void generateOutput()
     printf("#HC%06d\n", monte_carlo_steps);
   }
 }
+
 

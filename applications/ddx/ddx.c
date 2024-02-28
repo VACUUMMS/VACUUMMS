@@ -1,11 +1,18 @@
 /* ddx.c */
 
-#include "ddx.h"
-#include "io_setup.h"
+#include <io_setup.h>
 
 #include <ftw_std.h>
 #include <ftw_rng.h>
 #include <ftw_param.h>
+
+double calculateRepulsion();
+double calculateEnergy(double test_diameter);
+
+void generateTestPoint();
+void findEnergyMinimum();
+void makeVerletList();
+void expandTestParticle();
 
 #define MAX_NUM_MOLECULES 65536
 #define MAX_CLOSE 65536
@@ -92,7 +99,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  readConfiguration();
+  loadConfiguration();
   
   while (number_of_samples>0)
   {
@@ -351,4 +358,5 @@ void expandTestParticle()
     if (step_size*step_size < .00000001) break;
   }
 }
+
 

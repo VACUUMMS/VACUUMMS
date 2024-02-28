@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  readConfiguration();
+  loadConfiguration();
   
   while (number_of_samples>0)
   {

@@ -2,8 +2,7 @@
 /* input file should be of .cav format */
 /* output is of .hst format */
 
-#include "csd.h"
-#include "command_line_parser.h"
+#include <ftw_command_line_parser.h>
 
 #include <ftw_std.h>
 #include <ftw_rng.h>

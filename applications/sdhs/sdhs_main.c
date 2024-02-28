@@ -4,6 +4,14 @@
 #include "io_setup.h"
 #include "graphics.h"
 
+/* old io_setup.h prototypes */
+void setInitialConditions();
+void generateUniqueId();
+void finalizeOutput();
+void initializeOutput();
+void generateOutput();
+void readEnvironmentVariables();
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -62,56 +70,6 @@ int x_laps[MAX_NUMBER_MOLECULES], y_laps[MAX_NUMBER_MOLECULES], z_laps[MAX_NUMBE
 int mirror_depth = 1;
 
 int verbose;
-
-int main(int argc, char *argv[])
-{
-  int i;
-
-  setCommandLineParameters(argc, argv);
-  verbose = getFlagParam("-v");
-  if(getFlagParam("-ng")) graphics = 0;
-  if(getFlagParam("-no_side")) {side_view = 0; graphics = 1;}
-  getIntParam("-particle_scale", &particle_scale);
-  getIntParam("-N", &number_of_molecules);
-  getVectorParam("-box", &box_x, &box_y, &box_z);
-  getIntParam("-fg_color", &fg_color);
-  getIntParam("-bg_color", &bg_color);
-  getIntParam("-min_color", &min_color);
-  getIntParam("-rng_seed", &rng_seed);
-  if (getFlagParam("-randomize")) rng_seed = getRandomSeed();
-  getIntParam("-end_mcs", &end_mcs);
-  getIntParam("-energy_report_frequency", &energy_report_frequency);
-  getIntParam("-configuration_threshold", &configuration_threshold);
-  getIntParam("-configuration_frequency", &configuration_frequency);
-  getStringParam("-log_file_name", &log_file_name);
-  getStringParam("-input_file_name", &input_file_name);
-  getStringParam("-simulation_unique_identifier", &simulation_unique_identifier);
-  getDoubleParam("-target_acceptance_ratio", &target_acceptance_ratio);
-  getDoubleParam("-perturbation_length", &perturbation_length);
-
-  initializeRandomNumberGeneratorTo(rng_seed);
-  for (i=0; i<MAX_NUMBER_MOLECULES; i++) x_laps[i] = 0;
-  for (i=0; i<MAX_NUMBER_MOLECULES; i++) y_laps[i] = 0;
-  for (i=0; i<MAX_NUMBER_MOLECULES; i++) z_laps[i] = 0;
-
-  readEnvironmentVariables();
-  initializeOutput();
-  setInitialConditions();
-  if (graphicsModeEnabled()) initializeDisplay();
-
-  for(monte_carlo_steps=0; monte_carlo_steps<=end_mcs; monte_carlo_steps++)
-  {
-    generateOutput();
-    attempted_moves = 0;
-    accepted_moves = 0;
-    for (monte_carlo_step_counter=0; monte_carlo_step_counter<number_of_molecules; monte_carlo_step_counter++) perturbSystem();
-    acceptance_ratio = (0.0 + accepted_moves)/(0.0 + attempted_moves);
-    if (graphicsModeEnabled() && changeFlagIsSet()) drawGraphicalRepresentation();
-  } 
-
-  finalizeOutput();
-  return 0;
-} /* end main */
 
 /* generate a move, check for overlap */
 void perturbSystem()
@@ -202,3 +160,53 @@ int checkForOverlap(int particle_number)
 
   return 0;
 }
+
+int main(int argc, char *argv[])
+{
+  int i;
+
+  setCommandLineParameters(argc, argv);
+  verbose = getFlagParam("-v");
+  if(getFlagParam("-ng")) graphics = 0;
+  if(getFlagParam("-no_side")) {side_view = 0; graphics = 1;}
+  getIntParam("-particle_scale", &particle_scale);
+  getIntParam("-N", &number_of_molecules);
+  getVectorParam("-box", &box_x, &box_y, &box_z);
+  getIntParam("-fg_color", &fg_color);
+  getIntParam("-bg_color", &bg_color);
+  getIntParam("-min_color", &min_color);
+  getIntParam("-rng_seed", &rng_seed);
+  if (getFlagParam("-randomize")) rng_seed = getRandomSeed();
+  getIntParam("-end_mcs", &end_mcs);
+  getIntParam("-energy_report_frequency", &energy_report_frequency);
+  getIntParam("-configuration_threshold", &configuration_threshold);
+  getIntParam("-configuration_frequency", &configuration_frequency);
+  getStringParam("-log_file_name", &log_file_name);
+  getStringParam("-input_file_name", &input_file_name);
+  getStringParam("-simulation_unique_identifier", &simulation_unique_identifier);
+  getDoubleParam("-target_acceptance_ratio", &target_acceptance_ratio);
+  getDoubleParam("-perturbation_length", &perturbation_length);
+
+  initializeRandomNumberGeneratorTo(rng_seed);
+  for (i=0; i<MAX_NUMBER_MOLECULES; i++) x_laps[i] = 0;
+  for (i=0; i<MAX_NUMBER_MOLECULES; i++) y_laps[i] = 0;
+  for (i=0; i<MAX_NUMBER_MOLECULES; i++) z_laps[i] = 0;
+
+  readEnvironmentVariables();
+  initializeOutput();
+  setInitialConditions();
+  if (graphicsModeEnabled()) initializeDisplay();
+
+  for(monte_carlo_steps=0; monte_carlo_steps<=end_mcs; monte_carlo_steps++)
+  {
+    generateOutput();
+    attempted_moves = 0;
+    accepted_moves = 0;
+    for (monte_carlo_step_counter=0; monte_carlo_step_counter<number_of_molecules; monte_carlo_step_counter++) perturbSystem();
+    acceptance_ratio = (0.0 + accepted_moves)/(0.0 + attempted_moves);
+    if (graphicsModeEnabled() && changeFlagIsSet()) drawGraphicalRepresentation();
+  } 
+
+  finalizeOutput();
+  return 0;
+} /* end main */

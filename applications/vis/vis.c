@@ -1,9 +1,8 @@
 /*************************************** vis.c ********************************************/
 
-#include "vis.h"
-#include "io_setup.h"
-#include "graphics.h"
-#include "command_line_parser.h"
+#include <io_setup.h>
+#include <graphics.h>
+
 
 #include <stdio.h>
 #include <math.h>
@@ -22,6 +21,8 @@ int c[MAX_NUMBER_MOLECULES];
 int wsize_x, wsize_y, wsize_z;
 
 int number_of_molecules;
+
+void parseCommandLineOptions(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {

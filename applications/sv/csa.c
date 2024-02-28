@@ -8,7 +8,10 @@
 #include <ftw_std.h>
 #include <ftw_rng2.h>
 #include <ftw_param.h>
-#include "csa.h"
+
+void readInputStream();
+int checkExclusion();
+void generateSamplePoint(int particle_number);
 
 // Reads a centered cluster and determines the surface area of it.
 // Will deliver an erroneous result if cluster is not centered or percolates.

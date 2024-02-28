@@ -13,7 +13,14 @@
 #include <stdio.h>
 #include <ftw_std.h>
 #include <ftw_param.h>
-#include "center.h"
+
+int getStraddleInfo();
+void readInputStream();
+void printCavities();
+
+int checkXBoundary();
+int checkYBoundary();
+int checkZBoundary();
 
 double box_x, box_y, box_z;
 FILE *instream;
@@ -167,4 +174,5 @@ void readInputStream()
   
   V printf("%d cavities.\n", number_of_cavities);
 }
+
 

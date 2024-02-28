@@ -13,7 +13,7 @@ extern double sigma[], epsilon[];
 
 extern int verbose;
 
-void readConfiguration()
+int loadConfiguration()
 {
   char line[80];
   char *xs, *ys, *zs;
@@ -42,4 +42,6 @@ void readConfiguration()
  
   V printf("%d lines read.\n", number_of_molecules);
   fclose(stdin);
+
+  return number_of_molecules;
 }

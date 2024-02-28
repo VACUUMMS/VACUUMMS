@@ -140,7 +140,7 @@ void setInitialConditions()
 */
 }
 
-void loadConfiguration()
+int loadConfiguration()
 {
   FILE *datastream;
   char line[80];

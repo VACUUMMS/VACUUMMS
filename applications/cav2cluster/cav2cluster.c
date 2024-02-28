@@ -12,7 +12,15 @@
 
 #include <ftw_std.h>
 #include <ftw_param.h>
-#include "cav2cluster.h"
+
+void findAllPairs();
+void readInputStream();
+void printClusters();
+void turnPairsIntoClusters();
+void deleteEmptyClusters();
+void mergeClusters();
+void sortClusters();
+void buildClusters();
 
 double box_x, box_y, box_z;
 double sfactor = 1;
@@ -174,3 +182,4 @@ void readInputStream()
     }
   }
 }
+
