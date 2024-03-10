@@ -55,6 +55,7 @@ class CavityConfiguration
         void deleteRecordAt(int i);
         int getSize();
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
+        int pushBack(Cavity _cavity);
 
 }; // end class CavityConfiguration
 

@@ -17,7 +17,6 @@ Cavity::Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms
     d = _d;
 }
 
-
 CavityConfiguration::CavityConfiguration()
 {
     records = std::vector<Cavity>();
@@ -72,6 +71,12 @@ void CavityConfiguration::deleteRecordAt(int i)
 
 int CavityConfiguration::getSize()
 {
+    return records.size();
+}
+
+int CavityConfiguration::pushBack(Cavity _cavity)
+{
+    records.push_back(_cavity);
     return records.size();
 }
 
