@@ -5,10 +5,13 @@
 #include <string.h>
 
 // Hacking to interface to C linkage;
+/*
 extern "C"
 {
 #include <ftw_param.h>
 }
+*/
+#include <vacuumms/param.hh>
 
 #include <vacuumms/vertex.hh>
 #include <vacuumms/edge.hh>
