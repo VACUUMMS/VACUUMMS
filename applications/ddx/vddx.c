@@ -55,9 +55,6 @@ void makeVerletList(Trajectory*);
 void expandTestParticle(Trajectory*);
 void* ThreadMain(void *threadID);
 
-/* end of old pddx.h */
-
-
 pthread_t* 		threads;	// the threads
 void**			passvals;	// values passed to each thread
 sem_t			semaphore;	// semaphore to restrict number of threads running
@@ -65,7 +62,6 @@ sem_t			completion_semaphore;	// semaphore to count # of completed threads
 pthread_mutex_t 	mutex;
 int                     thread_idx; 
 
-// FTW move these to a std::vector dynamic allocation?
 vacuumms_float vertex_x[MAX_NUM_MOLECULES];
 vacuumms_float vertex_y[MAX_NUM_MOLECULES];
 vacuumms_float vertex_z[MAX_NUM_MOLECULES];
@@ -78,14 +74,12 @@ double 	sigma[MAX_NUM_MOLECULES];
 double 	epsilon[MAX_NUM_MOLECULES];
 
 // default values
-double 	box_x=6, box_y=6, box_z=6;
+double 	box_x=0.0, box_y=0.0, box_z=0.0;
 double 	verlet_cutoff=100.0;
 int 	n_steps = 1000000;
-int 	volume_sampling = 0;
 int 	include_center_energy = 0;
 int     check_insertion_point = 0;
 int 	show_steps = 0;
-int 	show_drift = 0;
 double  drift_threshold = INFINITY;
 int 	number_of_molecules = 0;
 int     n_threads = 1;
@@ -95,13 +89,11 @@ double 	characteristic_length = 1.0;
 double 	characteristic_energy = 1.0;
 int 	seed = 1;
 
-int verbose;
-
 int main(int argc, char **argv)
 {
   setCommandLineParameters(argc, argv);
-//  getIntParam("-seed", &seed);
   getIntParam("-n_threads", &n_threads);
+  getIntParam("-seed", &seed);
   getVectorParam("-box", &box_x, &box_y, &box_z);
   getDoubleParam("-characteristic_length", &characteristic_length);
   getDoubleParam("-characteristic_energy", &characteristic_energy);
@@ -109,50 +101,47 @@ int main(int argc, char **argv)
   getDoubleParam("-drift_threshold", &drift_threshold);
   getIntParam("-n_steps", &n_steps);
   check_insertion_point = getFlagParam("-check_insertion_point");
-  show_drift = getFlagParam("-show_drift");
 
   char *vertices_file;
   getStringParam("-vertices_file", &vertices_file);
-//FTW printf("Got verts_file=>>>%s<<<\n", vertices_file);
 
-//FTW
-  volume_sampling = getFlagParam("-volume_sampling");
-//FTW
   include_center_energy = getFlagParam("-include_center_energy");
   show_steps = getFlagParam("-show_steps");
   getDoubleParam("-min_diameter", &min_diameter);
 
   if (getFlagParam("-usage"))
   {
-    printf("\nusage:\t-box [ 6.0 6.0 6.0 ]\n");
-//    printf("\t\t-seed [ 1 ]\n");
-    printf("\t\t-characteristic_length [ 1.0 ] if in doubt, use largest sigma/diameter\n");
-    printf("\t\t-characteristic_energy [ 1.0 ] if in doubt, use largest energy/epsilon\n");
-    printf("\t\t-n_steps [ 1000000 ] maximum before giving up\n");
-    printf("\t\t-n_threads [ 1 ] \n");
-    printf("\t\t-show_steps (includes steps taken as final column)\n");
-    printf("\t\t-verlet_cutoff [ 100.0 ]\n");
-    printf("\t\t-drift_threshold [ 0.1 ] (only report cavs within this dist from original vertex)\n");
-// adding voronoi IC
-//    printf("\t\t-volume_sampling \n");
-    printf("\t\t-vertices_file [ filename ] \n");
-    printf("\t\t-include_center_energy \n");
-    printf("\t\t-check_insertion_point \n");
-    printf("\t\t-min_diameter [ 0.0 ] 0.0 will give all \n");
+    printf("vddx usage:     -box [ 0.0 0.0 0.0 ]\n");
+    printf("                -seed [ 1 ]\n");
+    printf("                -characteristic_length [ 1.0 ] if in doubt, use largest sigma/diameter\n");
+    printf("                -characteristic_energy [ 1.0 ] if in doubt, use largest energy/epsilon\n");
+    printf("                -n_steps [ 1000000 ] maximum before giving up\n");
+    printf("                -n_threads [ 1 ] \n");
+    printf("                -verlet_cutoff [ 100.0 ]\n");
+    printf("                -vertices_file [ filename ] \n");
+    printf("                -include_center_energy \n");
+    printf("                -show_steps (includes steps taken as final column)\n");
+    printf("                -check_insertion_point \n");
+    printf("                -min_diameter [ 0.0 ] 0.0 will give all \n");
+    printf("\n");
+    printf("                IN:  read from stdin < .gfg as: %%f     %%f     %%f     %%f     %%f\n");
+    printf("                                                 x      y      z      sigma  epsilon\n");
+    printf("                OUT: write to stdout > .vcv as: %%d     %%f     %%f     %%f     %%f     %%f\n");
+    printf("                                                idx     x      y      z      d      drift\n");
     printf("\n");
     exit(0);
   }
 
+  if (box_x * box_y * box_z <= 0.0) 
+  {
+    fprintf(stderr, "vacuumms/vddx: please supply suitable value of box size. (%lf x %lf x %lf)\n", box_x, box_y, box_z);
+    exit(2);
+  }
+
   loadConfiguration();
 
-// grab sigma_min to set lower bound for negative cavity sizing
-// FTW commented out, allow specifying negative min_diameter (e.g. 0.0 - sigma_min) on command line instead
-//  for (int i=0; i<number_of_molecules; i++)
-//    if (sigma[i] > sigma_min) sigma_min = sigma[i];
-
-// load verts
+  // load verts
   int n_vertices = loadVertices(vertices_file);
-//FTW printf("got %d vertices.\n", n_vertices);
 
   // make and verify all the threads and resources
   passvals = (void **)malloc(sizeof(void*) * n_vertices);
@@ -200,19 +189,13 @@ void *ThreadMain(void* passval) {
   assert(p_traj);
   /* passval is just an int wrapped as void*, need to cast down to int via long to match type size */
   p_traj->thread_id = (int)(long)passval; 
-//FTW printf("FTW p_traj->thread_id assigned %d\n", p_traj->thread_id); 
   MersenneInitialize(&(p_traj->rng), seed + p_traj->thread_id);
-
-  //FTW generateTestPoint(p_traj);
 
   /* guarantee insertion point not be located in a valley whose bottom is > 0 energy... 
    * otherwise cavity cannot be sized with real value */
-  //while (calculateEnergy(p_traj, 0.0) > 0) generateTestPoint(p_traj);
+  // while (calculateEnergy(p_traj, 0.0) > 0) generateTestPoint(p_traj);
 
-// FTW re-working condition for verts insertion
   generateTestPoint(p_traj);
-// trying this out to allow negative sizing
-//FTW  if (calculateEnergy(p_traj, min_diameter) > 0) 
 
   if (check_insertion_point && calculateEnergy(p_traj, 0.0) > 0) 
   {
@@ -233,8 +216,7 @@ void *ThreadMain(void* passval) {
   p_traj->sq_distance_from_initial_pt 	= (p_traj->test_x-p_traj->test_x0)*(p_traj->test_x-p_traj->test_x0) 
 				   	+ (p_traj->test_y-p_traj->test_y0)*(p_traj->test_y-p_traj->test_y0) 
 				   	+ (p_traj->test_z-p_traj->test_z0)*(p_traj->test_z-p_traj->test_z0);
-//  if (!volume_sampling || (p_traj->sq_distance_from_initial_pt < .25 * p_traj->diameter * p_traj->diameter)) {
-// FTW getting rid of volume sampling, since we're using verts as starting point
+
   if (drift < drift_threshold)
   {
     makeVerletList(p_traj);
@@ -249,9 +231,13 @@ void *ThreadMain(void* passval) {
       while (p_traj->test_z < 0) 	p_traj->test_z += box_z;
 
       pthread_mutex_lock(&mutex);
-      printf("%d\t%lf\t%lf\t%lf\t%lf", p_traj->thread_id, p_traj->test_x, p_traj->test_y, p_traj->test_z, p_traj->diameter);
+      printf("%d\t%lf\t%lf\t%lf\t%lf\t%lf", p_traj->thread_id, 
+                                            p_traj->test_x, 
+                                            p_traj->test_y, 
+                                            p_traj->test_z, 
+                                            p_traj->diameter,
+                                            drift);
       if (include_center_energy) printf("\t%lf", calculateEnergy(p_traj, p_traj->diameter));
-      if (show_drift) printf("\t%lf", drift);
       if (show_steps) printf("\t%d", p_traj->attempts);
       printf("\n");
       fflush(stdout);
@@ -259,7 +245,7 @@ void *ThreadMain(void* passval) {
     }
   }
   
-free(p_traj);
+  free(p_traj);
   sem_post(&semaphore);
   sem_post(&completion_semaphore);
   pthread_exit(NULL);
@@ -267,18 +253,10 @@ free(p_traj);
 
 void generateTestPoint(Trajectory *p_traj)
 {
-/*
-  p_traj->test_x = p_traj->test_x0 = prnd(&(p_traj->rng)) * box_x;
-  p_traj->test_y = p_traj->test_y0 = prnd(&(p_traj->rng)) * box_y;
-  p_traj->test_z = p_traj->test_z0 = prnd(&(p_traj->rng)) * box_z;
-*/
-
-//FTW printf("Assigning test_x #%d = %f\n", p_traj->thread_id, vertex_x[p_traj->thread_id]);
   p_traj->test_x = vertex_x[p_traj->thread_id];
   p_traj->test_y = vertex_y[p_traj->thread_id];
   p_traj->test_z = vertex_z[p_traj->thread_id];
 
-  /* printf("FTW: test point %lf, %lf, %lf\n", p_traj->test_x, p_traj->test_y, p_traj->test_z); */
   makeVerletList(p_traj);
 }
 
@@ -328,7 +306,6 @@ void makeVerletList(Trajectory *p_traj)
       }
     }
   }
-//printf("FTW: Verlet close molecules: %d\n", p_traj->close_molecules);
 }
 
 // return value is the drift from insertion point
@@ -358,17 +335,11 @@ double findEnergyMinimum(Trajectory *p_traj)
   // begin loop to iterate until minimum found
   for (p_traj->attempts=0; p_traj->attempts<n_steps; p_traj->attempts++)
   {
-    /*
-    drift_sq = (p_traj->test_x-p_traj->verlet_center_x)*(p_traj->test_x-p_traj->verlet_center_x) 
-             + (p_traj->test_y-p_traj->verlet_center_y)*(p_traj->test_y-p_traj->verlet_center_y) 
-             + (p_traj->test_z-p_traj->verlet_center_z)*(p_traj->test_z-p_traj->verlet_center_z);
-    */
     drift_x = (p_traj->test_x-p_traj->verlet_center_x);
     drift_y = (p_traj->test_y-p_traj->verlet_center_y);
     drift_z = (p_traj->test_z-p_traj->verlet_center_z);
     drift_sq = drift_x * drift_x + drift_y * drift_y + drift_z * drift_z; 
 
-    // if (drift_sq > .01 * verlet_cutoff) makeVerletList(p_traj);
     if (drift_sq > .01 * verlet_cutoff)
     {
       makeVerletList(p_traj);
@@ -498,8 +469,6 @@ void expandTestParticle(Trajectory *p_traj)
   double energy, old_energy;
   double e0, e1, r0, r1;
 
-  // double diameter = 0.0;
-    // FTW allowing negative diameter values
   double diameter = min_diameter; 
 
   // improved initial guess
@@ -532,5 +501,4 @@ void expandTestParticle(Trajectory *p_traj)
   // copy diameter to trajectory data
   p_traj->diameter = diameter;
 }
-
 
