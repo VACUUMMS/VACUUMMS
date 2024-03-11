@@ -10,6 +10,7 @@ option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
 option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
 option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
 
+
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
 message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
@@ -58,6 +59,7 @@ endif()
 
 # There's no find_package for voropp, so just add a path
 if (BUILD_VORONOI_UTILS)
+# how do we set VOROPP_HOME? and check it is set?
     # set paths here
     add_library(voro++ SHARED IMPORTED)
     message("Setting voropp paths... VOROPP_HOME=${VOROPP_HOME}")

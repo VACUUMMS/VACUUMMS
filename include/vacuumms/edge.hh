@@ -16,6 +16,7 @@ class Edge
         int index;
         int A;
         int B;
+        int foreign_key;
 
         Edge(int _index, int _A, int _B);
 
