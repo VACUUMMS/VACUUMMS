@@ -40,7 +40,6 @@ VertexList::VertexList(char *filename)
 
     while (!feof(instream))
     {
-        //fscanf(instream, "%d\t%f\t%f\t%f\t%f\t%f\n", &index, &x, &y, &z, &d, &drift);
         fscanf(instream, "%f\t%f\t%f\n", &x, &y, &z);
         records.push_back(Vertex(index++, x, y, z));
     }

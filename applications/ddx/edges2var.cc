@@ -66,19 +66,9 @@ int main(int argc, char *argv[])
         exit(2);
     }
 
-//printf("got verts file %s, edges file %s\n", verts_filename, edges_filename);
-
     VertexList verts(verts_filename);
 
-//printf("verts size: %d\n", verts.getSize());
-
     EdgeList edges(edges_filename, verts);
-
-//printf("edges size: %d\n", edges.getSize());
-
-//printf("Dumping edge list:\n");
-//for (int i = 0; i < edges.getSize(); i++) printf("%d - %d\n", edges.recordAt(i).A, edges.recordAt(i).B);
-//exit(1);
 
     // we've got vertices and edges lists. Now we refine:
 
@@ -99,17 +89,14 @@ int main(int argc, char *argv[])
         // vnq.recordAt(record_number).setForeignKey(index);
     }
 
-//printf("vnq size: %d\n", vnq.getSize());
-
     // vertex-to-cavity map
     IndexPairList v2c_map(map_filename);
 
-
-// everything loaded in, so now start culling pairs for output
+    // everything loaded in, so now start culling pairs for output
 
     IndexPairList output_list;
-// loop over the edges
-// for each edge, turn the vertex index pair into a cavity index pair
+
+    // Loop over the edges. For each edge, turn the vertex index pair into a cavity index pair
     for (int i = 0; i < edges.getSize(); i++)
     {
         Edge edge = edges.recordAt(i);
@@ -154,10 +141,7 @@ int main(int argc, char *argv[])
         output_list.pushBack(IndexPair(A_out, B_out));
     }
 
-//printf("output_list size: %d\n", output_list.getSize());
-// FTW debug for (int i=0;i<output_list.getSize(); i++) printf("output list: %d - %d\n", output_list.recordAt(i).A, output_list.recordAt(i).B);
-
-// once the list is complete, remove duplicates and self-pairs
+    // once the list is complete, remove duplicates and self-pairs
 
     for (int i=0;i<output_list.getSize(); i++) 
     {
@@ -170,48 +154,25 @@ int main(int argc, char *argv[])
             (
                 ((ip_i.A == ip_j.A) && (ip_i.B == ip_j.B)) || 
                 ((ip_i.A == ip_j.B) && (ip_i.B == ip_j.A)) 
-            ) // duplicate found
+            ) 
             {
+                // duplicate found 
                 output_list.deleteRecordAt(j--); // adjust index j for deleted record
             }
         }
     }
-
-//printf("new output_list size after rmeoving duplicates: %d\n", output_list.getSize());
 
     for (int i=0;i<output_list.getSize(); i++) 
     {
         IndexPair ip_i = output_list.recordAt(i);
         if (ip_i.A == ip_i.B) // check self
         {
-            //output_list.deleteRecordAt(i); // adjust index i for deleted record
             output_list.deleteRecordAt(i--); // adjust index i for deleted record
-            //printf("deleting self pair%d\n", i--);
         }
     }
 
-//printf("new output_list size after removing self-pairs: %d\n", output_list.getSize());
-
-//printf("output list: %d - %d\n", output_list.recordAt(i).A, output_list.recordAt(i).B);
-//for (int i=0; i<output_list.getSize(); i++) printf("output list: %d - %d\n", output_list.recordAt(i).A, output_list.recordAt(i).B);
-
-
-
-//printf("dumping vnq records:\n");
-
-/*FTW
-    for (int i=0;i<vnq.getSize(); i++) printf("%d\t%f\t%f\t%f\t%f\t%f\n", vnq.recordAt(i).index,
-                            vnq.recordAt(i).x,
-                            vnq.recordAt(i).y,
-                            vnq.recordAt(i).z,
-                            vnq.recordAt(i).d,
-                            vnq.recordAt(i).drift);
-printf("done dumping vnq records:\n");
-FTW*/
-
-//FTW still getting funny output here.
-
     // then turn this list/map into start/end points based on the cavs indexed
+
     for (int i=0;i<output_list.getSize(); i++) 
     {
         IndexPair ip_i = output_list.recordAt(i);
@@ -220,15 +181,11 @@ FTW*/
         int found_A = 0;
         int found_B = 0;
         
-//printf("ip_i.A = %d\t / ip_i.B = %d\n", ip_i.A, ip_i.B);
-
         // map the A part of the output record
         for (int j=0; j < vnq.getSize(); j++)
         {
-//printf("ip_i.A = %d\t / ip_i.B = %d\n", ip_i.A, ip_i.B);
             if (ip_i.A == vnq.recordAt(j).index)
             {
-//printf("found A, for i=%d at j=%d\n", i, j);
                 xA = vnq.recordAt(j).x;
                 yA = vnq.recordAt(j).y;
                 zA = vnq.recordAt(j).z;
@@ -236,7 +193,6 @@ FTW*/
                 break;
             }
         }
-
 
         // map the B part of the output record
         for (int j=0; j < vnq.getSize(); j++)
@@ -251,22 +207,11 @@ FTW*/
             }
         }
 
+        // Generate the output record
 
         printf("%f\t%f\t%f\t%f\t%f\t%f\n", xA, yA, zA, xB, yB, zB);
-
-/*
-        if (found_A && found_B)
-        {
-            printf("%f\t%f\t%f\t%f\t%f\t%f\n", xA, yA, zA, xB, yB, zB);
-        }
-        else
-        {
-            fprintf(stderr, "vacuumms/edges2pairs: failed to find A(%d) or B(%d)\n", found_A, found_B);
-            exit(2);
-        }
-*/
     }
 
-  return 0;
+    return 0;
 }
 

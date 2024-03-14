@@ -34,10 +34,6 @@ EdgeList::EdgeList(char *filename, VertexList _vertices)
     while (!feof(instream))
     {
         fscanf(instream, "%f\t%f\t%f\t%f\t%f\t%f\n", &xA, &yA, &zA, &xB, &yB, &zB); 
-        //fscanf(instream, "%d\t%d\n", &A, &B);
-        //records.push_back(Edge(index++, x, y, z));
-// need to look up the record.. just a placeholder now
-//printf("got %d\n", index);
 
         int A_found = 0;
         int B_found = 0;
@@ -81,21 +77,6 @@ EdgeList::EdgeList(char *filename, VertexList _vertices)
 
     }
 }
-    
-/*
-EdgeList::EdgeList(FILE *instream)
-{
-    records = std::vector<Edge>();
-    vacuumms_float x, y, z;
-    int index;
-
-    while (!feof(instream))
-    {
-        fscanf(instream, "%f\t%f\t%f\n", &x, &y, &z);
-        records.push_back(Edge(index++, x, y, z));
-    }
-}
-*/
     
 Edge EdgeList::recordAt(int i)
 {

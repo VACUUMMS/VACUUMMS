@@ -1,4 +1,4 @@
-/* io_setup.c */
+/* vddx_io_setup.c */
 
 #include <ftw_std.h>
 #include <ftw_rng.h>
@@ -6,8 +6,6 @@
 #include <string.h>
 
 #include <vacuumms/types.h>
-
-#include "io_setup.h"
 
 extern vacuumms_float vertex_x[];
 extern vacuumms_float vertex_y[];
@@ -17,7 +15,6 @@ int loadVertices(char* vertices_filename)
 {
   char line[256];
   char *xs, *ys, *zs;
-//  char *sigmas, *epsilons;
 
   int number_of_vertices = 0;
   FILE* vertices_file = fopen(vertices_filename, "r");
@@ -31,7 +28,6 @@ int loadVertices(char* vertices_filename)
     xs = strtok(line, "\t");
     ys = strtok(NULL, "\t");
     zs = strtok(NULL, "\n");
-//FTWprintf("%s,%s,%s<<<\n", xs, ys, zs);
 
     vertex_x[number_of_vertices] = strtod(xs, NULL);
     vertex_y[number_of_vertices] = strtod(ys, NULL);

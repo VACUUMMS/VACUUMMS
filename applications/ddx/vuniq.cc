@@ -57,8 +57,10 @@ int main(int argc, char *argv[])
     char* mapfile_name = NULL;
     getStringParam((char*)"-mapfile_name", &mapfile_name);
 
+    // All the unique cavities
     CavityConfiguration unique;
-//FTW VertexList map;
+
+    // List of index pairs for matched output
     IndexPairList map;
 
     // Read the input stream and generate unique list of cavs and map entries on the fly
@@ -84,8 +86,6 @@ int main(int argc, char *argv[])
                 if (dsq < threshold)
                 {
                     duplicate_found = 1;
-//FTW this is using the wrong index i, should be ... unique.recordAt(i).index; ?
-//                    map.pushBack(Vertex(vertex_index, x, y, z, i));
                     map.pushBack(IndexPair(vertex_index, unique.recordAt(i).index));
                     goto end_search;
                 }
@@ -97,9 +97,7 @@ end_search:
         // if no duplicate is found, so add the new cavity and record the index
         if (!duplicate_found) 
         {        
-//FTW why the - 1 at the end?            unique.pushBack(Cavity(vertex_index,x,y,z,d, drift)) - 1;
             unique.pushBack(Cavity(vertex_index, x, y, z, d, drift));
-//            map.pushBack(Vertex(vertex_index, x, y, z, vertex_index));
             map.pushBack(IndexPair(vertex_index, vertex_index));
         }
     }

@@ -223,7 +223,8 @@ void Variational3D::iterate()
         new_z[i] = var_z[i] + delta_z;
     }
 
-    // FTW: After full pass, copy the updates back.
+    // After full pass, copy the updates back.
+
     for (int i=0; i<n_var_points; i++)
     {
         var_x[i] = new_x[i];
