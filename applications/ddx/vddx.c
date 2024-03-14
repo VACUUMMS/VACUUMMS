@@ -111,6 +111,13 @@ int main(int argc, char **argv)
 
   if (getFlagParam("-usage"))
   {
+    printf("\n");
+    printf("vddx uses a set of Voronoi vertices as the initial condition\n");
+    printf("for particle insertion, generating an indexed list of cavities.\n");
+    printf("The index is based on order of vertices read from vertices file.\n");
+    printf("Output shows index and drift (distance from insertion point) for\n");
+    printf("each of the cavities, with options to show number of steps taken\n");
+    printf("and center energy as additional columns.\n\n");
     printf("vddx usage:     -box [ 0.0 0.0 0.0 ]\n");
     printf("                -seed [ 1 ]\n");
     printf("                -characteristic_length [ 1.0 ] if in doubt, use largest sigma/diameter\n");

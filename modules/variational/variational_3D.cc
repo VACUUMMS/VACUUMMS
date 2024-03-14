@@ -426,6 +426,7 @@ int Variational3D::respaceKernel(vacuumms_float _start_x, vacuumms_float _start_
             printf("new_point = %d, old_point = %d, all_segments_added = %d\n", new_point, old_point, all_segments_added);
             printf("remainder = %f, new_segment_length = %f\n", remainder, new_segment_length);
             printf("consider checking / reducing the value of alpha = %f\n", alpha);
+            printf("or adding more variational points (current n_var_points = %d) \n", n_var_points);
             return 1;
         }
     }
@@ -476,6 +477,7 @@ vacuumms_float Variational3D::calculateCurveLength(vacuumms_float _start_x, vacu
 vacuumms_float Variational3D::adaptiveIterateAndUpdate()
 {
     debug = getenv("VACUUMMS_DEBUG");
+    int wedge_count = 0;
 
     vacuumms_float curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
     vacuumms_float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
@@ -597,7 +599,13 @@ attempt_iteration:
 
     if (forward_status != 0) 
     {
-        fprintf(stdout, "forward respace failed, shrinking alpha = %f to %f and re-running.\n", alpha, alpha/=beta);
+        wedge_count++;
+        if (wedge_count > 100)
+        {
+            fprintf(stderr, "vacuumms/variational: wedge count > 100 in respaceKernel, giving up.\n");
+            exit(1);
+        }
+        fprintf(stderr, "forward respace failed, shrinking alpha = %f to %f and re-running.\n", alpha, alpha/=beta);
         goto attempt_iteration;
     }
 
@@ -623,7 +631,13 @@ attempt_iteration:
 
     if (backward_status != 0) 
     {
-        fprintf(stdout, "backward respace failed, shrinking alpha = %f to %f and re-running.\n", alpha, alpha/=beta);
+        wedge_count++;
+        if (wedge_count > 100)
+        {
+            fprintf(stderr, "vacuumms/variational: wedge count > 100 in respaceKernel, giving up.\n");
+            exit(1);
+        }
+        fprintf(stderr, "backward respace failed, shrinking alpha = %f to %f and re-running.\n", alpha, alpha/=beta);
         goto attempt_iteration;
     }
 

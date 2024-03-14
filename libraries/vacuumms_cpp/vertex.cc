@@ -9,7 +9,6 @@
 #include <iostream>
 
 
-//Vertex::Vertex(int _index, vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _d, vacuumms_float _drift, void* _link)
 Vertex::Vertex(int _index, vacuumms_float _x, vacuumms_float _y, vacuumms_float _z)
 {
     index = _index;

@@ -1,4 +1,4 @@
-/* vacuumms/vertex.cc */
+/* vacuumms/edge.cc */
 
 #include <vacuumms/vertex.hh>
 #include <vacuumms/edge.hh>
@@ -51,7 +51,7 @@ EdgeList::EdgeList(char *filename, VertexList _vertices)
                && (zA == vertices.recordAt(i).z) 
                )
             {
-                A_found = i + 1;
+                A_found = i + 1; // Add one to index to return TRUE
             }
             if ( 
                   (xB == vertices.recordAt(i).x) 
@@ -59,12 +59,12 @@ EdgeList::EdgeList(char *filename, VertexList _vertices)
                && (zB == vertices.recordAt(i).z) 
                )
             {
-                B_found = i + 1;
+                B_found = i + 1; // Add one to index to return TRUE
             }
 
             if (A_found && B_found) 
             {
-                records.push_back(Edge(index++, A_found, B_found));
+                records.push_back(Edge(index++, A_found - 1, B_found - 1));
                 break;
             }
         }
@@ -72,6 +72,7 @@ EdgeList::EdgeList(char *filename, VertexList _vertices)
         if (!A_found || !B_found) 
         {
             fprintf(stderr, "vacuumms/Edgelist()::EdgeList() record not found. Exiting. \n");
+            exit(1);
         }
         else
         {

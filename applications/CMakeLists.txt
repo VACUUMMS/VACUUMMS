@@ -63,9 +63,9 @@ add_executable(vuniq "${PROJECT_SOURCE_DIR}/applications/ddx/vuniq.cc")
 target_include_directories(vuniq PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(vuniq PUBLIC ftw_general m pthread vacuumms_cpp)
 
-add_executable(edges2pairs "${PROJECT_SOURCE_DIR}/applications/ddx/edges2pairs.cc")
-target_include_directories(edges2pairs PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(edges2pairs PUBLIC ftw_general vacuumms_cpp m)
+add_executable(edges2var "${PROJECT_SOURCE_DIR}/applications/ddx/edges2var.cc")
+target_include_directories(edges2var PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(edges2var PUBLIC ftw_general vacuumms_cpp m)
 
 add_executable(2pc 
     "${PROJECT_SOURCE_DIR}/applications/2pc/2pc.c" 
@@ -153,7 +153,7 @@ install(TARGETS
         pddx 
         vddx 
         vuniq
-        edges2pairs
+        edges2var
         hs 
         2pc
         csd    

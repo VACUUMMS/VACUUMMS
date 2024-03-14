@@ -4,7 +4,7 @@
 
 #include <vacuumms/types.h>
 #include <vacuumms/cavity.hh>
-#include <vacuumms/vertex.hh>
+#include <vacuumms/pair.hh>
 
 #include <stdio.h>
 
@@ -27,6 +27,12 @@ int main(int argc, char *argv[])
     if (getFlagParam((char*)"-usage")) 
     {
         printf("\n");
+        printf("vuniq takes an indexed set of cavities and removes duplicates,\n"); 
+        printf("preserving the index of first occurring instance, and optionally\n");
+        printf("generating a map of all indices to the index of the preserved instance.\n");
+        printf("E.g. cavs 1, 2, and 3 all map to cav 1, so cav 1 is preserved \n");
+        printf("and the map contains 1-1, 2-1, and 3-1 entries.\n");
+        printf("\n");  
         printf("vuniq usage:    -box [ 10.0 10.0 10.0 ]\n");  
         printf("                -threshold [ 0.01 ]\n");  
         printf("                -min_diam [ 0.0 ]\n");
@@ -52,7 +58,8 @@ int main(int argc, char *argv[])
     getStringParam((char*)"-mapfile_name", &mapfile_name);
 
     CavityConfiguration unique;
-    VertexList map;
+//FTW VertexList map;
+    IndexPairList map;
 
     // Read the input stream and generate unique list of cavs and map entries on the fly
     while (!feof(instream))
@@ -77,7 +84,9 @@ int main(int argc, char *argv[])
                 if (dsq < threshold)
                 {
                     duplicate_found = 1;
-                    map.pushBack(Vertex(vertex_index, x, y, z, i));
+//FTW this is using the wrong index i, should be ... unique.recordAt(i).index; ?
+//                    map.pushBack(Vertex(vertex_index, x, y, z, i));
+                    map.pushBack(IndexPair(vertex_index, unique.recordAt(i).index));
                     goto end_search;
                 }
             }
@@ -85,11 +94,13 @@ int main(int argc, char *argv[])
 
 end_search:
 
-        // no duplicate found, so add the new cavity and record the index
+        // if no duplicate is found, so add the new cavity and record the index
         if (!duplicate_found) 
         {        
-            unique.pushBack(Cavity(vertex_index,x,y,z,d, drift)) - 1;
-            map.pushBack(Vertex(vertex_index, x, y, z, vertex_index));
+//FTW why the - 1 at the end?            unique.pushBack(Cavity(vertex_index,x,y,z,d, drift)) - 1;
+            unique.pushBack(Cavity(vertex_index, x, y, z, d, drift));
+//            map.pushBack(Vertex(vertex_index, x, y, z, vertex_index));
+            map.pushBack(IndexPair(vertex_index, vertex_index));
         }
     }
 
@@ -108,11 +119,10 @@ end_search:
         FILE* mapfile = fopen(mapfile_name, "w");
 
         for (int i=0; i<map.getSize(); i++) 
-            fprintf(mapfile, "%d\t%d\n", map.recordAt(i).index, map.recordAt(i).foreign_key);
+            fprintf(mapfile, "%d\t%d\n", map.recordAt(i).A, map.recordAt(i).B);
 
         fflush(mapfile);
         fclose(mapfile);
     }
 }
-
 
