@@ -12,11 +12,11 @@ A small configuration (32 atoms) of a Lennard-Jones fluid is generated, and a ma
 
 ## PMP
 
-(see Makefile for usage and invocation)
+See Makefile for usage and invocation. Tools used include: vddx, vuniq, edges2var.
 
 ### cavity_pairs.cc 
 
-External application that uses VACUUMMS API and library to run the variational calculation. Generates cavity-cavity pairs, all-to-all. The generated diagram is <<<FTW>>> cluttered but shows how the various paths tend to coalesce to the available passages
+External application that uses VACUUMMS API and library to run the variational calculation. Generates cavity-cavity pairs, all-to-all. The generated diagram is cluttered but shows how the various paths tend to coalesce to the available passages
 
 ### preprocess.sh    
 
