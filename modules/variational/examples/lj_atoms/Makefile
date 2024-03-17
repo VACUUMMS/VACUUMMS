@@ -9,11 +9,8 @@ lj_voro.pov: ljx.gfg
 	gfg2voro -povray -box 3.174802103936399 3.174802103936399 3.174802103936399 < ljx.gfg > lj_voro.pov
 	sed -ie "s/,r/, 0.005000 texture{ pigment {color White } }/" lj_voro.pov
 
-#lj_all: ljx.gfg lj_all.cc ../../variational_3D.o ../../constants.o ../../configuration.o ../../quaternion.o
-#	g++ lj_all.cc -o lj_all ../../variational_3D.o ../../configuration.o ../../constants.o ../../quaternion.o -lm -I/home/frankwillmore/VACUUMMS/include /home/frankwillmore/VACUUMMS/cmake/libraries/libftw_general.so -Wl,-rpath,/home/frankwillmore/VACUUMMS/cmake/libraries/ -I../..
-
 lj_all: lj_all.cc
-	g++ lj_all.cc -o lj_all -lvacuumms_variational -lftw_general -lm -I${VACUUMMS_HOME}/include -L${VACUUMMS_HOME}/lib
+	g++ lj_all.cc -o lj_all -lvacuumms_variational -lftw_general -lm -I${VACUUMMS_ROOT}/include/include -L${VACUUMMS_ROOT}/lib
 
 lj_all.out: lj_all ljx.gfg
 	./lj_all -n_iter 12500 -n_var_points 125 -box 3.174802103936399 3.174802103936399 3.174802103936399 > lj_all.out
@@ -39,3 +36,14 @@ clean:
 veryclean: clean
 	rm -f lj_all lj_all.out ljx.gfg
 
+#lj_all.cc
+#lj_all.pov
+#lj_atoms.pov
+#lj_cylinder.pov
+#lj.png
+#lj.pov
+#lj_voro.pov
+#ljx.gfg
+#Makefile
+#twist.c
+#twist.sh

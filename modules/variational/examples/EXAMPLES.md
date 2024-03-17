@@ -1,84 +1,40 @@
-# PMP EXAMPLE GUIDE
+# VARIATIONAL MODULE EXAMPLES 
 
-**blah blah blah .**
+**The variational module enables calculation of paths of least energy between two points. Instead of a single test particle insertion, an entire curve of discrete points is inserted into the material of interest. The initial condition is a straight line spanning the start and end points. Successive iterations involve perturbing each of the points of the curve individually, then updating the entire set of points concurrently before performing subsequent iterations. Examples are provided for several models, including a simulated sample of PMP. **
 
-## XXX
+## RANDOM
 
-  Lorem Ipsum dolor. 
-  Copyright (C) 2003-2024 Frank T Willmore
+Simplest example. A single variational trajectiory is mapped and iterated in a small, randomly ordered configuration of particles. 
 
-  Permission is hereby granted, free of charge, to any person obtaining a 
-  copy of this software and associated documentation files (the "Software"), 
-  to deal in the Software without restriction, including without limitation 
-  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-  and/or sell copies of the Software, and to permit persons to whom the 
-  Software is furnished to do so, subject to the following conditions:
+## LJ atoms
 
-  The above copyright notice and this permission notice shall be included 
-  in all copies or substantial portions of the Software.
+A small configuration (32 atoms) of a Lennard-Jones fluid is generated, and a map of variational trajectories is produced by removing pairs of atoms and using their coordinates as endpoints for the variational trajectories. A set of scripts is provided which will generate POVRAY SDL and render frames and video perspective of a full 360 degree rotation.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-  DEALINGS IN THE SOFTWARE.
+## PMP
 
-## lorem Ipsum dolor. 
+(see Makefile for usage and invocation)
 
-  Lorem Ipsum dolor. 
-  Please reference the following publication/doi in citing this work:
+### cavity_pairs.cc 
 
-  A toolkit for the analysis and visualization of free volume in materials
+External application that uses VACUUMMS API and library to run the variational calculation. Generates cavity-cavity pairs, all-to-all. The generated diagram is <<<FTW>>> cluttered but shows how the various paths tend to coalesce to the available passages
 
-  Frank T Willmore
+### preprocess.sh    
 
-  Proceedings of the 1st Conference of the Extreme Science and Engineering 
-    Discovery Environment: Bridging from the eXtreme to the campus and beyond
-  Article No. 30 
+Script to preprocess data from lammps frame to gfg format for VACUUMMS
 
-  ISBN: 978-1-4503-1602-6 doi:10.1145/2335755.2335826
+### vddx 
 
-  https://dl.acm.org/doi/abs/10.1145/2335755.2335826
+Use the list of Voronoi vertices as starting points for test particle insertion and emit index of which vertex/insertion point finds which cavity
 
+### vuniq 
 
-### Installation
+Scrub the list of found cavities for duplicates. Generate a list of indices that maps which vertex finds which cavity
 
-Get spack:
+### edges2var 
 
-`$ git clone https://github.com/spack/spack`
+Map the edges to their corresponding vertices, the vertices to the cavities they find.  Emit a list of the resulting pairs of cavity centers to be used as start/end points for variational calculation of pore network. 
 
-Activate spack:
+### voro_pair.cc
 
-`$ . spack/share/spack/setup-env.sh`
+External application that uses VACUUMMS API and library to run the variational calculation Voronoi var pair generator, map voro edges to verts to cavities found by insertion at verts, and back to pairs based on voro edges
 
-Install:
-
-`$ spack install vacuumms`
-
-Load into the user environment:
-
-`$ spack load vacuumms`
-
-See individual commands for usage info, e.g.:
-
-`$ ddx -usage`
-
-## USER AND DEVELOPER GUIDES
-
-[IO Formats](IO_FORMATS.md)
-
-[Applications User Guide](APPLICATIONS_USER_GUIDE.md)
-
-[Utilities User Guide](UTILITIES_USER_GUIDE.md)
-
-[Developer Guide](DEVELOPER_GUIDE.md)
-
-[Roadmap](ROADMAP.md)
-
-[Release Notes](RELEASE_NOTES.md)
-
-## Examples:
-
-[Polystyrene](examples/polystyrene/README.md)
