@@ -70,7 +70,24 @@ voro_pair.out: voro_pair PMP.var
 voro_pair.pov: voro_pair.out
 	grep "###CYLINDER" < voro_pair.out | sed -e "s/###CYLINDER//" > voro_pair.pov
 
+cavities.pov: PMP.vnq
+	awk '{print $$2"\t"$$3"\t"$$4"\t"$$5}' < PMP.vnq | cav2pov -no_header -transmit 0.7 -phong 0.7 > cavities.pov
+#       | awk '{print $$1"\t"$$2}' \
+#	    | cav2pov -transmit 0.7 -phong 0.7 \
+#        > cavities.pov
+
 # Run POVRAY to generate the image, based on the includes in the base.pov file. 
 base.png:
 	povray -W3840 -H2160 base.pov   	 
+
+twist: twist.c
+	gcc twist.c -lm -o twist
+
+inside-mp4: twist
+	rm -rf pov
+	mkdir pov
+	./twist
+	pwd
+	./twist.sh
+	ffmpeg -f image2 -framerate 30 -i pov/PMP-%03d.png -vcodec libx264 -crf 22 -pix_fmt yuv420p PMP_inside_HD.mp4
 

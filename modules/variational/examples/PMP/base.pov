@@ -17,3 +17,5 @@ light_source{<125.000000,125.000000,125.000000> color White }
 //#include "lj_cylinder.pov"
 
 #include "voro_pair.pov"
+
+#include "cavities.pov"

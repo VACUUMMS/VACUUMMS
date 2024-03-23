@@ -36,14 +36,3 @@ clean:
 veryclean: clean
 	rm -f lj_all lj_all.out ljx.gfg
 
-#lj_all.cc
-#lj_all.pov
-#lj_atoms.pov
-#lj_cylinder.pov
-#lj.png
-#lj.pov
-#lj_voro.pov
-#ljx.gfg
-#Makefile
-#twist.c
-#twist.sh
