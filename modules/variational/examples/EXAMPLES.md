@@ -1,6 +1,6 @@
 # VARIATIONAL MODULE EXAMPLES 
 
-**The variational module enables calculation of paths of least energy between two points. Instead of a single test particle insertion, an entire curve of discrete points is inserted into the material of interest. The initial condition is a straight line spanning the start and end points. Successive iterations involve perturbing each of the points of the curve individually, then updating the entire set of points concurrently before performing subsequent iterations. Examples are provided for several models, including a simulated sample of PMP. **
+*The variational module enables calculation of paths of least energy between two points. Instead of a single test particle insertion, an entire curve of discrete points is inserted into the material of interest. The initial condition is a straight line spanning the start and end points. Successive iterations involve perturbing each of the points of the curve individually, then updating the entire set of points concurrently before performing subsequent iterations. Examples are provided for several models, including a simulated sample of PMP. *
 
 ## RANDOM
 
@@ -39,3 +39,4 @@ Map the edges to their corresponding vertices, the vertices to the cavities they
 
 External application that uses VACUUMMS API and library to run the variational calculation Voronoi var pair generator, map voro edges to verts to cavities found by insertion at verts, and back to pairs based on voro edges
 
+![PS](PMP/base.png)
