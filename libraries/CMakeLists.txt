@@ -47,6 +47,10 @@ target_include_directories(ftw_pov PUBLIC
 
 add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/cavity.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/vertex.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/edge.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/param.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pair.cc
 )
 
 target_link_libraries(vacuumms_cpp PUBLIC ftw_general m)

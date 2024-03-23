@@ -5,6 +5,8 @@
 #include <time.h>
 #include <string.h>
 
+#include <vacuumms/types.h>
+
 #include "io_setup.h"
 
 extern int number_of_molecules;
@@ -45,3 +47,4 @@ int loadConfiguration()
 
   return number_of_molecules;
 }
+

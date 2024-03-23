@@ -15,4 +15,7 @@ light_source{<125.000000,125.000000,125.000000> color White }
 
 // all variational paths built up of cylinders
 //#include "lj_cylinder.pov"
-#include "pmp125_cyl.pov"
+
+#include "voro_pair.pov"
+
+#include "cavities.pov"

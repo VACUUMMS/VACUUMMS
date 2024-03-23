@@ -17,6 +17,31 @@ Cavity::Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms
     d = _d;
 }
 
+Cavity::Cavity(int _index, 
+               vacuumms_float _x, 
+               vacuumms_float _y, 
+               vacuumms_float _z, 
+               vacuumms_float _d, 
+               vacuumms_float _drift)
+{
+    index = _index;
+    x = _x;
+    y = _y;
+    z = _z;
+    d = _d;
+    drift = _drift;
+}
+
+void Cavity::setForeignKey(int _foreign_key)
+{
+    foreign_key = _foreign_key;
+}
+
+int Cavity::getForeignKey()
+{
+    return foreign_key;
+}
+
 
 CavityConfiguration::CavityConfiguration()
 {
@@ -72,6 +97,12 @@ void CavityConfiguration::deleteRecordAt(int i)
 
 int CavityConfiguration::getSize()
 {
+    return records.size();
+}
+
+int CavityConfiguration::pushBack(Cavity _cavity)
+{
+    records.push_back(_cavity);
     return records.size();
 }
 
