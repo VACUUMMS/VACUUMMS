@@ -17,7 +17,9 @@ A small configuration (32 atoms) of a Lennard-Jones fluid is generated, and a ma
 See Makefile for usage and invocation. Tools used include: vddx, vuniq, edges2var. A similar script (twist.sh) and code (twist.c) are included, which allow a movie showing a view from the inside of the sample.
 A summary of what is produced here is to take the voronoi vertices of a polymer configuration, use them as insertion points to find cavities, and to generate the connectivity graph for the cavities based on their adjacency in the voronoi graph. Not that not every Voronoi vertex will map to a *unique* cavity. When generating the final graph of variational curves, pairs of vertices are omitted when they either map to the same cavity (degenerate case) or when the pairs of vertices map to an already mapped pair of cavities (duplicate case). Also, pairs are discarded when they are clearly mapped across a periodic boundary, as determined by the distance between centers exceeding half of the box dimension, defined as sqrt(box_x * box_x + box_y * box_y + box_z * box_z).
 
-![PS](PMP/base.png)
+Thanks to Mohammed al Otmi and Janani Sampath at the University of Florida for providing the original LAMMPS configuration data for PMP. 
+
+![PMP](PMP/base.png)
 
 ### cavity_pairs.cc 
 
