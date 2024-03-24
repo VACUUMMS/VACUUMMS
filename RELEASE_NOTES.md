@@ -2,11 +2,13 @@
 
 ---
 
-## 1.2.0:
+## 1.2.0rc1:
 
-- First release of the variational module
-- introduces support for voronoi generation
-- Starting to develop and use more includes (e.g. types.h)
+- Introduction of optional modules and First release of the variational module
+- The variational module introduces new utilities for the variational calculation of paths of least energy between points on the insertion energy landscape. 
+- introduces support for voronoi graph generation (using voro++ backend)
+- VACUUMMS internals are moving toward factoring out types, constants, etc. (e.g. include/vacuumms/types.h, include/vacuumms/constants.h)
+- Introduces the VACUUMMS C++ library (libvacuumms_cpp) and C++ header API. The examples in the variational module are written to use this API, and are compiled in user space, rather than as part of installation of VACUUMMS. 
 
 ## 1.1.4: 
 

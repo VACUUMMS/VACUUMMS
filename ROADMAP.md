@@ -27,3 +27,10 @@ Features planned and potential releases:
 
 - Tests:
   - Add tests for verifying integrity of builds. CTest?
+
+(24 Mar 2024)
+- Runtime library and API
+  - Beginning with VACUUMMS/1.2.0, and now with additional header files, the include path <vacuumms/*> can be considered a user-facing API to the new VACUUMMS C++ runtime library, libvacuumms_cpp.so. The variational module already makes use of this API for it's user-facing, user-buildable examples.
+  - Some existing VACUUMMS code will be factored to this and/or a new C runtime library, eventually replacing the vestigially named libftw_general.so, etc. 
+
+
