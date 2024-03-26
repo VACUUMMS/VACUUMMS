@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
 
-add_library(ftw_general SHARED
+add_library(vacuummsrt SHARED
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_prng.c
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_cav_parser.c
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_rng2.c
@@ -20,11 +20,13 @@ add_library(ftw_general SHARED
 # As apple-clang and newer gcc builds will fail with this
 # list(APPEND EXTRA_LIBS ftw_general)
 
-set_target_properties(ftw_general PROPERTIES
+#set_target_properties(ftw_general PROPERTIES
+set_target_properties(vacuummsrt PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
     )
 
-target_include_directories(ftw_general PUBLIC
+#target_include_directories(ftw_general PUBLIC
+target_include_directories(vacuummsrt PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
     )
 
@@ -55,7 +57,8 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pair.cc
 )
 
-target_link_libraries(vacuumms_cpp PUBLIC ftw_general m)
+#target_link_libraries(vacuumms_cpp PUBLIC ftw_general m)
+target_link_libraries(vacuumms_cpp PUBLIC vacuummsrt m)
 
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
@@ -98,7 +101,8 @@ if (BUILD_CUDA_COMPONENTS)
 endif()
 
 #install(TARGETS ftw_general ftw_pov vacuumms_cpp
-install(TARGETS ftw_general vacuumms_cpp
+#install(TARGETS ftw_general vacuumms_cpp
+install(TARGETS vacuummsrt vacuumms_cpp
         DESTINATION lib)
 
 if (BUILD_TIFF_UTILS)
