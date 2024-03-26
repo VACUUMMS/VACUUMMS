@@ -121,19 +121,23 @@ target_link_libraries(povheader PUBLIC ftw_general m pthread)
 
 add_executable(gfg2pov "${PROJECT_SOURCE_DIR}/utils/gfg2pov.c")
 target_include_directories(gfg2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(gfg2pov PUBLIC ftw_general ftw_pov m pthread)
+#target_link_libraries(gfg2pov PUBLIC ftw_general ftw_pov m pthread)
+target_link_libraries(gfg2pov PUBLIC ftw_general m pthread)
 
 add_executable(gfgc2pov "${PROJECT_SOURCE_DIR}/utils/gfgc2pov.c")
 target_include_directories(gfgc2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(gfgc2pov PUBLIC ftw_general ftw_pov m pthread)
+#target_link_libraries(gfgc2pov PUBLIC ftw_general ftw_pov m pthread)
+target_link_libraries(gfgc2pov PUBLIC ftw_general m pthread)
 
 add_executable(fvi2pov "${PROJECT_SOURCE_DIR}/utils/fvi2pov.c")
 target_include_directories(fvi2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(fvi2pov PUBLIC ftw_general ftw_pov m pthread)
+#target_link_libraries(fvi2pov PUBLIC ftw_general ftw_pov m pthread)
+target_link_libraries(fvi2pov PUBLIC ftw_general m pthread)
 
 add_executable(cav2pov "${PROJECT_SOURCE_DIR}/utils/cav2pov.c")
 target_include_directories(cav2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(cav2pov PUBLIC ftw_general ftw_pov m pthread)
+#target_link_libraries(cav2pov PUBLIC ftw_general ftw_pov m pthread)
+target_link_libraries(cav2pov PUBLIC ftw_general m pthread)
 
 if (BUILD_TIFF_UTILS)
     add_executable(stack_tiffs "${PROJECT_SOURCE_DIR}/utils/stack_tiffs.c")

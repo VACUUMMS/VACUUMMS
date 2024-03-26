@@ -13,6 +13,7 @@ add_library(ftw_general SHARED
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_std.c
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/ftw_param.c
       ${PROJECT_SOURCE_DIR}/libraries/ftw_general/constants.c
+    ${PROJECT_SOURCE_DIR}/libraries/ftw_pov/ftw_povheader.c
 )
 
 # This is removed in favor of explicitly adding with target_link_libraries
@@ -27,21 +28,22 @@ target_include_directories(ftw_general PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
     )
 
-# ftw_pov
-
-add_library(ftw_pov SHARED
-    ${PROJECT_SOURCE_DIR}/libraries/ftw_pov/ftw_povheader.c
-)
-
-target_link_libraries(ftw_pov PUBLIC ftw_general m)
-
-set_target_properties(ftw_pov PROPERTIES
-    POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
-    )
-
-target_include_directories(ftw_pov PUBLIC
-    "${PROJECT_SOURCE_DIR}/include"
-)
+# Can I pull this into a single library?
+## ftw_pov
+#
+#add_library(ftw_pov SHARED
+#    ${PROJECT_SOURCE_DIR}/libraries/ftw_pov/ftw_povheader.c
+#)
+#
+#target_link_libraries(ftw_pov PUBLIC ftw_general m)
+#
+#set_target_properties(ftw_pov PROPERTIES
+#    POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
+#    )
+#
+#target_include_directories(ftw_pov PUBLIC
+#    "${PROJECT_SOURCE_DIR}/include"
+#)
 
 # vacuumms_cpp
 
@@ -95,7 +97,8 @@ if (BUILD_CUDA_COMPONENTS)
     )
 endif()
 
-install(TARGETS ftw_general ftw_pov vacuumms_cpp
+#install(TARGETS ftw_general ftw_pov vacuumms_cpp
+install(TARGETS ftw_general vacuumms_cpp
         DESTINATION lib)
 
 if (BUILD_TIFF_UTILS)
