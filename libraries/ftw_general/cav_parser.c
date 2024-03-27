@@ -1,4 +1,4 @@
-/* ftw_cav_parser.c */
+/* cav_parser.c */
 
 //  A set of library routines to parse (CAV) input file
 
@@ -6,21 +6,21 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <ftw_param.h>
-#include <ftw_types.h>
+#include <vacuumms/param.h>
+#include <vacuumms/types.h>
 
-#include <ftw_cav_parser.h>
+#include <vacuumms/cav_parser.h>
 
 // IN:	input stream (or file pointer)
-// OUT: cavities data stored as *ftw_CAV65536 
-ftw_CAV65536 *readCAV65536(FILE *instream)
+// OUT: cavities data stored as *vacuumms_CAV65536 
+vacuumms_CAV65536 *readCAV65536(FILE *instream)
 {
   int lines_read=0;
   char line[80];
   char *xs, *ys, *zs, *ds;
 
   // allocate the return structure... 
-  ftw_CAV65536 *cavities = (ftw_CAV65536*)malloc(sizeof(ftw_CAV65536));
+  vacuumms_CAV65536 *cavities = (vacuumms_CAV65536*)malloc(sizeof(vacuumms_CAV65536));
 
   for (lines_read=0; ; lines_read++)
   {
@@ -46,13 +46,13 @@ ftw_CAV65536 *readCAV65536(FILE *instream)
 
 // IN:	set of Atoms, and a pointer to hold the replicated set of Atoms.
 // OUT:	replicated set of 27x cavity.  Uses the dimensions of the original box.
-ftw_CAV65536 *replicateCAV65536(ftw_CAV65536 *in)
+vacuumms_CAV65536 *replicateCAV65536(vacuumms_CAV65536 *in)
 {
   int i, j, k;
   int n;
   long n_out=0;
 
-  ftw_CAV65536 *cavities = (ftw_CAV65536*)malloc(sizeof(ftw_CAV65536));
+  vacuumms_CAV65536 *cavities = (vacuumms_CAV65536*)malloc(sizeof(vacuumms_CAV65536));
   
   for (i=-1; i<=1; i++)
   for (j=-1; j<=1; j++)

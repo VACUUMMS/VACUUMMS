@@ -1,4 +1,4 @@
-/* ftw_std.h */
+/* vacuumms/std.h */
 
 #ifndef FTW_STD_INCLUDE
 #define FTW_STD_INCLUDE

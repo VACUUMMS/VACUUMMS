@@ -1,5 +1,5 @@
-/*********************** ftw_rng.c *********************************/
-#include "ftw_rng.h"
+/*********************** rng.c *********************************/
+#include <vacuumms/rng.h>
 #include <math.h>
 #include <time.h>
 #include <stdio.h>

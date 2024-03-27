@@ -2,7 +2,7 @@
 
 /* input:  .dst */
 
-#include <ftw_param.h>
+#include <vacuumms/param.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

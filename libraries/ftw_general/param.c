@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <ftw_param.h>
+#include <vacuumms/param.h>
 
 int command_line_argc;
 char **command_line_argv;

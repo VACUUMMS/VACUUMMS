@@ -1,6 +1,6 @@
 /* dddx.h */
 
-#include <ftw_types.h>
+#include <vacuumms/types.h>
 #include <pthread.h>
 
 //double calculateRepulsion();
@@ -15,7 +15,7 @@ typedef struct dddCavity
   float z;
   float diameter;
   struct Cavity *next;
-  ftw_GFG65536 *gfg;
+  vacuumms_GFG65536 *gfg;
   pthread_t *thread;
 } dddCavity;
 

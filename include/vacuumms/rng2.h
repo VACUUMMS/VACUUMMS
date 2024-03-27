@@ -1,4 +1,4 @@
-/* ftw_rng2.h */
+/* rng2.h */
 
 /* random number generator will return 0 <= rnd() < 1 or 0 <= rnd_int() < 2^32 */
 

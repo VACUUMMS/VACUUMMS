@@ -1,4 +1,4 @@
-/* ftw_cuda.h */
+/* cuda.h */
 
 #include <errno.h>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include <ftw_types.h>
+#include <vacuumms/types.h>
 
 #ifndef FTW_CUDA_H
 #define FTW_CUDA_H
@@ -21,12 +21,12 @@
 #ifdef __cplusplus
 extern "C" 
 #endif
-void ftw_printDeviceInfo(int);
+void vacuumms_printDeviceInfo(int);
 
 #ifdef __cplusplus
 extern "C" 
 #endif
-int ftw_getNumberOfDevices();
+int vacuumms_getNumberOfDevices();
 
 #endif
 

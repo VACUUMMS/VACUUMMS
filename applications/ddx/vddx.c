@@ -9,11 +9,11 @@
 #include <math.h>
 
 #include <vacuumms/types.h>
-#include <ftw_param.h>
-#include <ftw_prng.h>
-#include <ftw_types.h>
-#include <ftw_std.h>
-#include <io_setup.h>
+#include <vacuumms/param.h>
+#include <vacuumms/prng.h>
+#include <vacuumms/types.h>
+#include <vacuumms/std.h>
+#include <vacuumms/io_setup.h>
 
 int loadVertices(char* vertices_file);
 

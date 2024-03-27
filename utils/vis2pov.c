@@ -1,7 +1,7 @@
 /* vis2pov.c */
 
 #include <stdio.h>
-#include <ftw_std.h>
+#include <vacuumms/std.h>
 
 #define MAX_NUM_MOLECULES 1000
 

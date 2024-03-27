@@ -208,7 +208,7 @@ if (BUILD_VORONOI_UTILS)
     message("using VOROPP_HOME set to >>>${VOROPP_HOME}<<<")
 
     target_include_directories(gfg2voro PUBLIC "${VOROPP_HOME}/include/voro++")
-    target_link_libraries(gfg2voro PUBLIC vacuummsrt m voro++)
+    target_link_libraries(gfg2voro PUBLIC vacuummsrt vacuumms_cpp m voro++)
 endif()
 
 #add_executable(fvi2tiff "${PROJECT_SOURCE_DIR}/utils/fvi2tiff.c")

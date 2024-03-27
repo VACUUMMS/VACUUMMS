@@ -1,4 +1,4 @@
-/* ftw_gfgEnergy.h */
+/* vacuumms/gfgEnergy.h */
 
 #include <errno.h>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include <ftw_types.h>
+#include <vacuumms/types.h>
 
 #ifndef FTW_GFGENERGY_H
 #define FTW_GFGENERGY_H
@@ -22,18 +22,18 @@
 #ifdef __cplusplus
 extern "C" 
 #endif
-float ftw_GFG65536Energy_69(ftw_GFG65536 *gfg, float x, float y, float z);
+float vacuumms_GFG65536Energy_69(vacuumms_GFG65536 *gfg, float x, float y, float z);
 
 #ifdef __cplusplus
 extern "C" 
 #endif
-float ftw_GFG65536Energy_612(ftw_GFG65536 *gfg, float x, float y, float z, float diameter);
+float vacuumms_GFG65536Energy_612(vacuumms_GFG65536 *gfg, float x, float y, float z, float diameter);
 
 
 #ifdef __cplusplus
 extern "C" 
 #endif
-int ftw_GFG65536HS_Overlap(ftw_GFG65536 *gfg, float x_j, float y_j, float z_j, float diameter);
+int vacuumms_GFG65536HS_Overlap(vacuumms_GFG65536 *gfg, float x_j, float y_j, float z_j, float diameter);
 
 
 

@@ -27,7 +27,7 @@
 #include <assert.h>
 #include <pthread.h>
 
-#include "ftw_prng.h"
+#include <vacuumms/prng.h>
 
 void MersenneInitialize(struct MersenneTwister *p_t, int seed)
 {

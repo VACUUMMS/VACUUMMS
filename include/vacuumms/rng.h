@@ -1,4 +1,4 @@
-/* ftw_rng.h */
+/* rng.h */
 
 #ifndef FTW_RNG_INCLUDE
 #define FTW_RNG_INCLUDE

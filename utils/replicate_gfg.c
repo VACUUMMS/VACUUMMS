@@ -7,8 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <ftw_param.h>
-#include <ftw_std.h>
+#include <vacuumms/param.h>
+#include <vacuumms/std.h>
 
 int main(int argc, char *argv[]) {
   char line[256];

@@ -1,8 +1,8 @@
-/* ftw_command_line_parser.c */
+/* command_line_parser.c */
 
-#include <ftw_std.h>
-#include <ftw_rng.h>
-#include <ftw_command_line_parser.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/command_line_parser.h>
 
 extern int verbose;
 

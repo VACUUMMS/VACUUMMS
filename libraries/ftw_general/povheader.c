@@ -1,11 +1,11 @@
-/* ftw_povheader.c */
+/* povheader.c */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <ftw_param.h>
-#include <ftw_pov.h>
+#include <vacuumms/param.h>
+#include <vacuumms/pov.h>
 
 void writePOVHeader()
 {

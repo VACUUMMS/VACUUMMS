@@ -1,9 +1,9 @@
-/* ftw_pov.h */
+/* pov.h */
 
 #ifndef FTW_POV_H
 #define FTW_POV_H
 
-#include <ftw_param.h>
+//#include <vacuumms/param.h>
 
 void writePOVHeader();
 
