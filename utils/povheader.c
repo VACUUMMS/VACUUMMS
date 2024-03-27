@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <ftw_param.h>
+#include <vacuumms/param.h>
 #include <string.h>
 
 double camera_x=40, camera_y=40, camera_z=40;

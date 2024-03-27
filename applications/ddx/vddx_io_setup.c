@@ -1,10 +1,10 @@
 /* vddx_io_setup.c */
 
-#include <ftw_std.h>
-#include <ftw_rng.h>
 #include <time.h>
 #include <string.h>
 
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
 #include <vacuumms/types.h>
 
 extern vacuumms_float vertex_x[];

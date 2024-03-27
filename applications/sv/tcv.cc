@@ -3,18 +3,21 @@
 //#define MAX_CAVITIES 1310720
 //#define N_SUCCESSES 10000
 
+#include <vector>
+
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
-#include <vacuumms/cavity.hh>
+//#include <vacuumms/std.h>
+//#include <vacuumms/rng2.h>
 
-#include <vector>
+#include <vacuumms/cavity.hh>
+#include <vacuumms/param.hh>
 
 // Use functions from the vacuumms C library
 extern "C"
 {
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
 }
 
 // In:  1 or more records in .cav format, box size on command line

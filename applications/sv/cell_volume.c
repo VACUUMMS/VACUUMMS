@@ -3,9 +3,9 @@
 #define MAX_CAVITIES 1310720
 #define N_SUCCESSES 10000
 
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
+#include <vacuumms/param.h>
 
 void readInputStream();
 int checkInclusion(double x, double y, double z);

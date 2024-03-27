@@ -8,8 +8,8 @@
 #include <string.h>
 #include <math.h>
 
-#include <ftw_std.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
 
 FILE *instream;
 double width=1;

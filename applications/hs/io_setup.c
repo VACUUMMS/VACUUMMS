@@ -1,15 +1,15 @@
 /* io_setup.c */
 
-#include <ftw_std.h>
-#include <ftw_rng.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/io_setup.h>
+#include <vacuumms/hs_main.h>
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "io_setup.h"
-#include "hs_main.h"
 
 //extern char simulation_unique_identifier[32];
 //extern char *simulation_unique_identifier;

@@ -1,11 +1,12 @@
 /* mfp.c */
 
-#include <io_setup.h>
 #include <stdlib.h>
 #include <math.h>
-#include <ftw_std.h>
-#include <ftw_param.h>
-#include <ftw_rng.h>
+
+#include <vacuumms/io_setup.h>
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
+#include <vacuumms/rng.h>
 
 double calculateEnergy();
 void generateTestPoint();

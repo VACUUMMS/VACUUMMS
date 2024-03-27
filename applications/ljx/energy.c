@@ -1,6 +1,6 @@
 /* energy.c */
 
-#include "energy.h"
+#include <vacuumms/energy.h>
 
 #define NPAIRS 1048576
 

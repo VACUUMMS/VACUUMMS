@@ -8,7 +8,7 @@
 #include <string.h>
 #include <math.h>
 
-#include <ftw_std.h>
+#include <vacuumms/std.h>
 
 FILE *instream;
 int n_vals=0;

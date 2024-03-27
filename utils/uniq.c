@@ -1,6 +1,6 @@
 /* uniq.c */
 
-#include <ftw_param.h>
+#include <vacuumms/param.h>
 
 #define MAX 1000000
 

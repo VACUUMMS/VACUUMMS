@@ -5,8 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <ftw_param.h>
-#include <ftw_pov.h>
+#include <vacuumms/param.h>
+#include <vacuumms/pov.h>
 
 FILE *instream;
 

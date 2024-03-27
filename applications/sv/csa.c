@@ -5,9 +5,9 @@
 
 #define PI 3.14159265358979323846264
 
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
+#include <vacuumms/param.h>
 
 void readInputStream();
 int checkExclusion();

@@ -1,14 +1,14 @@
 /*************************************** hs_main.c ********************************************/
 
-#include <graphics.h>
+#include <vacuumms/graphics.h>
+#include <vacuumms/science.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/param.h>
 
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <ftw_science.h>
-#include <ftw_std.h>
-#include <ftw_rng.h>
-#include <ftw_param.h>
 
 void setInitialConditions();
 void generateUniqueId();

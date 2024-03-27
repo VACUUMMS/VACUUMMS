@@ -14,7 +14,7 @@ add_library(vacuumms_variational SHARED
 )
 
 # What libraries this module depends on
-target_link_libraries(vacuumms_variational PUBLIC ftw_general m)
+target_link_libraries(vacuumms_variational PUBLIC vacuumms_rt vacuumms_cpp m)
 
 set_target_properties(vacuumms_variational PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}

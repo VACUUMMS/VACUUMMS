@@ -1,14 +1,13 @@
 /*************************************** vis.c ********************************************/
 
-#include <io_setup.h>
-#include <graphics.h>
-
-
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <ftw_science.h>
-#include <ftw_std.h>
+
+#include <vacuumms/io_setup.h>
+#include <vacuumms/graphics.h>
+#include <vacuumms/science.h>
+#include <vacuumms/std.h>
 
 #ifndef MAX_NUMBER_MOLECULES
 #define MAX_NUMBER_MOLECULES 16384

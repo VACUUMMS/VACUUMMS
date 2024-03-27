@@ -3,9 +3,9 @@
 #define MAX_CAVITIES 16384
 #define N_POINTS 10000
 
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
+#include <vacuumms/param.h>
 
 // Reads a centered cluster and determines the radius of gyration
 // Will deliver an erroneous result if cluster is not centered or percolates.

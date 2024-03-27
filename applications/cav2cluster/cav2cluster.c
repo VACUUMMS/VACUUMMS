@@ -10,8 +10,8 @@
 #define MAX_PAIRS 50000000
 #define MAX_CAVITIES 131072
 
-#include <ftw_std.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
 
 void findAllPairs();
 void readInputStream();

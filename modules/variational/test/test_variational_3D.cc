@@ -1,12 +1,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
-#include <vacuumms/variational/variational.hh>
 
-extern "C" 
-{
-#include <ftw_param.h>
-}; 
+#include <vacuumms/variational/variational.hh>
+#include <vacuumms/param.hh>
 
 int n_iter = 1;
 int n_var_points = 25; 
