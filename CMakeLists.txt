@@ -70,7 +70,7 @@ endif()
 # The standard stuff
 add_subdirectory(libraries)
 message("added subdirectory libraries")
-list(APPEND EXTRA_lIBS ftw_general )
+#list(APPEND EXTRA_lIBS ftw_general )
 add_subdirectory(utils)
 add_subdirectory(applications)
 
