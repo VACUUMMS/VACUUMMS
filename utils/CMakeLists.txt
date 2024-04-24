@@ -121,22 +121,18 @@ target_link_libraries(povheader PUBLIC vacuumms_rt m pthread)
 
 add_executable(gfg2pov "${PROJECT_SOURCE_DIR}/utils/gfg2pov.c")
 target_include_directories(gfg2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(gfg2pov PUBLIC ftw_general ftw_pov m pthread)
 target_link_libraries(gfg2pov PUBLIC vacuumms_rt m pthread)
 
 add_executable(gfgc2pov "${PROJECT_SOURCE_DIR}/utils/gfgc2pov.c")
 target_include_directories(gfgc2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(gfgc2pov PUBLIC ftw_general ftw_pov m pthread)
 target_link_libraries(gfgc2pov PUBLIC vacuumms_rt m pthread)
 
 add_executable(fvi2pov "${PROJECT_SOURCE_DIR}/utils/fvi2pov.c")
 target_include_directories(fvi2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(fvi2pov PUBLIC ftw_general ftw_pov m pthread)
 target_link_libraries(fvi2pov PUBLIC vacuumms_rt m pthread)
 
 add_executable(cav2pov "${PROJECT_SOURCE_DIR}/utils/cav2pov.c")
 target_include_directories(cav2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(cav2pov PUBLIC ftw_general ftw_pov m pthread)
 target_link_libraries(cav2pov PUBLIC vacuumms_rt m pthread)
 
 if (BUILD_TIFF_UTILS)
@@ -195,11 +191,11 @@ target_link_libraries(replicate_cav PUBLIC vacuumms_rt m pthread)
 if (BUILD_CUDA_COMPONENTS)
     add_executable(sgfg2fvi "${PROJECT_SOURCE_DIR}/utils/sgfg2fvi.c")
     target_include_directories(sgfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m ftw_cuda)
+    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda)
 
     add_executable(gfg2fvi "${PROJECT_SOURCE_DIR}/utils/gfg2fvi.c")
     target_include_directories(gfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(gfg2fvi PUBLIC vacuumms_rt m ftw_cuda)
+    target_link_libraries(gfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda)
 endif()
 
 if (BUILD_VORONOI_UTILS)
@@ -210,10 +206,6 @@ if (BUILD_VORONOI_UTILS)
     target_include_directories(gfg2voro PUBLIC "${VOROPP_HOME}/include/voro++")
     target_link_libraries(gfg2voro PUBLIC vacuumms_rt vacuumms_cpp m voro++)
 endif()
-
-#add_executable(fvi2tiff "${PROJECT_SOURCE_DIR}/utils/fvi2tiff.c")
-#target_include_directories(fvi2tiff PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(fvi2tiff PUBLIC ftw_general m pthread)
 
 # vacuumms executable simply returns the version number for the version in play
 add_executable(vacuumms "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")

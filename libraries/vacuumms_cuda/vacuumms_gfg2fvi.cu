@@ -1,20 +1,20 @@
-/* ftw_gfg2fvi.cu */
+/* vacuumms_gfg2fvi.cu */
 
-//  IN:    A pointer to a ***non-replicated*** polymer configuration as *ftw_GFG65536.  
-//  OUT:   A free volume intensity is returned as *ftw_FVI256.  
+//  IN:    A pointer to a ***non-replicated*** polymer configuration as *vacuumms_GFG65536.  
+//  OUT:   A free volume intensity is returned as *vacuumms_FVI256.  
 //  Input configuration is not modified.  
 //  Cross-interaction values are stored for the replicated config only.
 
-#include <ftw_gfg2fvi.h>
-#include <ftw_config_parser.h>
-#include <ftw_types.h>
+#include <vacuumms/gfg2fvi.h>
+#include <vacuumms/config_parser.h>
+#include <vacuumms/types.h>
 
 #include <stdlib.h>
 #include <math.h>
 
 // I took the kernel prototype out of the header file, because the header is included by C/C++ compilers that don't know what a kernel is...
 // NOTE:  this uses COMPASS / LJ 6-9 potential
-__global__ void EnergyKernel256(ftw_GFG65536 *d_configuration, ftw_EnergyArray256 *d_attraction, ftw_EnergyArray256 *d_repulsion, ftw_EnergyArray256 *d_total) 
+__global__ void EnergyKernel256(vacuumms_GFG65536 *d_configuration, vacuumms_EnergyArray256 *d_attraction, vacuumms_EnergyArray256 *d_repulsion, vacuumms_EnergyArray256 *d_total) 
 {
   unsigned int idx = blockIdx.x;
   unsigned int idy = blockIdx.y;
@@ -50,7 +50,7 @@ __global__ void EnergyKernel256(ftw_GFG65536 *d_configuration, ftw_EnergyArray25
   if (d_total) d_total->energy[idx][idy][idz] = 2 * repulsion - 3 * attraction;
 }
 
-__global__ void EnergyKernel256_612(ftw_GFG65536 *d_configuration, ftw_EnergyArray256 *d_attraction, ftw_EnergyArray256 *d_repulsion, ftw_EnergyArray256 *d_total) 
+__global__ void EnergyKernel256_612(vacuumms_GFG65536 *d_configuration, vacuumms_EnergyArray256 *d_attraction, vacuumms_EnergyArray256 *d_repulsion, vacuumms_EnergyArray256 *d_total) 
 {
   unsigned int idx = blockIdx.x;
   unsigned int idy = blockIdx.y;
@@ -86,7 +86,7 @@ __global__ void EnergyKernel256_612(ftw_GFG65536 *d_configuration, ftw_EnergyArr
   if (d_total) d_total->energy[idx][idy][idz] = 4 * repulsion - 4 * attraction;
 }
 
-__global__ void EnergyKernel512_612(ftw_GFG65536 *d_configuration, ftw_EnergyArray512 *d_attraction, ftw_EnergyArray512 *d_repulsion, ftw_EnergyArray512 *d_total) 
+__global__ void EnergyKernel512_612(vacuumms_GFG65536 *d_configuration, vacuumms_EnergyArray512 *d_attraction, vacuumms_EnergyArray512 *d_repulsion, vacuumms_EnergyArray512 *d_total) 
 {
   unsigned int idx = blockIdx.x;
   unsigned int idy = blockIdx.y;
@@ -123,11 +123,11 @@ __global__ void EnergyKernel512_612(ftw_GFG65536 *d_configuration, ftw_EnergyArr
 }
 
 //  This is the routine to call from outside the library
-extern "C" ftw_FVI256 *GFGToFVI256(ftw_GFG65536 *gfg, float sigma, float epsilon) 
+extern "C" vacuumms_FVI256 *GFGToFVI256(vacuumms_GFG65536 *gfg, float sigma, float epsilon) 
 {
   // call energy array then process each val
-  ftw_EnergyArray256 *era = GFGToRepulsion256(gfg, sigma, epsilon);
-  ftw_FVI256 *fvi = (ftw_FVI256*)malloc(sizeof(ftw_FVI256));
+  vacuumms_EnergyArray256 *era = GFGToRepulsion256(gfg, sigma, epsilon);
+  vacuumms_FVI256 *fvi = (vacuumms_FVI256*)malloc(sizeof(vacuumms_FVI256));
 
   // now process each value...
   for (int i=0; i<256; i++) for (int j=0; j<256; j++) for (int k=0; k<256; k++)
@@ -139,13 +139,13 @@ extern "C" ftw_FVI256 *GFGToFVI256(ftw_GFG65536 *gfg, float sigma, float epsilon
 // Now the C bindings...
 
 //  This routine to be called from outside the library
-extern "C" ftw_EnergyArray256 *GFGToRepulsion256_612(ftw_GFG65536 *gfg, float sigma, float epsilon)
+extern "C" vacuumms_EnergyArray256 *GFGToRepulsion256_612(vacuumms_GFG65536 *gfg, float sigma, float epsilon)
 {
-  ftw_EnergyArray256 	*d_repulsion;
-  ftw_GFG65536 		*d_configuration;
+  vacuumms_EnergyArray256 	*d_repulsion;
+  vacuumms_GFG65536 		*d_configuration;
 
   // replicate the gfg
-  ftw_GFG65536 *h_configuration = replicateGFG65536(gfg); 
+  vacuumms_GFG65536 *h_configuration = replicateGFG65536(gfg); 
 
 // and cross-parameterize use 6-12 rule
   for (int n=0; n<gfg->n_atoms; n++)
@@ -157,9 +157,9 @@ extern "C" ftw_EnergyArray256 *GFGToRepulsion256_612(ftw_GFG65536 *gfg, float si
   // then do the calc
   cudaError_t err;
   /* allocate for energy array and configuration on device */
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion, sizeof(ftw_EnergyArray256)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(ftw_GFG65536)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(ftw_GFG65536), cudaMemcpyHostToDevice ));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion, sizeof(vacuumms_EnergyArray256)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(vacuumms_GFG65536)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(vacuumms_GFG65536), cudaMemcpyHostToDevice ));
 
   dim3 dimGrid(256, 256);
   dim3 dimBlock(256, 1, 1);
@@ -170,8 +170,8 @@ extern "C" ftw_EnergyArray256 *GFGToRepulsion256_612(ftw_GFG65536 *gfg, float si
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
   // retrieve result
-  ftw_EnergyArray256 *h_repulsion = (ftw_EnergyArray256 *)malloc(sizeof(ftw_EnergyArray256));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_repulsion, d_repulsion, sizeof(ftw_EnergyArray256), cudaMemcpyDeviceToHost ));
+  vacuumms_EnergyArray256 *h_repulsion = (vacuumms_EnergyArray256 *)malloc(sizeof(vacuumms_EnergyArray256));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_repulsion, d_repulsion, sizeof(vacuumms_EnergyArray256), cudaMemcpyDeviceToHost ));
 
   // free device memory
   cudaFree(d_configuration);
@@ -183,14 +183,14 @@ extern "C" ftw_EnergyArray256 *GFGToRepulsion256_612(ftw_GFG65536 *gfg, float si
 }
 
 //  This routine to be called from outside the library
-extern "C" ftw_EnergyArray512 *GFGToRepulsion512_612(ftw_GFG65536 *gfg, float sigma, float epsilon)
+extern "C" vacuumms_EnergyArray512 *GFGToRepulsion512_612(vacuumms_GFG65536 *gfg, float sigma, float epsilon)
 {
-  ftw_EnergyArray512 	*d_repulsion;
-  ftw_GFG65536 		*d_configuration;
+  vacuumms_EnergyArray512 	*d_repulsion;
+  vacuumms_GFG65536 		*d_configuration;
 
 
   // replicate the gfg
-  ftw_GFG65536 *h_configuration = replicateGFG65536(gfg); 
+  vacuumms_GFG65536 *h_configuration = replicateGFG65536(gfg); 
 
 // and cross-parameterize use 6-12 rule
   for (int n=0; n<gfg->n_atoms; n++)
@@ -202,11 +202,11 @@ extern "C" ftw_EnergyArray512 *GFGToRepulsion512_612(ftw_GFG65536 *gfg, float si
   // then do the calc
   cudaError_t err;
   /* allocate for energy array and configuration on device */
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion, sizeof(ftw_EnergyArray512)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion, sizeof(vacuumms_EnergyArray512)));
 fprintf(stderr, "malloc-ing enrgyarray...\n");
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(ftw_GFG65536)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(vacuumms_GFG65536)));
 fprintf(stderr, "malloc-ing gfg ...\n");
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(ftw_GFG65536), cudaMemcpyHostToDevice ));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(vacuumms_GFG65536), cudaMemcpyHostToDevice ));
 fprintf(stderr, "mem copying...\n");
 
   dim3 dimGrid(512, 512);
@@ -221,8 +221,8 @@ fprintf(stderr, "synchronizing...\n");
 
   // retrieve result
 fprintf(stderr, "retrieving result...\n");
-  ftw_EnergyArray512 *h_repulsion = (ftw_EnergyArray512 *)malloc(sizeof(ftw_EnergyArray512));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_repulsion, d_repulsion, sizeof(ftw_EnergyArray512), cudaMemcpyDeviceToHost ));
+  vacuumms_EnergyArray512 *h_repulsion = (vacuumms_EnergyArray512 *)malloc(sizeof(vacuumms_EnergyArray512));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_repulsion, d_repulsion, sizeof(vacuumms_EnergyArray512), cudaMemcpyDeviceToHost ));
 
   // free device memory
   cudaFree(d_configuration);
@@ -234,13 +234,13 @@ fprintf(stderr, "retrieving result...\n");
 }
 
 //  This routine to be called from outside the library
-extern "C" ftw_EnergyArray256 *GFGToRepulsion256(ftw_GFG65536 *gfg, float sigma, float epsilon)
+extern "C" vacuumms_EnergyArray256 *GFGToRepulsion256(vacuumms_GFG65536 *gfg, float sigma, float epsilon)
 {
-  ftw_EnergyArray256 	*d_repulsion;
-  ftw_GFG65536 		*d_configuration;
+  vacuumms_EnergyArray256 	*d_repulsion;
+  vacuumms_GFG65536 		*d_configuration;
 
   // replicate the gfg
-  ftw_GFG65536 *h_configuration = replicateGFG65536(gfg); 
+  vacuumms_GFG65536 *h_configuration = replicateGFG65536(gfg); 
 
   // and cross-parameterize 
   for (int n=0; n<gfg->n_atoms; n++)
@@ -252,9 +252,9 @@ extern "C" ftw_EnergyArray256 *GFGToRepulsion256(ftw_GFG65536 *gfg, float sigma,
   // then do the calc
   cudaError_t err;
   /* allocate for energy array and configuration on device */
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion, sizeof(ftw_EnergyArray256)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(ftw_GFG65536)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(ftw_GFG65536), cudaMemcpyHostToDevice ));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion, sizeof(vacuumms_EnergyArray256)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(vacuumms_GFG65536)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(vacuumms_GFG65536), cudaMemcpyHostToDevice ));
 
   dim3 dimGrid(256, 256);
   dim3 dimBlock(256, 1, 1);
@@ -265,8 +265,8 @@ extern "C" ftw_EnergyArray256 *GFGToRepulsion256(ftw_GFG65536 *gfg, float sigma,
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
   // retrieve result
-  ftw_EnergyArray256 *h_repulsion = (ftw_EnergyArray256 *)malloc(sizeof(ftw_EnergyArray256));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_repulsion, d_repulsion, sizeof(ftw_EnergyArray256), cudaMemcpyDeviceToHost ));
+  vacuumms_EnergyArray256 *h_repulsion = (vacuumms_EnergyArray256 *)malloc(sizeof(vacuumms_EnergyArray256));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_repulsion, d_repulsion, sizeof(vacuumms_EnergyArray256), cudaMemcpyDeviceToHost ));
 
   // free device memory
   cudaFree(d_configuration);
@@ -278,13 +278,13 @@ extern "C" ftw_EnergyArray256 *GFGToRepulsion256(ftw_GFG65536 *gfg, float sigma,
 }
 
 //  This routine to be called from outside the library
-extern "C" ftw_EnergyArray256 *GFGToEnergyArray256(ftw_GFG65536 *gfg, float sigma, float epsilon)
+extern "C" vacuumms_EnergyArray256 *GFGToEnergyArray256(vacuumms_GFG65536 *gfg, float sigma, float epsilon)
 {
-  ftw_EnergyArray256 	*d_energy_array;
-  ftw_GFG65536 		*d_configuration;
+  vacuumms_EnergyArray256 	*d_energy_array;
+  vacuumms_GFG65536 		*d_configuration;
 
   // replicate the gfg
-  ftw_GFG65536 *h_configuration = replicateGFG65536(gfg); 
+  vacuumms_GFG65536 *h_configuration = replicateGFG65536(gfg); 
 
   // and cross-parameterize 
   for (int n=0; n<gfg->n_atoms; n++)
@@ -296,9 +296,9 @@ extern "C" ftw_EnergyArray256 *GFGToEnergyArray256(ftw_GFG65536 *gfg, float sigm
   // then do the calc
   cudaError_t err;
   /* allocate for energy array and configuration on device */
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_energy_array, sizeof(ftw_EnergyArray256)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(ftw_GFG65536)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(ftw_GFG65536), cudaMemcpyHostToDevice ));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_energy_array, sizeof(vacuumms_EnergyArray256)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(vacuumms_GFG65536)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(vacuumms_GFG65536), cudaMemcpyHostToDevice ));
 
   dim3 dimGrid(256, 256);
   dim3 dimBlock(256, 1, 1);
@@ -309,8 +309,8 @@ extern "C" ftw_EnergyArray256 *GFGToEnergyArray256(ftw_GFG65536 *gfg, float sigm
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
   // retrieve result
-  ftw_EnergyArray256 *h_energy_array = (ftw_EnergyArray256 *)malloc(sizeof(ftw_EnergyArray256));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_energy_array, d_energy_array, sizeof(ftw_EnergyArray256), cudaMemcpyDeviceToHost ));
+  vacuumms_EnergyArray256 *h_energy_array = (vacuumms_EnergyArray256 *)malloc(sizeof(vacuumms_EnergyArray256));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_energy_array, d_energy_array, sizeof(vacuumms_EnergyArray256), cudaMemcpyDeviceToHost ));
 
   // free device memory
   cudaFree(d_configuration);
@@ -323,10 +323,10 @@ extern "C" ftw_EnergyArray256 *GFGToEnergyArray256(ftw_GFG65536 *gfg, float sigm
 
 // This is for a traditional LJ 6-12 interaction.  Note that sigma is the value where energy is zero, not the well-bottom as for COMPASS...
 // This operates on 'chunks' in x-direction because the domain is too large for the GPU memory
-__global__ void EnergyKernel1024_612(	ftw_GFG65536 *d_configuration, 
- 					ftw_Chunk *d_attraction, 
- 					ftw_Chunk *d_repulsion, 
- 					ftw_Chunk *d_total, 
+__global__ void EnergyKernel1024_612(	vacuumms_GFG65536 *d_configuration, 
+ 					vacuumms_Chunk *d_attraction, 
+ 					vacuumms_Chunk *d_repulsion, 
+ 					vacuumms_Chunk *d_total, 
  					int chunk, int chunk_size) {
   unsigned int idx = threadIdx.x;
   unsigned int idy = blockIdx.x;
@@ -363,12 +363,12 @@ __global__ void EnergyKernel1024_612(	ftw_GFG65536 *d_configuration,
 }
 
 // This routine to be called from outside the library
-extern "C" ftw_EnergyArray1024 *GFGToEnergyArray1024_612(ftw_GFG65536 *gfg, float sigma, float epsilon)
+extern "C" vacuumms_EnergyArray1024 *GFGToEnergyArray1024_612(vacuumms_GFG65536 *gfg, float sigma, float epsilon)
 {
-  ftw_Chunk 		*d_energy_array_chunk;
-  ftw_GFG65536 		*d_configuration;
+  vacuumms_Chunk 		*d_energy_array_chunk;
+  vacuumms_GFG65536 		*d_configuration;
 
-  ftw_GFG65536 *h_configuration = replicateGFG65536(gfg); // replicate the gfg 
+  vacuumms_GFG65536 *h_configuration = replicateGFG65536(gfg); // replicate the gfg 
   for (int n=0; n<gfg->n_atoms; n++) // and cross-parameterize 
   {
     h_configuration->atom[n].sigma = pow(0.5f * (float)(pow(sigma, 6) + pow(h_configuration->atom[n].sigma, 6)), 0.1666666f);
@@ -383,11 +383,11 @@ extern "C" ftw_EnergyArray1024 *GFGToEnergyArray1024_612(ftw_GFG65536 *gfg, floa
 
   cudaError_t err;
   /* allocate for energy array and configuration on device */
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_energy_array_chunk, sizeof(ftw_Chunk)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(ftw_GFG65536)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(ftw_GFG65536), cudaMemcpyHostToDevice ));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_energy_array_chunk, sizeof(vacuumms_Chunk)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(vacuumms_GFG65536)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(vacuumms_GFG65536), cudaMemcpyHostToDevice ));
 
-  ftw_EnergyArray1024 *h_energy_array = (ftw_EnergyArray1024 *)malloc(sizeof(ftw_EnergyArray1024)); // host structure, for result
+  vacuumms_EnergyArray1024 *h_energy_array = (vacuumms_EnergyArray1024 *)malloc(sizeof(vacuumms_EnergyArray1024)); // host structure, for result
 
   for (int chunk=0; chunk < chunks; chunk++)
   {
@@ -396,8 +396,8 @@ extern "C" ftw_EnergyArray1024 *GFGToEnergyArray1024_612(ftw_GFG65536 *gfg, floa
     err = cudaGetLastError();
     if (err != cudaSuccess) {printf("CUDA error:  %s\n", cudaGetErrorString(err)); exit(1);}
     // retrieve result
-    ftw_EnergyArray1024* h_address = (ftw_EnergyArray1024*)((long)h_energy_array + (long)(sizeof(ftw_Chunk) * chunk));
-    for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_address, d_energy_array_chunk, sizeof(ftw_Chunk), cudaMemcpyDeviceToHost ));
+    vacuumms_EnergyArray1024* h_address = (vacuumms_EnergyArray1024*)((long)h_energy_array + (long)(sizeof(vacuumms_Chunk) * chunk));
+    for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_address, d_energy_array_chunk, sizeof(vacuumms_Chunk), cudaMemcpyDeviceToHost ));
   }
 
   // free device memory
@@ -409,12 +409,12 @@ extern "C" ftw_EnergyArray1024 *GFGToEnergyArray1024_612(ftw_GFG65536 *gfg, floa
 }
 
 // This routine to be called from outside the library
-extern "C" ftw_EnergyArray1024 *GFGToRepulsion1024_612(ftw_GFG65536 *gfg, float sigma, float epsilon)
+extern "C" vacuumms_EnergyArray1024 *GFGToRepulsion1024_612(vacuumms_GFG65536 *gfg, float sigma, float epsilon)
 {
-  ftw_Chunk 		*d_repulsion_chunk;
-  ftw_GFG65536 		*d_configuration;
+  vacuumms_Chunk 		*d_repulsion_chunk;
+  vacuumms_GFG65536 		*d_configuration;
 
-  ftw_GFG65536 *h_configuration = replicateGFG65536(gfg); // replicate the gfg 
+  vacuumms_GFG65536 *h_configuration = replicateGFG65536(gfg); // replicate the gfg 
   for (int n=0; n<gfg->n_atoms; n++) // and cross-parameterize 
   {
     h_configuration->atom[n].sigma = pow(0.5f * (float)(pow(sigma, 6) + pow(h_configuration->atom[n].sigma, 6)), 0.1666666f);
@@ -429,11 +429,11 @@ extern "C" ftw_EnergyArray1024 *GFGToRepulsion1024_612(ftw_GFG65536 *gfg, float 
 
   cudaError_t err;
   /* allocate for energy array and configuration on device */
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion_chunk, sizeof(ftw_Chunk)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(ftw_GFG65536)));
-  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(ftw_GFG65536), cudaMemcpyHostToDevice ));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_repulsion_chunk, sizeof(vacuumms_Chunk)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMalloc( (void **) &d_configuration, sizeof(vacuumms_GFG65536)));
+  for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy( d_configuration, h_configuration, sizeof(vacuumms_GFG65536), cudaMemcpyHostToDevice ));
 
-  ftw_EnergyArray1024 *h_repulsion = (ftw_EnergyArray1024 *)malloc(sizeof(ftw_EnergyArray1024)); // host structure, for result
+  vacuumms_EnergyArray1024 *h_repulsion = (vacuumms_EnergyArray1024 *)malloc(sizeof(vacuumms_EnergyArray1024)); // host structure, for result
 
   for (int chunk=0; chunk < chunks; chunk++)
   {
@@ -442,8 +442,8 @@ extern "C" ftw_EnergyArray1024 *GFGToRepulsion1024_612(ftw_GFG65536 *gfg, float 
     err = cudaGetLastError();
     if (err != cudaSuccess) {printf("CUDA error:  %s\n", cudaGetErrorString(err)); exit(1);}
     // retrieve result
-    ftw_EnergyArray1024* h_address = (ftw_EnergyArray1024*)((long)h_repulsion + (long)(sizeof(ftw_Chunk) * chunk));
-    for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_address, d_repulsion_chunk, sizeof(ftw_Chunk), cudaMemcpyDeviceToHost ));
+    vacuumms_EnergyArray1024* h_address = (vacuumms_EnergyArray1024*)((long)h_repulsion + (long)(sizeof(vacuumms_Chunk) * chunk));
+    for(err = cudaErrorUnknown; err != cudaSuccess; err = cudaMemcpy(h_address, d_repulsion_chunk, sizeof(vacuumms_Chunk), cudaMemcpyDeviceToHost ));
   }
 
   // free device memory

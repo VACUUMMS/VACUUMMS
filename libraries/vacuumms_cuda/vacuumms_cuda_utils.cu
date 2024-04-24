@@ -1,7 +1,7 @@
-/* ftw_cuda.cu */
+/* vacuumms_cuda_utils.cu */
 
-#include <ftw_cuda.h>
-#include <ftw_types.h>
+#include <vacuumms/cuda.h>
+#include <vacuumms/types.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +13,7 @@
 // I took the kernel prototype out of the header file, because the header is included by C/C++ compilers that don't know what a kernel is...
 
 //  This is the routine to call from outside the library
-extern "C" int ftw_getNumberOfDevices()
+extern "C" int vacuumms_getNumberOfDevices()
 {
 	int count = 0;
 	cudaGetDeviceCount(&count);
@@ -21,7 +21,7 @@ extern "C" int ftw_getNumberOfDevices()
 	return count;
 }
 
-extern "C" void ftw_printDeviceInfo(int device = 0)
+extern "C" void vacuumms_printDeviceInfo(int device = 0)
 {	
 	int device_number = device;
 	struct cudaDeviceProp prop;
