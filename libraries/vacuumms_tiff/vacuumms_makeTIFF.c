@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <tiffio.h>
 
-#include <ftw_makeTIFF.h>
+#include <vacuumms/makeTIFF.h>
 
 int makeTIFF(char *filename, int height, int width, int depth, char *image, int sampleperpixel)
 {
