@@ -1,8 +1,9 @@
 // sgfg2fvi.c -- serial version
 
-#include <ftw_config_parser.h>
-#include <ftw_param.h>
-#include <ftw_types.h>
+#include <vacuumms/config_parser.h>
+#include <vacuumms/param.h>
+#include <vacuumms/types.h>
+
 #include <stdio.h>
 #include <math.h>
 
@@ -39,7 +40,7 @@ main(int argc, char *argv[])
   getFloatParam("-epsilon", &epsilon);
 
   // read configuration
-  ftw_GFG65536 *gfg = readGFG65536(stdin);
+  vacuumms_GFG65536 *gfg = readGFG65536(stdin);
   int n=0;
   // Berthelot combining rule...
   for (n=0; n<gfg->n_atoms; n++) {
@@ -52,7 +53,7 @@ main(int argc, char *argv[])
   gfg->box_z = box_z;
 
   // replicate, then free the original
-  ftw_GFG65536 *configuration = replicateGFG65536(gfg);  
+  vacuumms_GFG65536 *configuration = replicateGFG65536(gfg);  
   free(gfg);
 
   float test_x, test_y, test_z;
