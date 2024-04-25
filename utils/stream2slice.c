@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 
-#include <ftw_param.h>
+#include <vacuumms/param.h>
 
 int main(int argc, char *argv[])
 {

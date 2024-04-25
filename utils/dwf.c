@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <ftw_param.h>
+#include <vacuumms/param.h>
 
 char *file1;
 char *file2;

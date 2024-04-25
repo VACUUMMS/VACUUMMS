@@ -2,15 +2,15 @@
 /* input file should be of .cav format */
 /* output is of .hst format */
 
-#include <ftw_command_line_parser.h>
-
-#include <ftw_std.h>
-#include <ftw_rng.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <vacuumms/command_line_parser.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
 
 int n_bins = 100;
 double resolution = .01;

@@ -2,10 +2,10 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ftw_std.h>
-#include <ftw_rng.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
 
-#include <ftw_command_line_parser.h>
+#include <vacuumms/command_line_parser.h>
 
 /* parameters configurable on command line and default values */
 int verbose = 0;

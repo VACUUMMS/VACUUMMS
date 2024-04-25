@@ -1,13 +1,14 @@
 /* io_setup.c */
 
-#include <ftw_std.h>
-#include <ftw_rng.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/energy.h>
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <energy.h>
 
 
 void setInitialConditions();

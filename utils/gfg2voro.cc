@@ -4,12 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 
-// Hacking to interface to C linkage; since voro++ is C++, gfg2voro also needs to be C++
+#include <vacuumms/param.hh>
+
 extern "C"
 {
-#include <ftw_param.h>
-#include <ftw_pov.h>
+#include <vacuumms/pov.h>
 }
+
 #include "voro++.hh"
 
 int main(int argc, char *argv[])

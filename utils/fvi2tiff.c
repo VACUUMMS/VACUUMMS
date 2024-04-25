@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <ftw_makeTIFF.h>
-#include <ftw_param.h>
+#include <vacuumms/makeTIFF.h>
+#include <vacuumms/param.h>
 
 FILE *instream;
 

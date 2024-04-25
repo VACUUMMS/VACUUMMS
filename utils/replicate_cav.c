@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <ftw_config_parser.h>
-#include <ftw_param.h>
-#include <ftw_types.h>
+#include <vacuumms/config_parser.h>
+#include <vacuumms/param.h>
+#include <vacuumms/types.h>
 
 double box_x, box_y, box_z;
 

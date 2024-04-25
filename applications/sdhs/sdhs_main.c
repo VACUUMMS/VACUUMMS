@@ -1,8 +1,16 @@
 /*************************************** sdhs_main.c ********************************************/
 
-#include "sdhs_main.h"
-#include "io_setup.h"
-#include "graphics.h"
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+#include <vacuumms/science.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/param.h>
+#include <vacuumms/sdhs_main.h>
+#include <vacuumms/io_setup.h>
+#include <vacuumms/graphics.h>
 
 /* old io_setup.h prototypes */
 void setInitialConditions();
@@ -11,14 +19,6 @@ void finalizeOutput();
 void initializeOutput();
 void generateOutput();
 void readEnvironmentVariables();
-
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <ftw_science.h>
-#include <ftw_std.h>
-#include <ftw_rng.h>
-#include <ftw_param.h>
 
 #ifndef MAX_NUMBER_MOLECULES
 #define MAX_NUMBER_MOLECULES 1024

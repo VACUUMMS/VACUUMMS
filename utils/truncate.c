@@ -1,7 +1,7 @@
 /* truncate.c */
 
-#include <ftw_std.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
 
 // Mechanism:  Reads a stream of data, and interprets first three fields as x, y, z. 
 //             Any records with x,y,z outside of specified box are discarded.

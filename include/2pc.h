@@ -1,3 +1,0 @@
-/* vis.h */
-
-int main();

@@ -1,7 +1,7 @@
 /* cfg2gfg.c */
 
 #include <stdio.h>
-#include <ftw_std.h>
+#include <vacuumms/std.h>
 
 double epsilon=1.0;
 

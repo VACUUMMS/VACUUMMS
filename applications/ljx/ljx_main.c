@@ -1,16 +1,16 @@
 /*************************************** ljx_main.c ********************************************/
 
-#include "io_setup.h"
-#include "graphics.h"
-#include <ftw_command_line_parser.h>
-#include "energy.h"
+#include <vacuumms/io_setup.h>
+#include <vacuumms/graphics.h>
+#include <vacuumms/command_line_parser.h>
+#include <vacuumms/energy.h>
+#include <vacuumms/science.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
 
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <ftw_science.h>
-#include <ftw_std.h>
-#include <ftw_rng.h>
 
 void perturbSystem();
 void updatePosition();

@@ -3,8 +3,9 @@
 #define MAX_CAVITIES 131072
 
 #include <stdio.h>
-#include <ftw_std.h>
-#include <ftw_param.h>
+
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
 
 int getStraddleInfo();
 void readInputStream();
