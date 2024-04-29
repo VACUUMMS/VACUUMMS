@@ -293,4 +293,6 @@ endif()
 add_test(insource_cat "/usr/bin/cat" "${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg"  )
 add_test(insource_test_script, "${PROJECT_SOURCE_DIR}/test/script.sh" 1)
 
+add_test(test_uniq, "${PROJECT_SOURCE_DIR}/utils/test/test_uniq.sh" 1)
+
 

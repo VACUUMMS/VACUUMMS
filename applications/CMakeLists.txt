@@ -176,11 +176,17 @@ install(TARGETS
 #add_test(ddx_fcc "${CMAKE_SOURCE_DIR}/cmake/applications/pddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg" -box 1 1 1 )
 add_test(insource_cat "/usr/bin/cat" "${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg"  )
 add_test(insource_test_script, "${PROJECT_SOURCE_DIR}/test/script.sh" 1)
-add_test(NAME ddx_fcc COMMAND "${PROJECT_SOURCE_DIR}/applications/test/ddx_fcc.sh")
 
+add_test(NAME ddx_fcc COMMAND "${PROJECT_SOURCE_DIR}/applications/test/ddx_fcc.sh")
 set_property(TEST ddx_fcc
     PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
 )
+
+add_test(NAME pddx_fcc COMMAND "${PROJECT_SOURCE_DIR}/applications/test/pddx_fcc.sh")
+set_property(TEST pddx_fcc
+    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+)
+
 #    PROPERTY ENVIRONMENT CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} 
 
 #6 ${CMAKE_SOURCE_DIR}/cmake/applications/ddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg -box 1 1 1 > fcc.out
