@@ -9,12 +9,14 @@ option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
 option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
 option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
 option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
+option(ENABLE_TESTING "run the unit tests when building" ON)
 
 
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
 message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
 message("got value for BUILD_VORONOI_UTILS=${BUILD_VORONOI_UTILS}")
+message("got value for ENABLE_TESTING=${ENABLE_TESTING}")
 
 # Find X11. Usually installed to system area, but when it's not, need to find it.
 find_package(X11)
@@ -27,11 +29,9 @@ message("X11_Xext_LIB set to ${X11_Xext_LIB}")
 message("X11_ICE_LIB set to ${X11_ICE_LIB}")
 message("X11_LIBRARIES set to ${X11_LIBRARIES}")
 
-# FTW: This was done in an attempt to make the package buildable with non-system install
-#      of X11, but have abandoned this effort for now. CMake standalone build will work
-#      on a system with an X11 install to /usr.
-#
-#      Spack front-ended install will work on systems with or without a system X11.
+# FTW: Below is an attempt to make the package buildable from CMake with a non-system install
+#      of X11, but this effort has been abandoned for now. CMake standalone build will work
+#      on a system with an X11 install to /usr, and a spack build will work with non-system X11.
 
 #list(PREPEND X11_LIBRARIES ${X11_ICE_LIB})
 #message("X11_LIBRARIES now set to ${X11_LIBRARIES}")
@@ -45,6 +45,21 @@ message("X11_LIBRARIES set to ${X11_LIBRARIES}")
 #set_target_properties(ICE PROPERTIES IMPORTED_LOCATION "${X11_ICE_INCLUDE_PATH}")
 #add_library(Xext SHARED IMPORTED)
 #set_target_properties(Xext PROPERTIES IMPORTED_LOCATION "${X11_Xext_LIB}")
+
+# enable/disable testing
+
+if (ENABLE_TESTING)
+    message("adding tests subdirectory")
+    include(CTest)
+    enable_testing()
+    add_subdirectory(test)
+endif()
+
+# The standard VACUUMMS stuff
+
+add_subdirectory(libraries)
+add_subdirectory(utils)
+add_subdirectory(applications)
 
 # Import the tiff library. This will make it available for linking. 
 if (BUILD_TIFF_UTILS)
@@ -67,12 +82,7 @@ if (BUILD_VORONOI_UTILS)
     set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib/libvoro++.a")
 endif()
 
-# The standard stuff
-add_subdirectory(libraries)
-message("added subdirectory libraries")
-#list(APPEND EXTRA_lIBS ftw_general )
-add_subdirectory(utils)
-add_subdirectory(applications)
+# optional modules
 
 if (BUILD_VARIATIONAL_MODULE)
     message("adding variational module")
@@ -80,12 +90,7 @@ if (BUILD_VARIATIONAL_MODULE)
     add_subdirectory(modules/variational)
 endif()
 
-#if (ENABLE_TESTING)
-    message("adding tests subdirectory")
-    include(CTest)
-    enable_testing()
-    add_subdirectory(test)
-#endif()
+# install headers
 
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/" # source directory
         DESTINATION "include" # target directory

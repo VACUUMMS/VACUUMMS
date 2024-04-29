@@ -165,3 +165,31 @@ install(TARGETS
         csa
         vis
         DESTINATION bin)
+
+# testing
+
+#target_include_directories(expr_add PUBLIC "${PROJECT_SOURCE_DIR}/include")
+#target_link_libraries(expr_add PUBLIC vacuumms_rt m ) 
+#add_executable(poo poo.cc)
+#target_include_directories(poo PUBLIC "${PROJECT_SOURCE_DIR}/include")
+#add_test(test_poo, "${CMAKE_SOURCE_DIR}/cmake/test/poo" 1)
+#add_test(ddx_fcc "${CMAKE_SOURCE_DIR}/cmake/applications/pddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg" -box 1 1 1 )
+add_test(insource_cat "/usr/bin/cat" "${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg"  )
+add_test(insource_test_script, "${PROJECT_SOURCE_DIR}/test/script.sh" 1)
+add_test(NAME ddx_fcc COMMAND "${PROJECT_SOURCE_DIR}/applications/test/ddx_fcc.sh")
+
+set_property(TEST ddx_fcc
+    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+)
+#    PROPERTY ENVIRONMENT CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} 
+
+#6 ${CMAKE_SOURCE_DIR}/cmake/applications/ddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg -box 1 1 1 > fcc.out
+
+#set_property(TEST test_name
+#             PROPERTY prop1 value1 value2 ...)
+#This command will set additional properties for the specified tests. Example properties are:
+
+#ENVIRONMENT
+#Specifies environment variables that should be defined for running a test. If set to a list of environment variables and values of the form MYVAR=value, those environment variables will be defined while the test is running. The environment is restored to its previous state after the test is done.
+
+
