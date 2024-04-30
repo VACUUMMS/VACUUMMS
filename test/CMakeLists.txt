@@ -1,26 +1,15 @@
 # test/CMakeLists.txt
 
+# testing the tests:
 
-#add_executable(expr_add "${PROJECT_SOURCE_DIR}/utils/expr_add.c")
-#target_include_directories(expr_add PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(expr_add PUBLIC vacuumms_rt m ) 
+    # example binary executable test
+    add_executable(binary ${PROJECT_SOURCE_DIR}/test/binary.cc)
+    target_include_directories(binary PUBLIC "${PROJECT_SOURCE_DIR}/include")
+    add_test(test_binary, "${CMAKE_SOURCE_DIR}/cmake/test/binary" 1)
 
+    # example script test
+    add_test(test_script, "${PROJECT_SOURCE_DIR}/test/test_script.sh" 1)
 
-
-
-#include(CTest)
-#enable_testing()
-
-
-add_executable(poo ${PROJECT_SOURCE_DIR}/test/poo.cc)
-target_include_directories(poo PUBLIC "${PROJECT_SOURCE_DIR}/include")
-add_test(test_poo, "${CMAKE_SOURCE_DIR}/cmake/test/poo" 1)
-
-#add_test(ddx_fcc "${CMAKE_SOURCE_DIR}/cmake/applications/pddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg" -box 1 1 1 )
-add_test(cat "/usr/bin/cat" "${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg"  )
-add_test(test_script, "${PROJECT_SOURCE_DIR}/test/script.sh" 1)
-
-
-
-#/home/frankwillmore/VACUUMMS/cmake/test/poo
+    # example compare output test
+    add_test(test_compare_output, "${PROJECT_SOURCE_DIR}/test/test_compare_output.sh" 1)
 

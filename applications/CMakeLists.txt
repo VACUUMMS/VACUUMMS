@@ -139,11 +139,6 @@ add_executable(tcv
 target_include_directories(tcv PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(tcv PUBLIC vacuumms_cpp vacuumms_rt m )
 
-
-# Cuda codes needing work (prolly just with CUDA): pmd pmdgpu fv/essence
-# Unknown status: eg size
-# sv - looks to have surface/volume utils, but needs another look
-
 install(TARGETS 
         rattle 
         ljx 
@@ -168,34 +163,30 @@ install(TARGETS
 
 # testing
 
-#target_include_directories(expr_add PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#target_link_libraries(expr_add PUBLIC vacuumms_rt m ) 
-#add_executable(poo poo.cc)
-#target_include_directories(poo PUBLIC "${PROJECT_SOURCE_DIR}/include")
-#add_test(test_poo, "${CMAKE_SOURCE_DIR}/cmake/test/poo" 1)
-#add_test(ddx_fcc "${CMAKE_SOURCE_DIR}/cmake/applications/pddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg" -box 1 1 1 )
-add_test(insource_cat "/usr/bin/cat" "${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg"  )
-add_test(insource_test_script, "${PROJECT_SOURCE_DIR}/test/script.sh" 1)
-
-add_test(NAME ddx_fcc COMMAND "${PROJECT_SOURCE_DIR}/applications/test/ddx_fcc.sh")
-set_property(TEST ddx_fcc
+add_test(
+    NAME test_ddx_fcc 
+    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ddx_fcc.sh"
+)
+set_property(
+    TEST test_ddx_fcc
     PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
 )
 
-add_test(NAME pddx_fcc COMMAND "${PROJECT_SOURCE_DIR}/applications/test/pddx_fcc.sh")
-set_property(TEST pddx_fcc
+add_test(
+    NAME test_pddx_fcc C
+    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_pddx_fcc.sh"
+)
+set_property(
+    TEST test_pddx_fcc
     PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
 )
 
-#    PROPERTY ENVIRONMENT CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} 
-
-#6 ${CMAKE_SOURCE_DIR}/cmake/applications/ddx < ${PROJECT_SOURCE_DIR}/applications/ddx/fcc.gfg -box 1 1 1 > fcc.out
-
-#set_property(TEST test_name
-#             PROPERTY prop1 value1 value2 ...)
-#This command will set additional properties for the specified tests. Example properties are:
-
-#ENVIRONMENT
-#Specifies environment variables that should be defined for running a test. If set to a list of environment variables and values of the form MYVAR=value, those environment variables will be defined while the test is running. The environment is restored to its previous state after the test is done.
-
+add_test(
+    NAME test_ljx C
+    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ljx.sh"
+)
+set_property(
+    TEST test_ljx
+    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+)
 
