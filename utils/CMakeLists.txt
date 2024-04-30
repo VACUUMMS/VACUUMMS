@@ -280,3 +280,8 @@ if (BUILD_VORONOI_UTILS)
             gfg2voro
             DESTINATION bin)
 endif()
+
+# testing
+
+add_test(test_uniq, "${PROJECT_SOURCE_DIR}/utils/test/test_uniq.sh" 1)
+

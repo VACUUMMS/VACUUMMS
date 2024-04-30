@@ -139,11 +139,6 @@ add_executable(tcv
 target_include_directories(tcv PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(tcv PUBLIC vacuumms_cpp vacuumms_rt m )
 
-
-# Cuda codes needing work (prolly just with CUDA): pmd pmdgpu fv/essence
-# Unknown status: eg size
-# sv - looks to have surface/volume utils, but needs another look
-
 install(TARGETS 
         rattle 
         ljx 
@@ -165,3 +160,33 @@ install(TARGETS
         csa
         vis
         DESTINATION bin)
+
+# testing
+
+add_test(
+    NAME test_ddx_fcc 
+    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ddx_fcc.sh"
+)
+set_property(
+    TEST test_ddx_fcc
+    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME test_pddx_fcc C
+    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_pddx_fcc.sh"
+)
+set_property(
+    TEST test_pddx_fcc
+    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME test_ljx C
+    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ljx.sh"
+)
+set_property(
+    TEST test_ljx
+    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+)
+
