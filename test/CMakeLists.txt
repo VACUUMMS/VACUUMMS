@@ -1,6 +1,6 @@
 # test/CMakeLists.txt
 
-# testing the tests:
+# testing the tester/tests:
 
     # example binary executable test
     add_executable(binary ${PROJECT_SOURCE_DIR}/test/binary.cc)
