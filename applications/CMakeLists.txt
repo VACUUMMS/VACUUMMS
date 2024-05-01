@@ -164,7 +164,7 @@ install(TARGETS
 # testing
 
 add_test(
-    NAME test_ddx_fcc 
+    NAME test_ddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ddx_fcc.sh"
 )
 set_property(
@@ -173,7 +173,7 @@ set_property(
 )
 
 add_test(
-    NAME test_pddx_fcc C
+    NAME test_pddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_pddx_fcc.sh"
 )
 set_property(
@@ -182,7 +182,7 @@ set_property(
 )
 
 add_test(
-    NAME test_ljx C
+    NAME test_ljx
     COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ljx.sh"
 )
 set_property(
