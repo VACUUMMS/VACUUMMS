@@ -7,9 +7,9 @@ option(BUILD_STATIC_LIBS "static libs " OFF)
 add_executable(avg "${PROJECT_SOURCE_DIR}/utils/avg.c")
 target_include_directories(avg PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
-add_executable(lmp2gfg "${PROJECT_SOURCE_DIR}/utils/lmp2gfg.c")
+add_executable(lmp2gfg "${PROJECT_SOURCE_DIR}/utils/lmp2gfg.cc")
 target_include_directories(lmp2gfg PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(lmp2gfg PUBLIC vacuumms_rt m )
+target_link_libraries(lmp2gfg PUBLIC vacuumms_rt vacuumms_cpp m )
 
 add_executable(vis2pov "${PROJECT_SOURCE_DIR}/utils/vis2pov.c")
 target_include_directories(vis2pov PUBLIC "${PROJECT_SOURCE_DIR}/include")

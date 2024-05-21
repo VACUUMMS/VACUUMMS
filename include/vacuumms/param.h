@@ -1,4 +1,4 @@
-/* param.h */
+/* vacuumms/param.h */
 
 #ifndef FTW_PARAM_H
 #define FTW_PARAM_H
