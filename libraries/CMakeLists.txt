@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
@@ -70,13 +69,22 @@ endif() # BUILD_TIFF_UTILS
 
 
 if (BUILD_CUDA_COMPONENTS)
-    cuda_add_library(vacuumms_cuda SHARED
+    add_library(vacuumms_cuda SHARED
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_cuda_utils.cu
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_gfg2fvi.cu
     )
     target_include_directories(vacuumms_cuda PUBLIC
        "${PROJECT_SOURCE_DIR}/include"
     )
+
+    target_link_libraries(vacuumms_cuda PUBLIC cuda CUDA::cudart m)
+
+    set_property(TARGET vacuumms_cuda PROPERTY CUDA_ARCHITECTURES OFF)
+
+target_include_directories(vacuumms_cpp PUBLIC
+    "${PROJECT_SOURCE_DIR}/include"
+)
+
 endif()
 
 install(TARGETS vacuumms_rt vacuumms_cpp

@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 # set the project name
-project(VACUUMMS)
+project(VACUUMMS LANGUAGES C CXX CUDA)
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
@@ -32,6 +32,8 @@ message("X11_LIBRARIES set to ${X11_LIBRARIES}")
 # FTW: Below is an attempt to make the package buildable from CMake with a non-system install
 #      of X11, but this effort has been abandoned for now. CMake standalone build will work
 #      on a system with an X11 install to /usr, and a spack build will work with non-system X11.
+#      10/22/2024 note: I was able to get CMake to use the spack build with:
+#      LIBRARY_PATH=/path/to/spack/build/of/X11/lib cmake ..
 
 #list(PREPEND X11_LIBRARIES ${X11_ICE_LIB})
 #message("X11_LIBRARIES now set to ${X11_LIBRARIES}")
@@ -55,11 +57,10 @@ if (ENABLE_TESTING)
     add_subdirectory(test)
 endif()
 
-# The standard VACUUMMS stuff
-
-add_subdirectory(libraries)
-add_subdirectory(utils)
-add_subdirectory(applications)
+if (BUILD_CUDA_COMPONENTS)
+    find_package(CUDA)
+    find_package(CUDAToolkit)
+endif()
 
 # Import the tiff library. This will make it available for linking. 
 if (BUILD_TIFF_UTILS)
@@ -68,9 +69,11 @@ if (BUILD_TIFF_UTILS)
     set_target_properties(tiff PROPERTIES IMPORTED_LOCATION "${TIFF_LIBRARIES}")
 endif()
 
-if (BUILD_CUDA_COMPONENTS)
-    find_package(CUDA)
-endif()
+# The standard VACUUMMS stuff
+
+add_subdirectory(libraries)
+add_subdirectory(utils)
+add_subdirectory(applications)
 
 # There's no find_package for voropp, so just add a path
 if (BUILD_VORONOI_UTILS)

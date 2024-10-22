@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
@@ -191,11 +190,11 @@ target_link_libraries(replicate_cav PUBLIC vacuumms_rt m pthread)
 if (BUILD_CUDA_COMPONENTS)
     add_executable(sgfg2fvi "${PROJECT_SOURCE_DIR}/utils/sgfg2fvi.c")
     target_include_directories(sgfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda)
+    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda CUDA::cudart)
 
     add_executable(gfg2fvi "${PROJECT_SOURCE_DIR}/utils/gfg2fvi.c")
     target_include_directories(gfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(gfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda)
+    target_link_libraries(gfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda CUDA::cudart)
 endif()
 
 if (BUILD_VORONOI_UTILS)
