@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name
-project(VACUUMMS)
+project(VACUUMMS VERSION 1.2.1)
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
@@ -52,6 +52,7 @@ if (BUILD_CUDA_COMPONENTS)
     find_package(CUDA)
 endif()
 
+add_subdirectory(include/vacuumms)
 add_subdirectory(libraries)
 message("added subdirectory lbiraries")
 list(APPEND EXTRA_lIBS ftw_general )
