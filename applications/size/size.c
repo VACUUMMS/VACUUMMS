@@ -6,7 +6,12 @@
 #include <ftw_std.h>
 #include <ftw_rng.h>
 #include <ftw_param.h>
-#include "size.h"
+
+void readInputStream();
+double findRadiusOfGyration();
+void findCenterOfMass();
+void samplePoints();
+double findSpan();
 
 // Reads a centered cluster and determines the radius of gyration and span
 // Will deliver an erroneous result if cluster is not centered or percolates.

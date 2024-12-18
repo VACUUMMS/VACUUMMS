@@ -1,10 +1,21 @@
 /*************************************** lj_main.c ********************************************/
 
-#include "lj_main.h"
-#include "io_setup.h"
-#include "graphics.h"
-#include "command_line_parser.h"
-#include "energy.h"
+double calculateSystemEnergy();
+double interactionEnergy(int i, int j);
+void perturbSystem();
+void updatePosition();
+
+void setInitialConditions();
+void generateUniqueId();
+void finalizeOutput();
+void initializeOutput();
+void generateOutput();
+void loadConfiguration();
+void readEnvironmentVariables();
+
+#include <graphics.h>
+#include <command_line_parser.h>
+#include <energy.h>
 
 #include <stdio.h>
 #include <math.h>
@@ -130,3 +141,5 @@ void updatePosition(int particle_number, double dx, double dy, double dz)
   if (z[particle_number] > box_z) z[particle_number] -= box_z;
   if (z[particle_number] < 0) z[particle_number] += box_z;
 }
+
+

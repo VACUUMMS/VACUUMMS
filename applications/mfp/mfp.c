@@ -1,13 +1,17 @@
 /* mfp.c */
 
-#include "io_setup.h"
-#include "mfp.h"
-
 #include <stdlib.h>
 #include <math.h>
-#include <ftw_std.h>
-#include <ftw_param.h>
-#include <ftw_rng.h>
+
+#include <vacuumms/io_setup.h>
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
+#include <vacuumms/rng.h>
+
+double calculateEnergy();
+void generateTestPoint();
+void makeVerletList();
+int readConfiguration();
 
 #define MAX_NUM_MOLECULES 16384
 #define MAX_CLOSE 2048
@@ -259,3 +263,4 @@ double calculateEnergy()
   retval = 4.0 * (repulsion - attraction);
   return retval;
 }
+

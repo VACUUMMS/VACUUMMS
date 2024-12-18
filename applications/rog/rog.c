@@ -3,11 +3,16 @@
 #define MAX_CAVITIES 131072
 #define N_POINTS 10000
 
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
+#include <vacuumms/param.h>
 
-#include "rog.h"
+void findMinimumBoxSize();
+void readInputStream();
+void findRadiusOfGyration();
+void findCenterOfMass();
+int checkInclusion(double tx, double ty, double tz);
+void samplePoints();
 
 // Reads a centered cluster and determines the radius of gyration
 // Will deliver an erroneous result if cluster is not centered or percolates.

@@ -1,15 +1,13 @@
 /*************************************** vis.c ********************************************/
 
-#include "vis.h"
-#include "io_setup.h"
-#include "graphics.h"
-#include "command_line_parser.h"
-
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <ftw_science.h>
-#include <ftw_std.h>
+
+#include <vacuumms/io_setup.h>
+#include <vacuumms/graphics.h>
+#include <vacuumms/science.h>
+#include <vacuumms/std.h>
 
 #ifndef MAX_NUMBER_MOLECULES
 #define MAX_NUMBER_MOLECULES 16384
@@ -22,6 +20,8 @@ int c[MAX_NUMBER_MOLECULES];
 int wsize_x, wsize_y, wsize_z;
 
 int number_of_molecules;
+
+void parseCommandLineOptions(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {

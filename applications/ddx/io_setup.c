@@ -1,11 +1,12 @@
 /* io_setup.c */
 
-#include <ftw_std.h>
-#include <ftw_rng.h>
 #include <time.h>
 #include <string.h>
 
-#include "io_setup.h"
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/types.h>
+#include <vacuumms/io_setup.h>
 
 extern int number_of_molecules;
 extern double x[], y[], z[];
@@ -13,7 +14,7 @@ extern double sigma[], epsilon[];
 
 extern int verbose;
 
-void readConfiguration()
+int loadConfiguration()
 {
   char line[80];
   char *xs, *ys, *zs;
@@ -42,4 +43,7 @@ void readConfiguration()
  
   V printf("%d lines read.\n", number_of_molecules);
   fclose(stdin);
+
+  return number_of_molecules;
 }
+

@@ -1,6 +1,6 @@
 /* graphics.c */
 
-#include "graphics.h"
+#include <vacuumms/graphics.h>
 
 extern int side_view;
 extern int wsize_x, wsize_y, wsize_z;

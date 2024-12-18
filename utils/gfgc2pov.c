@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <ftw_param.h>
-#include <ftw_pov.h>
+#include <vacuumms/param.h>
+#include <vacuumms/pov.h>
 
 double box_x=10, box_y=10, box_z=10;
 double transmit = 0.0;

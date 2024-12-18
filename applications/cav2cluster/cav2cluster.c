@@ -10,9 +10,17 @@
 #define MAX_PAIRS 50000000
 #define MAX_CAVITIES 131072
 
-#include <ftw_std.h>
-#include <ftw_param.h>
-#include "cav2cluster.h"
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
+
+void findAllPairs();
+void readInputStream();
+void printClusters();
+void turnPairsIntoClusters();
+void deleteEmptyClusters();
+void mergeClusters();
+void sortClusters();
+void buildClusters();
 
 double box_x, box_y, box_z;
 double sfactor = 1;
@@ -174,3 +182,4 @@ void readInputStream()
     }
   }
 }
+

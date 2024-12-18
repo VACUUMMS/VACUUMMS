@@ -10,9 +10,10 @@
 
 ****************************************************************************/
 
-#include <ftw_std.h>
-#include <ftw_rng.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng.h>
+#include <vacuumms/param.h>
+
 #include <string.h>
 
 #define MAX_NUM_RATTLERS 65536

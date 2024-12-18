@@ -1,8 +1,8 @@
 /* pow.c */
 
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
+#include <vacuumms/param.h>
 #include <errno.h>
 #include <math.h>
 

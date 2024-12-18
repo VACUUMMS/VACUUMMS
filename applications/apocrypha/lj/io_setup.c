@@ -6,11 +6,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <arpa/inet.h>
 #include <unistd.h>
 
-#include "io_setup.h"
-#include "energy.h"
+void setInitialConditions();
+void generateUniqueId();
+void finalizeOutput();
+void initializeOutput();
+void generateOutput();
+void loadConfiguration();
+void readEnvironmentVariables();
+
+#include <energy.h>
 
 extern char simulation_unique_identifier[];
 extern double temperature;
@@ -201,4 +207,5 @@ void generateOutput()
 
   fflush(output_file);
 }
+
 

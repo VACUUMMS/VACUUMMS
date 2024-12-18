@@ -1,8 +1,8 @@
 /* graphics.c */
 
-#include "graphics.h"
-#include <ftw_science.h>
-#include <ftw_std.h>
+#include <vacuumms/graphics.h>
+#include <vacuumms/science.h>
+#include <vacuumms/std.h>
 
 extern int side_view;
 extern int wsize_x, wsize_y, wsize_z;

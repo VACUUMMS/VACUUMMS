@@ -11,9 +11,16 @@
 #define MAX_CAVITIES 1310720
 
 #include <stdio.h>
-#include <ftw_std.h>
-#include <ftw_param.h>
-#include "center.h"
+#include <vacuumms/std.h>
+#include <vacuumms/param.h>
+
+int getStraddleInfo();
+void readInputStream();
+void printCavities();
+
+int checkXBoundary();
+int checkYBoundary();
+int checkZBoundary();
 
 double box_x, box_y, box_z;
 FILE *instream;
@@ -167,4 +174,5 @@ void readInputStream()
   
   V printf("%d cavities.\n", number_of_cavities);
 }
+
 

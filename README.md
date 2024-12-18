@@ -1,10 +1,12 @@
+![FVI-xray](examples/polystyrene/images/xray.png)
+
 # VACUUMMS
 
 **VACUUMMS (Void Analysis Codes and Unix Utilities for Molecular Modeling and Simulation) is a collection of codes developed over the course of a research career, specifically for analyzing Free Volume in materials.**
 
 ## LICENSE
 
-  Copyright (C) 2003-2022 Frank T Willmore
+  Copyright (C) 2003-2024 Frank T Willmore
 
   Permission is hereby granted, free of charge, to any person obtaining a 
   copy of this software and associated documentation files (the "Software"), 
@@ -48,9 +50,15 @@
 
  Videos: https://www.youtube.com/playlist?list=PLb1z5T_SBfZgV0-0qzXOeYTgL8NkGST2w
 
+## MODULES:
+
+There is currently one optional module, *variational* and it includes its own examples. 
+
 ## QUICK START GUIDE
 
 ### Installation
+
+#### via spack
 
 Get spack:
 
@@ -67,6 +75,21 @@ Install:
 Load into the user environment:
 
 `$ spack load vacuumms`
+
+#### via CMake
+
+VACUUMMS can also be installed using the CMake build system generator:
+
+`$ git clone https://github.com/VACUUMMS/VACUUMMS`
+`$ cd VACUUMMS`
+`$ mkdir cmake`
+`$ cd cmake`
+`$ ccmake ..`
+
+Select the desired options from the ccmake generator screen, generate, and exit ccmake. Then invoke make to build VACUUMMS:
+
+`$ make`
+`$ make install`
 
 See individual commands for usage info, e.g.:
 

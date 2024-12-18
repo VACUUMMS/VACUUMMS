@@ -2,18 +2,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include <tiffio.h>
 
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     TIFF* tif = TIFFOpen(argv[1], "r");
     if (tif) 
     {
-        uint32 imagelength;
+        uint32_t imagelength;
         tdata_t buf;
-        uint32 row;
-        uint16 s, nsamples;
+        uint32_t row;
+        uint16_t s, nsamples;
 	int pixel;
 
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &imagelength);

@@ -5,7 +5,7 @@
 #include <ftw_std.h>
 #include <ftw_rng.h>
 
-#include "command_line_parser.h"
+#include <ftw_command_line_parser.h>
 
 /* parameters configurable on command line and default values */
 int verbose = 0;

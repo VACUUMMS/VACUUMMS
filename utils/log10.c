@@ -3,7 +3,7 @@
 /* input:  .dst */
 /* output:  log base 10 of input values */
 
-#include <ftw_std.h>
+#include <vacuumms/std.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

@@ -3,7 +3,7 @@
 /* input:  .dst */
 /* output:  singular value (average of all entries) */
 
-#include <ftw_std.h>
+#include <vacuumms/std.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

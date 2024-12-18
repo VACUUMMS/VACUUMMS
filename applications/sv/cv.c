@@ -3,11 +3,13 @@
 #define MAX_CAVITIES 1310720
 #define N_SUCCESSES 10000
 
-#include <ftw_std.h>
-#include <ftw_rng2.h>
-#include <ftw_param.h>
+#include <vacuumms/std.h>
+#include <vacuumms/rng2.h>
+#include <vacuumms/param.h>
 
-#include "cv.h"
+void readInputStream();
+int checkInclusion(double x, double y, double z);
+void findMinimumBoxSize();
 
 // Reads a centered cluster and determines the volume of it.
 // Will deliver an erroneous result if cluster is not centered or percolates.

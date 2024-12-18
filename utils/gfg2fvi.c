@@ -1,9 +1,9 @@
 // gfg2fvi.c
 
-#include <ftw_config_parser.h>
-#include <ftw_param.h>
-#include <ftw_types.h>
-#include <ftw_gfg2fvi.h>
+#include <vacuumms/config_parser.h>
+#include <vacuumms/param.h>
+#include <vacuumms/types.h>
+#include <vacuumms/gfg2fvi.h>
 
 #include <stdio.h>
 #include <math.h>
@@ -67,7 +67,7 @@ main(int argc, char *argv[])
 
   fprintf(stderr,"reading configuration\n");
 
-  ftw_GFG65536 *gfg = readGFG65536(stdin);
+  vacuumms_GFG65536 *gfg = readGFG65536(stdin);
   gfg->box_x = box_x;
   gfg->box_y = box_y;
   gfg->box_z = box_z;
@@ -82,25 +82,25 @@ main(int argc, char *argv[])
     for (i=0; i < gfg->n_atoms; i++) gfg->atom[i].epsilon *= 503.25;
     if (!getFlagParam("-epsilon")) epsilon = 1.0 / temperature;
 
-    ftw_EnergyArray256 *ea = GFGToRepulsion256(gfg, sigma, epsilon);
+    vacuumms_EnergyArray256 *ea = GFGToRepulsion256(gfg, sigma, epsilon);
     for (i=0; i<resolution; i++) for (j=0; j<resolution; j++) for (k=0; k<resolution; k++)
       printf("%f\t%f\t%f\t%f\n", i*box_x / resolution, j*box_y / resolution, k*box_z / resolution, 
                                  preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
   }
   else if ((resolution == 256) && (potential == 612)){
-    ftw_EnergyArray256 *ea = GFGToRepulsion256_612(gfg, sigma, epsilon);
+    vacuumms_EnergyArray256 *ea = GFGToRepulsion256_612(gfg, sigma, epsilon);
     for (i=0; i<resolution; i++) for (j=0; j<resolution; j++) for (k=0; k<resolution; k++)
       printf("%f\t%f\t%f\t%f\n", i*box_x / resolution, j*box_y / resolution, k*box_z / resolution, 
                                  preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
   }
   else if ((resolution == 512) && (potential == 612)){
-    ftw_EnergyArray512 *ea = GFGToRepulsion512_612(gfg, sigma, epsilon);
+    vacuumms_EnergyArray512 *ea = GFGToRepulsion512_612(gfg, sigma, epsilon);
     for (i=0; i<resolution; i++) for (j=0; j<resolution; j++) for (k=0; k<resolution; k++)
       printf("%f\t%f\t%f\t%f\n", i*box_x / resolution, j*box_y / resolution, k*box_z / resolution, 
                                  preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
   }
   else if ((resolution == 1024) && (potential == 612)){
-    ftw_EnergyArray1024 *ea = GFGToRepulsion1024_612(gfg, sigma, epsilon);
+    vacuumms_EnergyArray1024 *ea = GFGToRepulsion1024_612(gfg, sigma, epsilon);
     for (i=0; i<resolution; i++) for (j=0; j<resolution; j++) for (k=0; k<resolution; k++)
       printf("%f\t%f\t%f\t%f\n", i*box_x / resolution, j*box_y / resolution, k*box_z / resolution, 
                                  preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 

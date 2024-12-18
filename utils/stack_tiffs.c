@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <tiffio.h>
+#include <stdint.h>
 
-#include <ftw_makeTIFF.h>
+#include <vacuumms/makeTIFF.h>
 
 int width = 512;
 int height = 512;
@@ -17,7 +18,7 @@ char image[1024*1024*94*4];
 //  OUT: a 3D-TIFF file
 //  e.g. issue command:  stack_tiffs *.tif
 //  assuming input is 256x256
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   int z;
   char *filename;
@@ -32,10 +33,10 @@ filename = argv[z];
       printf("Could not open %s\n", argv[1]);
       exit(1);
     }
-    uint32 imagelength;
+    uint32_t imagelength;
     tdata_t buf;
-    uint32 row;
-    uint16 s, nsamples;
+    uint32_t row;
+    uint16_t s, nsamples;
     int pixel;
     unsigned char value;
 
