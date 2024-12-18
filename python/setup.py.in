@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='vacuumms',
-    version='1.2.1.post2',  
+    version='@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.post2',  
     description='A module for working with vacuumms',
     long_description='A module for working with vacuumms',
     url='http://www.vacuumms.org',
@@ -41,3 +41,6 @@ setup(
          ],
     include_package_data=True,
 )
+
+
+

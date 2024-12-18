@@ -53,10 +53,11 @@ if (BUILD_CUDA_COMPONENTS)
 endif()
 
 add_subdirectory(include/vacuumms)
+add_subdirectory(python)
 add_subdirectory(libraries)
 message("added subdirectory lbiraries")
 list(APPEND EXTRA_lIBS ftw_general )
 add_subdirectory(utils)
 add_subdirectory(applications)
 
-
+file(COPY python DESTINATION python)
