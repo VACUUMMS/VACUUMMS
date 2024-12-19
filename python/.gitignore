@@ -8,3 +8,4 @@
 vacuumms.egg-info
 dist
 build
+*.pyc

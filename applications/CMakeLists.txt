@@ -73,12 +73,19 @@ add_executable(2pc
 target_include_directories(2pc PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(2pc PUBLIC vacuumms_rt m )
 
+#add_executable(csd 
+#    "${PROJECT_SOURCE_DIR}/applications/csd/csd.c" 
+#    "${PROJECT_SOURCE_DIR}/applications/csd/command_line_parser.c" 
+#)
+#target_include_directories(csd PUBLIC "${PROJECT_SOURCE_DIR}/include")
+#target_link_libraries(csd PUBLIC vacuumms_rt m pthread)
+
 add_executable(csd 
-    "${PROJECT_SOURCE_DIR}/applications/csd/csd.c" 
-    "${PROJECT_SOURCE_DIR}/applications/csd/command_line_parser.c" 
+    "${PROJECT_SOURCE_DIR}/applications/csd/csd.cc" 
+#    "${PROJECT_SOURCE_DIR}/applications/csd/command_line_parser.c" 
 )
 target_include_directories(csd PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(csd PUBLIC vacuumms_rt m pthread)
+target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread)
 
 add_executable(rog 
     "${PROJECT_SOURCE_DIR}/applications/rog/rog.c" 

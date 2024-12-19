@@ -1,4 +1,4 @@
-#include <vacuumms/variational/configuration.hh>
+#include <vacuumms/configuration.hh>
 #include <vacuumms/types.h>
 #include <iostream>
 
