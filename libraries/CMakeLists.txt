@@ -33,6 +33,7 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/vertex.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/edge.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/param.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/parameters.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pair.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/configuration.cc
 )
