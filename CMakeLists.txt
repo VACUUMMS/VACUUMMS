@@ -72,12 +72,13 @@ endif()
 # The standard VACUUMMS stuff
 
 add_subdirectory(include/vacuumms)
-add_subdirectory(python)
+add_subdirectory(conda)
 add_subdirectory(libraries)
 add_subdirectory(utils)
 add_subdirectory(applications)
 
-file(COPY python DESTINATION python)
+# Commenting this out, not sure why I put it. python dir is moved to conda
+#file(COPY python DESTINATION python)
 
 # There's no find_package for voropp, so just add a path
 if (BUILD_VORONOI_UTILS)
