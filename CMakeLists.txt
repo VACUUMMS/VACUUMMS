@@ -73,12 +73,13 @@ endif()
 
 add_subdirectory(include/vacuumms)
 add_subdirectory(conda)
+add_subdirectory(boost-python)
 add_subdirectory(libraries)
 add_subdirectory(utils)
 add_subdirectory(applications)
 
-# Commenting this out, not sure why I put it. python dir is moved to conda
-#file(COPY python DESTINATION python)
+# This may be erroneous, maybe needs removed
+file(COPY conda DESTINATION conda)
 
 # There's no find_package for voropp, so just add a path
 if (BUILD_VORONOI_UTILS)
