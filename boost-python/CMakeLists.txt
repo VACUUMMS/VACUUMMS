@@ -2,6 +2,9 @@
 
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
+#find_package(Boost REQUIRED COMPONENTS system filesystem)
+#find_package(Python COMPONENTS Interpreter Development)
+
 add_library(vacuumms SHARED
       ${PROJECT_SOURCE_DIR}/boost-python/bp_parameter.cc
 )
