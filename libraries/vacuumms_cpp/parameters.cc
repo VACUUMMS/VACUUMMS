@@ -2,12 +2,66 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <boost/python.hpp>
+
+#include <string>
+#include <iostream>
+
 #include <vacuumms/parameters.hh>
+
+namespace bp = boost::python;
 
 Parameters::Parameters(int argc, char **argv)
 {
     command_line_argc = argc;
     command_line_argv = argv;
+}
+
+Parameters::Parameters()
+{
+
+    command_line_argc = 0;
+    command_line_argv = NULL;
+
+    std::cout << "Constructing default\n";
+}
+
+Parameters::Parameters(const boost::python::list& _argv)
+{
+
+//    command_line_argc = 0;
+//    command_line_argv = NULL;
+
+    int _argc = bp::len(_argv);
+
+    char **argv = (char**)malloc(sizeof(char*) * _argc);
+
+    for (int i=0; i<_argc; i++)
+    {
+        char *arg = bp::extract<char*>(_argv[i]);
+        argv[i] = arg;
+        std::cout << argv[i] << std::endl;
+    }
+
+    free(argv);
+}
+
+Parameters::Parameters(std::string arg_list)
+{
+
+    command_line_argc = 0;
+    command_line_argv = NULL;
+
+    std::cout << "Constructing from arglist <" << arg_list << ">\n";
+}
+
+void Parameters::setParameters(std::string arg_list)
+{
+
+    command_line_argc = 0;
+    command_line_argv = NULL;
+
+    std::cout << "setting arglist <" << arg_list << ">\n";
 }
 
 int Parameters::getStringParam(char *param_name, char **parameter)

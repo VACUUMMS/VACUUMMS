@@ -1,5 +1,8 @@
 /* vacuumms/parameters.hh */
 
+#include <boost/python.hpp>
+#include <string>
+
 class Parameters
 {
     private:
@@ -10,6 +13,10 @@ class Parameters
     public:
 
         Parameters(int argc, char **argv);
+        Parameters(std::string);
+        Parameters();
+        Parameters(const boost::python::list&);
+        void setParameters(std::string);
 
 	/* if a parameter is received, return a true value, otherwise return NULL) */
 	int getIntParam(char *param_name, int *parameter);
