@@ -25,8 +25,14 @@ class Parameters
         Parameters(const boost::python::list&);
 #endif
 
+        int addParameter(const char* parameter);
+
 	/* if a parameter is received, return a true value, otherwise return NULL) */
+#ifdef BUILD_BOOST_PYTHON_BINDINGS 
+	int getIntParam(boost::python::object obj);
+#else
 	int getIntParam(char *param_name, int *parameter);
+#endif
 	int getLongParam(char *param_name, long *parameter);
 	int getFloatParam(char *param_name, float *parameter);
 	int getDoubleParam(char *param_name, double *parameter);

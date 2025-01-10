@@ -48,6 +48,13 @@ std::cout << arg << std::endl;
 
 #endif
 
+int Parameters::addParameter(const char* parameter)
+{
+    command_line_argv.push_back(parameter);
+    command_line_argc = command_line_argv.size();
+    return command_line_argc;
+}
+
 
 //int Parameters::getStringParam(char *param_name, char **parameter)
 int Parameters::getStringParam(char *param_name, const char **parameter)
@@ -72,11 +79,26 @@ int Parameters::getStringParam(char *param_name, const char **parameter)
     return retval;
 }
 
-int Parameters::getIntParam(char *param_name, int *parameter)
+// need to extract it
+//        char *arg = boost::python::extract<char*>(_argv[i]);
+
+#ifdef BUILD_BOOST_PYTHON_BINDINGS
+int Parameters::getIntParam(boost::python::object obj)
+#else
+int Parameters::getIntParam(char *param_name, int *p_parameter)
+#endif
 {
     int i=0;
     int retval = 0;
 
+#ifdef BUILD_BOOST_PYTHON_BINDINGS
+    char *param_name = boost::python::extract<char*>(obj);
+    int parameter, *p_parameter;
+    p_parameter = &parameter;
+    *p_parameter = 0;
+#endif
+
+std::cout << "Searching for parameter: " << param_name << std::endl;
     while (++i<command_line_argc)
 //    if (strcmp(command_line_argv[i], param_name) == 0) 
     if (command_line_argv[i] == param_name)
@@ -88,10 +110,14 @@ int Parameters::getIntParam(char *param_name, int *parameter)
 	}
 
 	//FTW*parameter = (strtol(command_line_argv[++i], NULL, 10));
-	*parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
+#ifdef BUILD_BOOST_PYTHON_BINDINGS
+    return parameter;
+#else
     return retval;
+#endif
 }
 
 int Parameters::getLongParam(char *param_name, long *parameter)

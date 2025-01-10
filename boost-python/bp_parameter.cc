@@ -21,6 +21,7 @@ BOOST_PYTHON_MODULE(vacuumms)
 //        .def(bp::init<std::string>())
 //        .def("Parameters", init<std::string>())
 //        .def("setParameters", &Parameters::setParameters)
+        .def("addParameter", &Parameters::addParameter)
         .def("getIntParam", &Parameters::getIntParam) ;
 
 }
