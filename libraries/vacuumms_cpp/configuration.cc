@@ -21,7 +21,7 @@ Configuration::Configuration()
 }
 
 
-Configuration::Configuration(char *filename)
+Configuration::Configuration(const char *filename)
 {
     FILE* infile = fopen(filename, "r");
     vacuumms_float x, y, z, sigma, epsilon;

@@ -29,7 +29,7 @@ class Configuration
     
     public:
 
-        Configuration(char *filename);
+        Configuration(const char *filename);
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
         Configuration();
         void dumpContents();

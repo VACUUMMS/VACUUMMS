@@ -48,7 +48,7 @@ CavityConfiguration::CavityConfiguration()
     records = std::vector<Cavity>();
 }
 
-CavityConfiguration::CavityConfiguration(char *filename)
+CavityConfiguration::CavityConfiguration(const char *filename)
 {
     FILE* instream=fopen(filename, "r");
     records = std::vector<Cavity>();
