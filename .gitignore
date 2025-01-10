@@ -7,4 +7,4 @@ build
 cmake
 package.py
 __pycache__
-
+env.sh

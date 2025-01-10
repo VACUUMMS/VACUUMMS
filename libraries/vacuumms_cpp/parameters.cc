@@ -2,75 +2,62 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <boost/python.hpp>
-
 #include <string>
 #include <iostream>
+#include <vector>
+
+#ifdef BUILD_BOOST_PYTHON_BINDINGS
+#include <boost/python.hpp>
+#endif
 
 #include <vacuumms/parameters.hh>
 
-namespace bp = boost::python;
+//remember:        std::vector<std::string> command_line_argv;
+
 
 Parameters::Parameters(int argc, char **argv)
 {
     command_line_argc = argc;
-    command_line_argv = argv;
+    for (int i=0; i<argc; i++) command_line_argv.push_back(argv[i]);
 }
 
 Parameters::Parameters()
 {
-
     command_line_argc = 0;
-    command_line_argv = NULL;
-
-    std::cout << "Constructing default\n";
+//    command_line_argv = std::vector<std::string> ();
 }
+
+#ifdef BUILD_BOOST_PYTHON_BINDINGS
 
 Parameters::Parameters(const boost::python::list& _argv)
 {
+    command_line_argc = boost::python::len(_argv);
 
-//    command_line_argc = 0;
-//    command_line_argv = NULL;
+//    char **argv = (char**)malloc(sizeof(char*) * _argc);
 
-    int _argc = bp::len(_argv);
-
-    char **argv = (char**)malloc(sizeof(char*) * _argc);
-
-    for (int i=0; i<_argc; i++)
+    for (int i=0; i<command_line_argc; i++)
     {
-        char *arg = bp::extract<char*>(_argv[i]);
-        argv[i] = arg;
-        std::cout << argv[i] << std::endl;
+        char *arg = boost::python::extract<char*>(_argv[i]);
+        command_line_argv.push_back(arg);
+std::cout << arg << std::endl;
+
     }
 
-    free(argv);
+    for (int i=0; i<command_line_argc; i++) printf("%03d\t%s\n", i, command_line_argv[i].c_str());
 }
 
-Parameters::Parameters(std::string arg_list)
-{
+#endif
 
-    command_line_argc = 0;
-    command_line_argv = NULL;
 
-    std::cout << "Constructing from arglist <" << arg_list << ">\n";
-}
-
-void Parameters::setParameters(std::string arg_list)
-{
-
-    command_line_argc = 0;
-    command_line_argv = NULL;
-
-    std::cout << "setting arglist <" << arg_list << ">\n";
-}
-
-int Parameters::getStringParam(char *param_name, char **parameter)
+//int Parameters::getStringParam(char *param_name, char **parameter)
+int Parameters::getStringParam(char *param_name, const char **parameter)
 {
     int i=0;
     int retval = 0;
  
     while (++i<command_line_argc)
-    if (strcmp(command_line_argv[i], param_name) == 0) 
+//    if (strcmp(command_line_argv[i], param_name) == 0) 
+    if (command_line_argv[i] == param_name) 
     {
 	if (i+1>=command_line_argc) 
 	{
@@ -78,7 +65,8 @@ int Parameters::getStringParam(char *param_name, char **parameter)
 	    exit(1);
 	}
 	// parameter = &command_line_argv[++i];
-	*parameter = command_line_argv[++i];
+	//FTW*parameter = command_line_argv[++i];
+	*parameter = command_line_argv[++i].c_str();
 	retval = 1;
     }
     return retval;
@@ -90,7 +78,8 @@ int Parameters::getIntParam(char *param_name, int *parameter)
     int retval = 0;
 
     while (++i<command_line_argc)
-    if (strcmp(command_line_argv[i], param_name) == 0) 
+//    if (strcmp(command_line_argv[i], param_name) == 0) 
+    if (command_line_argv[i] == param_name)
     {
 	if (i+1>=command_line_argc) 
 	{
@@ -98,7 +87,8 @@ int Parameters::getIntParam(char *param_name, int *parameter)
 	    exit(1);
 	}
 
-	*parameter = (strtol(command_line_argv[++i], NULL, 10));
+	//FTW*parameter = (strtol(command_line_argv[++i], NULL, 10));
+	*parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
     return retval;
@@ -110,7 +100,8 @@ int Parameters::getLongParam(char *param_name, long *parameter)
     int retval = 0;
  
     while (++i<command_line_argc)
-    if (strcmp(command_line_argv[i], param_name) == 0) 
+    //if (strcmp(command_line_argv[i], param_name) == 0) 
+    if (command_line_argv[i] == param_name) 
     {
 	if (i+1>=command_line_argc) 
 	{
@@ -118,7 +109,7 @@ int Parameters::getLongParam(char *param_name, long *parameter)
 	    exit(1);
 	}
 
-	*parameter = (strtol(command_line_argv[++i], NULL, 10));
+	*parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
     return retval;
@@ -130,7 +121,8 @@ int Parameters::getFloatParam(char *param_name, float *parameter)
     int retval = 0;
  
     while (++i<command_line_argc)
-    if (strcmp(command_line_argv[i], param_name) == 0) 
+    //FTWif (strcmp(command_line_argv[i], param_name) == 0) 
+    if (command_line_argv[i] == param_name)
     {
 	if (i+1>=command_line_argc) 
 	{
@@ -138,7 +130,7 @@ int Parameters::getFloatParam(char *param_name, float *parameter)
 	    exit(1);
 	}
 
-	*parameter = (float)strtod(command_line_argv[++i], NULL);
+	*parameter = (float)strtod(command_line_argv[++i].c_str(), NULL);
 	retval = 1;
     }
     return retval;
@@ -150,7 +142,7 @@ int Parameters::getDoubleParam(char *param_name, double *parameter)
     int retval = 0;
  
     while (++i<command_line_argc)
-    if (strcmp(command_line_argv[i], param_name) == 0) 
+    if (command_line_argv[i] == param_name) 
     {
 	if (i+1>=command_line_argc) 
 	{
@@ -158,7 +150,7 @@ int Parameters::getDoubleParam(char *param_name, double *parameter)
 	    exit(1);
 	}
 
-	*parameter = (strtod(command_line_argv[++i], NULL));
+	*parameter = (strtod(command_line_argv[++i].c_str(), NULL));
 	retval = 1;
     }
     return retval;
@@ -170,7 +162,7 @@ int Parameters::getVectorParam(char *param_name, double *parameter1,  double *pa
     int retval = 0;
  
     while (++i<command_line_argc)
-    if (strcmp(command_line_argv[i], param_name) == 0) 
+    if (command_line_argv[i] == param_name) 
     {
 	if (i+3>=command_line_argc) 
 	{
@@ -178,21 +170,21 @@ int Parameters::getVectorParam(char *param_name, double *parameter1,  double *pa
 	    exit(1);
 	}
 
-	*parameter1 = (strtod(command_line_argv[++i], NULL));
-	*parameter2 = (strtod(command_line_argv[++i], NULL));
-	*parameter3 = (strtod(command_line_argv[++i], NULL));
+	*parameter1 = (strtod(command_line_argv[++i].c_str(), NULL));
+	*parameter2 = (strtod(command_line_argv[++i].c_str(), NULL));
+	*parameter3 = (strtod(command_line_argv[++i].c_str(), NULL));
 	retval = 1;
     }
     return retval;
 }
 
-int Parameters::getVectorStringParam(char *param_name, char **parameter1,  char **parameter2, char **parameter3)
+int Parameters::getVectorStringParam(char *param_name, const char **parameter1,  const char **parameter2, const char **parameter3)
 {
     int i=0;
     int retval = 0;
  
     while (++i<command_line_argc)
-	if (strcmp(command_line_argv[i], param_name) == 0) 
+	if (command_line_argv[i] == param_name)
     {
 	if (i+3>=command_line_argc) 
 	{
@@ -200,9 +192,9 @@ int Parameters::getVectorStringParam(char *param_name, char **parameter1,  char 
 	    exit(1);
 	}
 
-	*parameter1 = command_line_argv[++i];
-	*parameter2 = command_line_argv[++i];
-	*parameter3 = command_line_argv[++i];
+	*parameter1 = command_line_argv[++i].c_str();
+	*parameter2 = command_line_argv[++i].c_str();
+	*parameter3 = command_line_argv[++i].c_str();
 	retval = 1;
     }
     return retval;
@@ -212,7 +204,8 @@ int Parameters::getFlagParam(char *param_name)
 {
     int i=0;
 
-    while (++i<command_line_argc) if (strcmp(command_line_argv[i], param_name) == 0) return 1;
+    while (++i<command_line_argc) if (command_line_argv[i] == param_name) return 1;
 
     return 0;
 }
+

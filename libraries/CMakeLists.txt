@@ -38,7 +38,11 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/configuration.cc
 )
 
+if (BUILD_BOOST_PYTHON_BINDINGS)
+target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
+else()
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
+endif()
 
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}

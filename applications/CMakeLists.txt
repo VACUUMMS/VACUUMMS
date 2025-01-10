@@ -61,7 +61,11 @@ target_link_libraries(vddx PUBLIC vacuumms_rt m pthread)
 
 add_executable(vuniq "${PROJECT_SOURCE_DIR}/applications/ddx/vuniq.cc") 
 target_include_directories(vuniq PUBLIC "${PROJECT_SOURCE_DIR}/include")
+if (BUILD_BOOST_PYTHON_BINDINGS)
+target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp boost_python312 python3 )
+else()
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp)
+endif()
 
 add_executable(edges2var "${PROJECT_SOURCE_DIR}/applications/ddx/edges2var.cc")
 target_include_directories(edges2var PUBLIC "${PROJECT_SOURCE_DIR}/include")

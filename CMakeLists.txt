@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.12)
 
+option(BUILD_SHARED_LIBS "shared libs " ON)
+option(BUILD_STATIC_LIBS "static libs " OFF)
+option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
+option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
+option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
+option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
+option(BUILD_BOOST_PYTHON_BINDINGS "Build the boost::python binding library (vacuumms.so)" ON)
+option(ENABLE_TESTING "run the unit tests when building" ON)
+
 # set the project name
 if (BUILD_CUDA_COMPONENTS) 
     project(VACUUMMS VERSION 1.2.1 LANGUAGES C CXX CUDA)
@@ -7,22 +16,13 @@ else()
     project(VACUUMMS VERSION 1.2.1 LANGUAGES C CXX)
 endif()
 
-option(BUILD_SHARED_LIBS "shared libs " ON)
-option(BUILD_STATIC_LIBS "static libs " OFF)
-option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
-option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
-option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
-option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
-option(BUILD_PYTHON_BINDINGS "Build the boost::python binding library (vacuumms.so)" ON)
-#option(BUILD_PYTHON_BINDINGS "Build the boost::python binding library (vacuumms.so)" OFF)
-option(ENABLE_TESTING "run the unit tests when building" ON)
-
-
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
 message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
 message("got value for BUILD_VORONOI_UTILS=${BUILD_VORONOI_UTILS}")
 message("got value for ENABLE_TESTING=${ENABLE_TESTING}")
+message("got value for BUILD_BOOST_PYTHON_BINDINGS =${BUILD_BOOST_PYTHON_BINDINGS}")
+
 
 # Find X11. Usually installed to system area, but when it's not, need to find it.
 find_package(X11 REQUIRED)
@@ -75,7 +75,8 @@ if (BUILD_TIFF_UTILS)
     set_target_properties(tiff PROPERTIES IMPORTED_LOCATION "${TIFF_LIBRARIES}")
 endif()
 
-if (BUILD_PYTHON_BINDINGS)
+if (BUILD_BOOST_PYTHON_BINDINGS)
+    add_definitions(-DBUILD_BOOST_PYTHON_BINDINGS)
     find_package(BOOST)
     find_package(Python COMPONENTS Interpreter Development)
     add_subdirectory(boost-python)
