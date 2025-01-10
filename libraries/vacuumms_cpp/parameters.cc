@@ -56,14 +56,12 @@ int Parameters::addParameter(const char* parameter)
 }
 
 
-//int Parameters::getStringParam(char *param_name, char **parameter)
 int Parameters::getStringParam(char *param_name, const char **parameter)
 {
     int i=0;
     int retval = 0;
  
     while (++i<command_line_argc)
-//    if (strcmp(command_line_argv[i], param_name) == 0) 
     if (command_line_argv[i] == param_name) 
     {
 	if (i+1>=command_line_argc) 
@@ -79,28 +77,18 @@ int Parameters::getStringParam(char *param_name, const char **parameter)
     return retval;
 }
 
-// need to extract it
-//        char *arg = boost::python::extract<char*>(_argv[i]);
-
 #ifdef BUILD_BOOST_PYTHON_BINDINGS
 int Parameters::getIntParam(boost::python::object obj)
-#else
-int Parameters::getIntParam(char *param_name, int *p_parameter)
-#endif
 {
     int i=0;
     int retval = 0;
 
-#ifdef BUILD_BOOST_PYTHON_BINDINGS
     char *param_name = boost::python::extract<char*>(obj);
     int parameter, *p_parameter;
     p_parameter = &parameter;
     *p_parameter = 0;
-#endif
 
-std::cout << "Searching for parameter: " << param_name << std::endl;
     while (++i<command_line_argc)
-//    if (strcmp(command_line_argv[i], param_name) == 0) 
     if (command_line_argv[i] == param_name)
     {
 	if (i+1>=command_line_argc) 
@@ -109,15 +97,31 @@ std::cout << "Searching for parameter: " << param_name << std::endl;
 	    exit(1);
 	}
 
-	//FTW*parameter = (strtol(command_line_argv[++i], NULL, 10));
 	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
-#ifdef BUILD_BOOST_PYTHON_BINDINGS
     return parameter;
-#else
-    return retval;
+}
 #endif
+
+int Parameters::getIntParam(char *param_name, int *p_parameter)
+{
+    int i=0;
+    int retval = 0;
+
+    while (++i<command_line_argc)
+    if (command_line_argv[i] == param_name)
+    {
+	if (i+1>=command_line_argc) 
+	{
+	    printf("no value specified for %s\n", param_name);
+	    exit(1);
+	}
+
+	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	retval = 1;
+    }
+    return retval;
 }
 
 int Parameters::getLongParam(char *param_name, long *parameter)

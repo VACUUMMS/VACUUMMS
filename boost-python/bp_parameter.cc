@@ -16,13 +16,18 @@ BOOST_PYTHON_MODULE(vacuumms)
 
 //    class_<Parameters>("Parameters", init<std::string>())
 
+//int (Parameters::*p_getIntParam)(char*) = &Parameters::getIntParam;
+int (Parameters::*p_getIntParam)(boost::python::object obj) = &Parameters::getIntParam;
+      
+
+
     bp::class_<Parameters>("Parameters")
         .def(bp::init<bp::list>())
 //        .def(bp::init<std::string>())
 //        .def("Parameters", init<std::string>())
 //        .def("setParameters", &Parameters::setParameters)
         .def("addParameter", &Parameters::addParameter)
-        .def("getIntParam", &Parameters::getIntParam) ;
+        .def("getIntParam", p_getIntParam);
 
 }
 
