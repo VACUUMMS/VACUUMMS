@@ -59,3 +59,20 @@ class CavityConfiguration
 
 }; // end class CavityConfiguration
 
+
+class CavitySizeDistribution
+{
+    public:
+
+        CavitySizeDistribution(CavityConfiguration cc);
+
+        int n_bins = 100;
+        double resolution = .01;
+        const char *input_file_name;
+        int histogram[1000];
+
+        void print();
+
+}; // end class CavitySizeDistribution
+
+

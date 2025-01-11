@@ -6,7 +6,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 #find_package(Python COMPONENTS Interpreter Development)
 
 add_library(vacuumms SHARED
-      ${PROJECT_SOURCE_DIR}/boost-python/bp_parameter.cc
+      ${PROJECT_SOURCE_DIR}/boost-python/bp_def.cc
 )
 
 set_target_properties(vacuumms PROPERTIES

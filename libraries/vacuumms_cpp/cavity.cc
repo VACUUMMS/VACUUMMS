@@ -175,3 +175,38 @@ int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, va
     return 0;
 }
 
+/*
+CavitySizeDistribution::CavitySizeDistribution(Parameters p)
+{
+    getStringParam("input_file_name", input_file_name);
+    p.getIntParam((char*)"n_bins", &n_bins);
+    p.getDoubleParam((char*)"resolution", &resolution);
+    
+}
+
+//IN
+int n_bins = 100;
+double resolution = .01;
+const char *input_file_name;
+//OUT
+int histogram[1000];
+*/
+
+
+
+
+CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc)
+{
+    for (int i=0; i<cc.getSize(); i++)
+    {
+        int which_bin = (int)(cc.recordAt(i).d / resolution);
+        histogram[which_bin]++;
+    }
+
+    for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
+}
+
+void CavitySizeDistribution::print()
+{
+    for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
+}
