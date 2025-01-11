@@ -23,19 +23,17 @@ class Parameters
         // Note that these return the value instead of setting pointed value.
 
 #ifdef BUILD_BOOST_PYTHON_BINDINGS 
-        Parameters(const boost::python::list&);
-	int getIntParam(boost::python::object obj);
-	long getLongParam(boost::python::object obj);
-	float getFloatParam(char *param_name);
-	double getDoubleParam(char *param_name);
-        const char* getStringParam(char *param_name);
-        //std::vector<double> getVectorParam(char* param_name);
-        boost::python::list getVectorParam(char* param_name);
-        //std::vector<std::string> getVectorStringParam(char* param_name);
-        boost::python::list getVectorStringParam(char* param_name);
-#endif
 
-        int addParameter(const char* parameter);
+        Parameters(const boost::python::list&);
+        int getIntParam(char* param_name);
+        long getLongParam(char* param_name);
+	float getFloatParam(char* param_name);
+	double getDoubleParam(char* param_name);
+        const char* getStringParam(char* param_name);
+        boost::python::list getVectorParam(char* param_name);
+        boost::python::list getVectorStringParam(char* param_name);
+
+#endif
 
 	/* if a parameter is received, return a true value, otherwise return NULL) */
 	int getIntParam(char *param_name, int *parameter);
@@ -52,6 +50,7 @@ class Parameters
                                  const char **parameter2, 
                                  const char **parameter3);
 
+        int addParameter(const char* parameter);
         int getFlagParam(char *param_name);
 
 };
