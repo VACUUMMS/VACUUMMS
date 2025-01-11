@@ -46,7 +46,23 @@ std::cout << arg << std::endl;
     for (int i=0; i<command_line_argc; i++) printf("%03d\t%s\n", i, command_line_argv[i].c_str());
 }
 
+const char* Parameters::getStringParam(char *param_name)
+{
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name) 
+    {
+	if (i+1>=command_line_argc) 
+	{
+	    printf("reached EOL with no value specified for %s\n", param_name);
+	    exit(1);
+	}
+	return command_line_argv[++i].c_str();
+    }
+    return NULL;
+}
+
 #endif
+
 
 int Parameters::addParameter(const char* parameter)
 {
@@ -102,7 +118,117 @@ int Parameters::getIntParam(boost::python::object obj)
     }
     return parameter;
 }
+
+long Parameters::getLongParam(boost::python::object obj)
+{
+    int i=0;
+    int retval = 0;
+ 
+    char *param_name = boost::python::extract<char*>(obj);
+
+    while (++i<command_line_argc)
+    if (command_line_argv[i] == param_name) 
+    {
+	if (i+1>=command_line_argc) 
+	{
+	    printf("no value specified for %s\n", param_name);
+	    exit(1);
+	}
+
+	retval = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+    }
+    return retval;
+}
+
+float Parameters::getFloatParam(char *param_name)
+{
+    int i=0;
+    float retval = -0.0f;
+ 
+    while (++i<command_line_argc)
+    if (command_line_argv[i] == param_name)
+    {
+	if (i+1>=command_line_argc) 
+	{
+	    printf("no value specified for %s\n", param_name);
+	    exit(1);
+	}
+
+	retval = (float)strtod(command_line_argv[++i].c_str(), NULL);
+    }
+    return retval;
+}
+
+double Parameters::getDoubleParam(char *param_name)
+{
+    for(int i=0; i<command_line_argc; i++)
+        if (command_line_argv[i] == param_name)
+        {
+            if (i+1>=command_line_argc) 
+            {
+	        printf("no value specified for %s\n", param_name);
+                exit(1);
+            }
+            return strtod(command_line_argv[++i].c_str(), NULL);
+        }
+    return -0.0f;
+}
+
+//std::vector<double> Parameters::getVectorParam(char *param_name)
+boost::python::list Parameters::getVectorParam(char *param_name)
+{
+    //std::vector<double> retval;
+    boost::python::list retval;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name) 
+    {
+	if (i+3>=command_line_argc) 
+	{
+	    printf("not enough values specified for %s\n", param_name);
+	    exit(1);
+	}
+
+        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+//        retval.push_back(strtod(command_line_argv[++i].c_str(), NULL));
+//        retval.push_back(strtod(command_line_argv[++i].c_str(), NULL));
+//        retval.push_back(strtod(command_line_argv[++i].c_str(), NULL));
+//	*parameter2 = (strtod(command_line_argv[++i].c_str(), NULL));
+//	*parameter3 = (strtod(command_line_argv[++i].c_str(), NULL));
+    }
+    return retval;
+}
+
+
+//std::vector<std::string> Parameters::getVectorStringParam(char *param_name)
+boost::python::list Parameters::getVectorStringParam(char *param_name)
+{
+    //std::vector<std::string> retval;
+    boost::python::list retval;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name) 
+    {
+	if (i+3>=command_line_argc) 
+	{
+	    printf("not enough values specified for %s\n", param_name);
+	    exit(1);
+	}
+
+        retval.append(command_line_argv[++i].c_str());
+        retval.append(command_line_argv[++i].c_str());
+        retval.append(command_line_argv[++i].c_str());
+        //retval.push_back(command_line_argv[++i]);
+        //retval.push_back(command_line_argv[++i]);
+        //retval.push_back(command_line_argv[++i]);
+    }
+    return retval;
+}
+
 #endif
+
 
 int Parameters::getIntParam(char *param_name, int *p_parameter)
 {
@@ -144,6 +270,7 @@ int Parameters::getLongParam(char *param_name, long *parameter)
     }
     return retval;
 }
+
 
 int Parameters::getFloatParam(char *param_name, float *parameter)
 {
@@ -232,9 +359,10 @@ int Parameters::getVectorStringParam(char *param_name, const char **parameter1, 
 
 int Parameters::getFlagParam(char *param_name)
 {
-    int i=0;
+    //int i=0;
 
-    while (++i<command_line_argc) if (command_line_argv[i] == param_name) return 1;
+    //while (i++<command_line_argc) if (command_line_argv[i] == param_name) return 1;
+    for (int i=0; i<command_line_argc; i++) if (command_line_argv[i] == param_name) return 1;
 
     return 0;
 }
