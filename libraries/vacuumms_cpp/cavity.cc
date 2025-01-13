@@ -210,3 +210,4 @@ void CavitySizeDistribution::print()
 {
     for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
 }
+

@@ -7,11 +7,14 @@
 #include <vacuumms/parameters.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
+#include <vacuumms/operations.hh>
 
 namespace bp = boost::python;
 
 BOOST_PYTHON_MODULE(vacuumms) 
 {
+    // Parameters type
+
     // Thin wrappers for overleaded functions
      
     int (Parameters::*p_getIntParam)(char*) = &Parameters::getIntParam;
@@ -35,16 +38,36 @@ BOOST_PYTHON_MODULE(vacuumms)
         // These don't require the wrapper since they aren't overloaded
 	// and have same function signature with or without boost
         .def("addParameter", &Parameters::addParameter)
-        .def("getFlagParam", &Parameters::getFlagParam);
+        .def("getFlagParam", &Parameters::getFlagParam)
+    ;
+
+
+    // Configuration type
 
     bp::class_<Configuration>("Configuration", bp::init<char*>())
     ;
 
+
+    // CavityConfiguration type
+
     bp::class_<CavityConfiguration>("CavityConfiguration", bp::init<char*>())
     ;
+
+
+    // CavitySizeDistribution type
 
     bp::class_<CavitySizeDistribution>("CavitySizeDistribution", bp::init<CavityConfiguration>())
         .def("print", &CavitySizeDistribution::print)
     ;
+
+
+    // Operations
+
+    // Interface to DDX operation subclass
+
+    bp::class_<DDX>("ddx", bp::init<Configuration, Parameters>())
+        .def("getOutput", &DDX::getOutput)
+    ;
+
 }
 
