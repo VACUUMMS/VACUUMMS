@@ -117,3 +117,8 @@ int Configuration::getSize()
     return records.size();
 }
 
+int Configuration::pushBack(ConfigurationRecord record)
+{
+    records.push_back(record);
+    return records.size();
+}

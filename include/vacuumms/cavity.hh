@@ -1,4 +1,5 @@
-/* vacuumms/cavity.hh */
+// vacuumms/cavity.hh 
+#pragma once
 
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>

@@ -1,5 +1,13 @@
 #include <vacuumms/operations.hh>
+#include <vacuumms/configuration.hh>
+#include <vacuumms/cavity.hh>
+
 #include <vacuumms/limits.h>
+#include <vacuumms/rng.h>
+
+int Operation::execute()
+{
+}
 
 DDX::DDX(Configuration c, Parameters p) : 
     c{c}, p{p} 
@@ -16,24 +24,24 @@ int DDX::execute()
 
   double sq_distance_from_initial_pt;
 
-  verbose = p.getFlagParam("-verbose");
-  p.getIntParam("-seed", &seed);
-  if (p.getFlagParam("-randomize")) randomize();
+  verbose = p.getFlagParam((char*)"-verbose");
+  p.getIntParam((char*)"-seed", &seed);
+  if (p.getFlagParam((char*)"-randomize")) randomize();
   else initializeRandomNumberGeneratorTo(seed);
 
-  p.getVectorParam("-box", &box_x, &box_y, &box_z);
-  p.getDoubleParam("-characteristic_length", &characteristic_length);
-  p.getDoubleParam("-characteristic_energy", &characteristic_energy);
-  p.getDoubleParam("-precision_parameter", &precision_parameter);
-  p.getDoubleParam("-verlet_cutoff", &verlet_cutoff);
-  p.getIntParam("-n", &number_of_samples);
-  p.getIntParam("-n_steps", &n_steps);
-  volume_sampling = p.getFlagParam("-volume_sampling");
-  include_center_energy = p.getFlagParam("-include_center_energy");
-  show_steps = p.getFlagParam("-show_steps");
-  p.getDoubleParam("-min_diameter", &min_diameter);
+  p.getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
+  p.getDoubleParam((char*)"-characteristic_length", &characteristic_length);
+  p.getDoubleParam((char*)"-characteristic_energy", &characteristic_energy);
+  p.getDoubleParam((char*)"-precision_parameter", &precision_parameter);
+  p.getDoubleParam((char*)"-verlet_cutoff", &verlet_cutoff);
+  p.getIntParam((char*)"-n", &number_of_samples);
+  p.getIntParam((char*)"-n_steps", &n_steps);
+  volume_sampling = p.getFlagParam((char*)"-volume_sampling");
+  include_center_energy = p.getFlagParam((char*)"-include_center_energy");
+  show_steps = p.getFlagParam((char*)"-show_steps");
+  p.getDoubleParam((char*)"-min_diameter", &min_diameter);
 
-  if (p.getFlagParam("-usage"))
+  if (p.getFlagParam((char*)"-usage"))
   {
     printf("\nusage:\t-box [ 6.0 6.0 6.0 ]\n");
     printf("\t\t-seed [ 1 ]\n");
@@ -52,7 +60,18 @@ int DDX::execute()
     exit(0);
   }
 
-  loadConfiguration();
+// was  loadConfiguration(); 
+// now just copy over the records and run the old algorithm
+  for (int i=0; i<c.getSize(); i++) 
+  {
+    ConfigurationRecord r = c.recordAt(i);
+    x[i] = r.x;
+    y[i] = r.y;
+    z[i] = r.z;
+    sigma[i] = r.sigma;
+    epsilon[i] = r.epsilon;
+  }
+
   
   while (number_of_samples>0)
   {
@@ -78,7 +97,7 @@ int DDX::execute()
         while (test_z < 0) test_z += box_z;
 
         printf("%lf\t%lf\t%lf\t%lf", test_x, test_y, test_z, diameter);
-        output.push_back(CavityRecord(test_x, test_y, test_z, diameter));
+        output.pushBack(Cavity(test_x, test_y, test_z, diameter));
         if (include_center_energy) printf("\t%lf", calculateEnergy(diameter));
         if (show_steps) printf("\t%d", attempts);
         printf("\n");
@@ -312,5 +331,3 @@ void DDX::expandTestParticle()
     if (step_size*step_size < .00000001) break;
   }
 } // end DDX::expandTestParticle()
-
-}; // end class DDX

@@ -1,4 +1,9 @@
 // operations.hh
+#pragma once
+
+#include <vacuumms/configuration.hh>
+#include <vacuumms/cavity.hh>
+#include <vacuumms/parameters.hh>
 
 #include <vacuumms/limits.h>
 #define MAX_CLOSE (VACUUMMS_MAX_NUMBER_OF_MOLECULES)
@@ -21,7 +26,6 @@ class DDX : public Operation
         int execute();
 
     private:
-
 
         double calculateRepulsion();
         double calculateEnergy(double test_diameter);

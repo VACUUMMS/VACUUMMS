@@ -1,4 +1,5 @@
 /* vacuumms/parameters.hh */
+#pragma once
 
 #ifdef BUILD_BOOST_PYTHON_BINDINGS 
 #include <boost/python.hpp>

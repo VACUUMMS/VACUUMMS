@@ -1,3 +1,6 @@
+// configuration.hh 
+#pragma once
+
 #include <vector>
 #include <stdio.h>
 #include <vacuumms/types.h>
@@ -40,6 +43,7 @@ class Configuration
         ConfigurationRecord recordAt(int i);
         void deleteRecordAt(int i);
         int getSize();
+        int pushBack(ConfigurationRecord);
 };
 
 
