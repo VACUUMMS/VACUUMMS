@@ -1,5 +1,6 @@
 # CMakeLists.txt for boost::python connector lib
 
+# Set empty prefix, because we want the target vacuumms.so not libvacuumms.so
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 #find_package(Boost REQUIRED COMPONENTS system filesystem)

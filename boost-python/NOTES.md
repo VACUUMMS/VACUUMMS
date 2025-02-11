@@ -2,7 +2,7 @@
 
 <H2> How it works </H2>
 
-In boost-python directory, there is a file bd_def.cc which defines the interface from the python classes to the C++ classes. This interface is compiled to build the vacuumms.so target, which in turn depend on VACUUMMS runtime and C++ libraries.
+In the boost-python directory, there is a file bp_def.cc which defines the interface from the python classes to the C++ classes. This interface is compiled to build the vacuumms.so target, which in turn depend on the VACUUMMS runtime and C++ libraries.
 
 To use this interface, the vacuumms package must be imported into python. This ostensibly means vacuumms.so being in the PYTHONPATH or potentially in the current working directory. 
 
