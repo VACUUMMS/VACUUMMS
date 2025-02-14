@@ -63,6 +63,8 @@ add_executable(vuniq "${PROJECT_SOURCE_DIR}/applications/ddx/vuniq.cc")
 target_include_directories(vuniq PUBLIC "${PROJECT_SOURCE_DIR}/include")
 if (BUILD_BOOST_PYTHON_BINDINGS)
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp boost_python312 python3 )
+elseif (BUILD_PYBIND_BINDINGS)
+target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp python3 )
 else()
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp)
 endif()
@@ -89,7 +91,8 @@ add_executable(csd
 #    "${PROJECT_SOURCE_DIR}/applications/csd/command_line_parser.c" 
 )
 target_include_directories(csd PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread)
+#target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread)
+target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread PRIVATE Python3::Python)
 
 add_executable(rog 
     "${PROJECT_SOURCE_DIR}/applications/rog/rog.c" 

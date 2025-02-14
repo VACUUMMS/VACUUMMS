@@ -41,6 +41,9 @@ add_library(vacuumms_cpp SHARED
 
 if (BUILD_BOOST_PYTHON_BINDINGS)
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
+elseif (BUILD_PYBIND_BINDINGS)
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt python3 m Python3::Python)
+target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
 else()
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
 endif()

@@ -174,6 +174,57 @@ boost::python::list Parameters::getVectorStringParam(char *param_name)
 #endif
 
 
+#ifdef BUILD_PYBIND_BINDINGS
+
+int Parameters::getIntParam(char *param_name)
+{
+    int retval = 0;
+
+    int parameter, *p_parameter;
+    p_parameter = &parameter;
+    *p_parameter = 0;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name)
+    {
+	if (i+1>=command_line_argc) 
+	{
+	    printf("no value specified for %s\n", param_name);
+	    exit(1);
+	}
+
+	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	retval = 1;
+    }
+    return parameter;
+}
+
+//boost::python::list Parameters::getVectorParam(char *param_name)
+pybind11::list Parameters::getVectorParam(char *param_name)
+{
+    //std::vector<double> retval;
+    //boost::python::list retval;
+    pybind11::list retval;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name) 
+    {
+	if (i+3>=command_line_argc) 
+	{
+	    printf("not enough values specified for %s\n", param_name);
+	    exit(1);
+	}
+
+        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+    }
+    return retval;
+}
+
+#endif // BUILD_PYBIND_BINDINGS
+
+
 int Parameters::addParameter(const char* parameter)
 {
     command_line_argv.push_back(parameter);

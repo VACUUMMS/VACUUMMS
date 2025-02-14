@@ -5,6 +5,11 @@
 #include <boost/python.hpp>
 #endif
 
+#ifdef BUILD_PYBIND_BINDINGS 
+#include <pybind11/pybind11.h>
+#endif
+
+
 #include <string>
 #include <vector>
 
@@ -28,13 +33,30 @@ class Parameters
         Parameters(const boost::python::list&);
         int getIntParam(char* param_name);
         long getLongParam(char* param_name);
-	float getFloatParam(char* param_name);
-	double getDoubleParam(char* param_name);
+        float getFloatParam(char* param_name);
+        double getDoubleParam(char* param_name);
         const char* getStringParam(char* param_name);
         boost::python::list getVectorParam(char* param_name);
         boost::python::list getVectorStringParam(char* param_name);
 
 #endif
+
+
+#ifdef BUILD_PYBIND_BINDINGS 
+
+//        Parameters(const boost::python::list&);
+
+        int getIntParam(char* param_name);
+//        long getLongParam(char* param_name);
+//        float getFloatParam(char* param_name);
+//        double getDoubleParam(char* param_name);
+//        const char* getStringParam(char* param_name);
+
+        pybind11::list getVectorParam(char* param_name);
+//        boost::python::list getVectorStringParam(char* param_name);
+
+#endif
+
 
 	/* if a parameter is received, return a true value, otherwise return NULL) */
 	int getIntParam(char *param_name, int *parameter);

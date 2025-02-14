@@ -88,7 +88,10 @@ endif()
 if (BUILD_PYBIND_BINDINGS)
     add_definitions(-DBUILD_PYBIND_BINDINGS)
     find_package(pybind11 REQUIRED)
-    find_package(Python COMPONENTS Interpreter Development)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
+    include_directories(${pybind11_INCLUDE_DIRS})
+
     add_subdirectory(pybind)
 endif()
 

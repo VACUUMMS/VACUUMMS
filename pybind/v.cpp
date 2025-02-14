@@ -25,40 +25,24 @@ BOOST_PYTHON_MODULE(vacuumms)
 }
 */
 
-/*
-namespace lib
-{
-    int f();
-    int g(int a);
-}
-*/
-
-namespace lib
-{
-    int f()
-    {
-        std::cout << "f()\n";
-        return 0;
-    }
-
-int g(int a)
-    {
-        std::cout << "g(int)\n";
-        std::cout << a << "\n";
-        return 1;
-    }
-}
-
 namespace py = pybind11;
+
+//thin wrapper
+int (Parameters::*p_getIntParam)(char*) = &Parameters::getIntParam;
 
 PYBIND11_MODULE(vacuumms, m)
 {
-    m.def("f", &lib::f);
-    m.def("g", &lib::g);
-
+//    m.def("f", &lib::f);
+//    m.def("g", &lib::g);
 //    m.def("Parameters", &Parameters::Parameters);
 
 
-py::class_<Parameters>(m, "Parameters")
-    .def(py::init<>());
+    py::class_<Parameters>(m, "Parameters")
+        .def(py::init<>())
+        .def("addParameter", &Parameters::addParameter)
+        .def("getIntParam", p_getIntParam)
+//        .def("getVectorParam", &Parameters::getVectorParam)
+        .def("getVectorParam", [](Parameters& self, char* arg){self.getVectorParam(arg); })
+        ;
+
 }
