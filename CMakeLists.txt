@@ -6,7 +6,9 @@ option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
 option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
 option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
 option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
-option(BUILD_BOOST_PYTHON_BINDINGS "Build the boost::python binding library (vacuumms.so)" ON)
+option(BUILD_BOOST_PYTHON_BINDINGS "Build the boost::python binding library (vacuumms.so)" OFF)
+option(BUILD_PYBIND_BINDINGS "Build the pybind binding library (vacuumms.so)" ON)
+
 option(ENABLE_TESTING "run the unit tests when building" ON)
 
 # set the project name
@@ -22,6 +24,7 @@ message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
 message("got value for BUILD_VORONOI_UTILS=${BUILD_VORONOI_UTILS}")
 message("got value for ENABLE_TESTING=${ENABLE_TESTING}")
 message("got value for BUILD_BOOST_PYTHON_BINDINGS =${BUILD_BOOST_PYTHON_BINDINGS}")
+message("got value for BUILD_PYBIND_BINDINGS =${BUILD_PYBIND_BINDINGS}")
 
 
 # Find X11. Usually installed to system area, but when it's not, need to find it.
@@ -80,6 +83,13 @@ if (BUILD_BOOST_PYTHON_BINDINGS)
     find_package(BOOST)
     find_package(Python COMPONENTS Interpreter Development)
     add_subdirectory(boost-python)
+endif()
+
+if (BUILD_PYBIND_BINDINGS)
+    add_definitions(-DBUILD_PYBIND_BINDINGS)
+    find_package(pybind11 REQUIRED)
+    find_package(Python COMPONENTS Interpreter Development)
+    add_subdirectory(pybind)
 endif()
 
 # The standard VACUUMMS stuff

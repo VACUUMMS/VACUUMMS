@@ -5,8 +5,11 @@
 #include <vacuumms/limits.h>
 #include <vacuumms/rng.h>
 
+#include <math.h>
+
 int Operation::execute()
 {
+    return 0;
 }
 
 DDX::DDX(Configuration c, Parameters p) : 
