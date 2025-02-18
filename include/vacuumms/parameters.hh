@@ -6,14 +6,18 @@
 #endif
 
 #ifdef BUILD_PYBIND_BINDINGS 
-#include <pybind11/pybind11.h>
+    #include <pybind11/pybind11.h>
+    #ifdef PYBIND11_EXPORTS 
+        #define PYBIND11_EXPORT __attribute__((visibility("default")))
+    #endif
 #endif
 
 
 #include <string>
 #include <vector>
 
-class Parameters
+
+class PYBIND11_EXPORT Parameters
 {
     private:
 
@@ -56,6 +60,7 @@ class Parameters
 //        boost::python::list getVectorStringParam(char* param_name);
 
 #endif
+// FTW pybind11::list getVectorParam(char* param_name);
 
 
 	/* if a parameter is received, return a true value, otherwise return NULL) */

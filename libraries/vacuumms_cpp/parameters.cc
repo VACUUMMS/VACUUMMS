@@ -199,7 +199,6 @@ int Parameters::getIntParam(char *param_name)
     return parameter;
 }
 
-//boost::python::list Parameters::getVectorParam(char *param_name)
 pybind11::list Parameters::getVectorParam(char *param_name)
 {
     //std::vector<double> retval;

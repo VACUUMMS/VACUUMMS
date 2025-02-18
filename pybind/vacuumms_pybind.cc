@@ -4,9 +4,8 @@
 #include <vacuumms/operations.hh>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <iostream>
-
-//namespace bp = boost::python;
 
 /*
 BOOST_PYTHON_MODULE(vacuumms)
@@ -27,22 +26,28 @@ BOOST_PYTHON_MODULE(vacuumms)
 
 namespace py = pybind11;
 
-//thin wrapper
-int (Parameters::*p_getIntParam)(char*) = &Parameters::getIntParam;
+// thin wrappers, maybe more readable than the lambdas?
+//  int (Parameters::*p_getIntParam)(char*) = &Parameters::getIntParam;
+//  py::list (Parameters::*p_getVectorParam)(char*) = &Parameters::getVectorParam;
 
 PYBIND11_MODULE(vacuumms, m)
 {
-//    m.def("f", &lib::f);
-//    m.def("g", &lib::g);
-//    m.def("Parameters", &Parameters::Parameters);
-
-
+    // Declare a python wrapper and expose member functions
     py::class_<Parameters>(m, "Parameters")
         .def(py::init<>())
         .def("addParameter", &Parameters::addParameter)
-        .def("getIntParam", p_getIntParam)
-//        .def("getVectorParam", &Parameters::getVectorParam)
-        .def("getVectorParam", [](Parameters& self, char* arg){self.getVectorParam(arg); })
+        .def("getIntParam", [](Parameters& self, char* arg) -> int {return self.getIntParam(arg);} )
+        .def("getVectorParam", [](Parameters& self, char* arg)-> py::list {return self.getVectorParam(arg); })
         ;
 
+    // Same thing as above, implemented using thin wrappers.
+    // .def("getIntParam", p_getIntParam)
+    // .def("getVectorParam", &Parameters::getVectorParam)
+    // .def("getVectorParam", p_getVectorParam)
+
+    // This one won't work because getIntParam is overloaded
+    // .def("getIntParam", &Parameters::getIntParam)
+
+    // Can declare a module function outside of a class like this
+    // m.def("getlist", &getlist);
 }

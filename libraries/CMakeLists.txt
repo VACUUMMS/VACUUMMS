@@ -39,14 +39,30 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/operations.cc
 )
 
-if (BUILD_BOOST_PYTHON_BINDINGS)
-target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
-elseif (BUILD_PYBIND_BINDINGS)
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt python3 m Python3::Python)
-target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
-else()
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
+
+if (BUILD_PYBIND_BINDINGS)
+#    target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
+    target_link_libraries(vacuumms_cpp PUBLIC Python3::Python)
+
+    # The following is needed so that the pybind types are global symbols. 
+    # See the source files for e.g. parameters.cc. Without this, the generated symbols
+    # are local and only visible within libvacuumms_cpp.so library.
+    target_compile_definitions(vacuumms_cpp PRIVATE PYBIND11_EXPORTS)
 endif()
+
+if (BUILD_BOOST_PYTHON_BINDINGS)
+    target_link_libraries(vacuumms_cpp PUBLIC boost_python312 Python3:Python)
+endif()
+
+#if (BUILD_BOOST_PYTHON_BINDINGS)
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
+#elseif (BUILD_PYBIND_BINDINGS)
+##target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt python3 m Python3::Python)
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
+#else()
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
+#endif()
 
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}

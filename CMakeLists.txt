@@ -23,8 +23,8 @@ message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
 message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
 message("got value for BUILD_VORONOI_UTILS=${BUILD_VORONOI_UTILS}")
 message("got value for ENABLE_TESTING=${ENABLE_TESTING}")
-message("got value for BUILD_BOOST_PYTHON_BINDINGS =${BUILD_BOOST_PYTHON_BINDINGS}")
-message("got value for BUILD_PYBIND_BINDINGS =${BUILD_PYBIND_BINDINGS}")
+message("got value for BUILD_BOOST_PYTHON_BINDINGS=${BUILD_BOOST_PYTHON_BINDINGS}")
+message("got value for BUILD_PYBIND_BINDINGS=${BUILD_PYBIND_BINDINGS}")
 
 
 # Find X11. Usually installed to system area, but when it's not, need to find it.
@@ -89,9 +89,7 @@ if (BUILD_PYBIND_BINDINGS)
     add_definitions(-DBUILD_PYBIND_BINDINGS)
     find_package(pybind11 REQUIRED)
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-
     include_directories(${pybind11_INCLUDE_DIRS})
-
     add_subdirectory(pybind)
 endif()
 
