@@ -5,7 +5,16 @@
 #include <stdio.h>
 #include <vacuumms/types.h>
 
-class ConfigurationRecord
+
+#ifdef BUILD_PYBIND_BINDINGS 
+    #include <pybind11/pybind11.h>
+    #ifdef PYBIND11_EXPORTS 
+        #define PYBIND11_EXPORT __attribute__((visibility("default")))
+    #endif
+#endif
+
+
+class PYBIND11_EXPORT ConfigurationRecord
 {
     public:
 
@@ -20,7 +29,7 @@ class ConfigurationRecord
         ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon);
 };
 
-class Configuration
+class PYBIND11_EXPORT Configuration
 {
         std::vector<ConfigurationRecord> records;
 
@@ -44,6 +53,10 @@ class Configuration
         void deleteRecordAt(int i);
         int getSize();
         int pushBack(ConfigurationRecord);
+
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
 };
 
 

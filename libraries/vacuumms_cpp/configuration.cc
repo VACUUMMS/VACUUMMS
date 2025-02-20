@@ -122,3 +122,29 @@ int Configuration::pushBack(ConfigurationRecord record)
     records.push_back(record);
     return records.size();
 }
+
+
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str Configuration::__repr__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<records.size(); i++)
+        // retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
+        retval = retval + 
+                 pybind11::str(std::to_string(records[i].x)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].y)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].z)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].sigma)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].epsilon)) +
+                 pybind11::str("\n");
+
+    return retval;
+}
+
+#endif
