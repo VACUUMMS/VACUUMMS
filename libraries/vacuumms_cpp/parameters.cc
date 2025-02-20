@@ -196,6 +196,16 @@ pybind11::str Parameters::__str__()
     return retval;
 }
 
+Parameters::Parameters(const pybind11::list& _argv)
+{   
+    command_line_argc = pybind11::len(_argv);
+
+    for (const auto& item : _argv) 
+    {
+        command_line_argv.push_back(item.cast<std::string>().c_str());
+    } 
+}
+
 int Parameters::getIntParam(char *param_name)
 {
     int parameter, *p_parameter;

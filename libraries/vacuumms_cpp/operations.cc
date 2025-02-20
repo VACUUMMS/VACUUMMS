@@ -74,7 +74,8 @@ int DDX::execute()
     sigma[i] = r.sigma;
     epsilon[i] = r.epsilon;
   }
-
+  
+  number_of_molecules = c.getSize();
   
   while (number_of_samples>0)
   {

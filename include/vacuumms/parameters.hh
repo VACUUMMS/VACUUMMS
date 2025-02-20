@@ -29,6 +29,10 @@ class PYBIND11_EXPORT Parameters
         Parameters();
         Parameters(int argc, char **argv);
 
+#ifdef BUILD_PYBIND_BINDINGS 
+        Parameters(const pybind11::list&);
+#endif
+
         // Maintain a set of methods for boost::python. 
         // Note that these return the value instead of setting pointed value.
 

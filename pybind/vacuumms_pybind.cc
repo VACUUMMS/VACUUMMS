@@ -16,6 +16,7 @@ PYBIND11_MODULE(vacuumms, m)
     // Declare a python wrapper and expose member functions for Parameters class
     py::class_<Parameters>(m, "Parameters")
         .def(py::init<>())
+        .def(py::init<py::list>())
         .def("addParameter", &Parameters::addParameter)
         .def("getFlagParam", &Parameters::getFlagParam)
         .def("getIntParam", [](Parameters& self, char* arg) -> int {return self.getIntParam(arg);} )
@@ -58,8 +59,9 @@ PYBIND11_MODULE(vacuumms, m)
 
     // Interface to DDX operation subclass
 
-    py::class_<DDX>(m, "ddx")
+    py::class_<DDX>(m, "DDX")
         .def(py::init<Configuration, Parameters>())
+        .def("execute", &DDX::execute)
         .def("getOutput", &DDX::getOutput)
     ;
 
