@@ -8,7 +8,13 @@
 #ifndef VACUUMMS_TYPES
 #define VACUUMMS_TYPES
 
-#define vacuumms_float float
+/* May later add code to declare this as double precision */
+
+#ifdef VACUUMMS_DOUBLE_PRECISION
+    #define vacuumms_float double
+#else
+    #define vacuumms_float float
+#endif
 
 #include <vacuumms/limits.h>
 

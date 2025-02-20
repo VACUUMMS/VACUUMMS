@@ -12,10 +12,10 @@
     #endif
 #endif
 
-
 #include <string>
 #include <vector>
 
+#include <vacuumms/types.h>
 
 class PYBIND11_EXPORT Parameters
 {
@@ -37,7 +37,7 @@ class PYBIND11_EXPORT Parameters
         Parameters(const boost::python::list&);
         int getIntParam(char* param_name);
         long getLongParam(char* param_name);
-        float getFloatParam(char* param_name);
+        vacuumms_float getFloatParam(char* param_name);
         double getDoubleParam(char* param_name);
         const char* getStringParam(char* param_name);
         boost::python::list getVectorParam(char* param_name);
@@ -48,16 +48,16 @@ class PYBIND11_EXPORT Parameters
 
 #ifdef BUILD_PYBIND_BINDINGS 
 
+        pybind11::str __str__();
+        pybind11::str __repr__();
+
 //        Parameters(const boost::python::list&);
 
         int getIntParam(char* param_name);
-//        long getLongParam(char* param_name);
-//        float getFloatParam(char* param_name);
-//        double getDoubleParam(char* param_name);
-//        const char* getStringParam(char* param_name);
-
+        vacuumms_float getFloatParam(char* param_name);
+        const char* getStringParam(char* param_name);
         pybind11::list getVectorParam(char* param_name);
-//        boost::python::list getVectorStringParam(char* param_name);
+        pybind11::list getVectorStringParam(char* param_name);
 
 #endif
 // FTW pybind11::list getVectorParam(char* param_name);
@@ -66,7 +66,7 @@ class PYBIND11_EXPORT Parameters
 	/* if a parameter is received, return a true value, otherwise return NULL) */
 	int getIntParam(char *param_name, int *parameter);
 	int getLongParam(char *param_name, long *parameter);
-	int getFloatParam(char *param_name, float *parameter);
+	int getFloatParam(char *param_name, vacuumms_float *parameter);
 	int getDoubleParam(char *param_name, double *parameter);
 	int getStringParam(char *param_name, const char **parameter);
 	int getVectorParam(char *param_name, 

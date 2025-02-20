@@ -11,6 +11,7 @@
 #endif
 
 #include <vacuumms/parameters.hh>
+#include <vacuumms/types.h>
 
 
 Parameters::Parameters(int argc, char **argv)
@@ -96,9 +97,9 @@ long Parameters::getLongParam(char* param_name)
     return retval;
 }
 
-float Parameters::getFloatParam(char *param_name)
+vacuumms_float Parameters::getFloatParam(char *param_name)
 {
-    float retval = -0.0f;
+    vacuumms_float retval = -0.0f;
  
     for (int i=0; i<command_line_argc; i++)
     if (command_line_argv[i] == param_name)
@@ -109,7 +110,7 @@ float Parameters::getFloatParam(char *param_name)
 	    exit(1);
 	}
 
-	retval = (float)strtod(command_line_argv[++i].c_str(), NULL);
+	retval = (vacuumms_float)strtod(command_line_argv[++i].c_str(), NULL);
     }
     return retval;
 }
@@ -176,43 +177,95 @@ boost::python::list Parameters::getVectorStringParam(char *param_name)
 
 #ifdef BUILD_PYBIND_BINDINGS
 
+pybind11::str Parameters::__repr__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<command_line_argc; i++)
+        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
+    
+    return retval;
+}
+
+pybind11::str Parameters::__str__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<command_line_argc; i++)
+        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
+    return retval;
+}
+
 int Parameters::getIntParam(char *param_name)
 {
-    int retval = 0;
-
     int parameter, *p_parameter;
     p_parameter = &parameter;
-    *p_parameter = 0;
+    *p_parameter = -1;
 
     for (int i=0; i<command_line_argc; i++)
     if (command_line_argv[i] == param_name)
     {
-	if (i+1>=command_line_argc) 
-	{
-	    printf("no value specified for %s\n", param_name);
-	    exit(1);
-	}
+        if (i+1>=command_line_argc) 
+        {
+            printf("no value specified for %s\n", param_name);
+            break;
+        }
 
-	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
-	retval = 1;
+        *p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+    }
+    return parameter;
+}
+
+vacuumms_float Parameters::getFloatParam(char *param_name)
+{
+    vacuumms_float parameter, *p_parameter;
+    p_parameter = &parameter;
+    *p_parameter = -0.0;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name)
+    {
+        if (i+1>=command_line_argc) 
+        {
+            printf("no value specified for %s\n", param_name);
+            break;
+        }
+
+        *p_parameter = (strtod(command_line_argv[++i].c_str(), NULL));
+    }
+    return parameter;
+}
+
+const char* Parameters::getStringParam(char* param_name)
+{
+    const char* parameter;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name)
+    {
+        if (i+1>=command_line_argc) 
+        {
+            printf("no value specified for %s\n", param_name);
+            break;
+        }
+
+        parameter = command_line_argv[++i].c_str();
     }
     return parameter;
 }
 
 pybind11::list Parameters::getVectorParam(char *param_name)
 {
-    //std::vector<double> retval;
-    //boost::python::list retval;
     pybind11::list retval;
 
     for (int i=0; i<command_line_argc; i++)
     if (command_line_argv[i] == param_name) 
     {
-	if (i+3>=command_line_argc) 
-	{
-	    printf("not enough values specified for %s\n", param_name);
-	    exit(1);
-	}
+        if (i+3>=command_line_argc) 
+        {
+            printf("not enough values specified for %s\n", param_name);
+            break;
+        }
 
         retval.append(strtod(command_line_argv[++i].c_str(), NULL));
         retval.append(strtod(command_line_argv[++i].c_str(), NULL));
@@ -220,6 +273,27 @@ pybind11::list Parameters::getVectorParam(char *param_name)
     }
     return retval;
 }
+
+pybind11::list Parameters::getVectorStringParam(char* param_name)
+{
+    pybind11::list retval;
+
+    for (int i=0; i<command_line_argc; i++)
+    if (command_line_argv[i] == param_name) 
+    {
+        if (i+3>=command_line_argc) 
+        {
+            printf("not enough values specified for %s\n", param_name);
+            break;
+        }
+
+        retval.append(command_line_argv[++i].c_str());
+        retval.append(command_line_argv[++i].c_str());
+        retval.append(command_line_argv[++i].c_str());
+    }
+    return retval;
+}
+
 
 #endif // BUILD_PYBIND_BINDINGS
 
@@ -293,7 +367,7 @@ int Parameters::getLongParam(char *param_name, long *parameter)
 }
 
 
-int Parameters::getFloatParam(char *param_name, float *parameter)
+int Parameters::getFloatParam(char *param_name, vacuumms_float *parameter)
 {
     int retval = 0;
  
@@ -306,7 +380,7 @@ int Parameters::getFloatParam(char *param_name, float *parameter)
 	    exit(1);
 	}
 
-	*parameter = (float)strtod(command_line_argv[++i].c_str(), NULL);
+	*parameter = (vacuumms_float)strtod(command_line_argv[++i].c_str(), NULL);
 	retval = 1;
     }
     return retval;
