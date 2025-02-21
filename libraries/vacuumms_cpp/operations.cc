@@ -7,22 +7,48 @@
 
 #include <math.h>
 
-int Operation::execute()
+/*
+void Operation::execute()
 {
-    return 0;
 }
+*/
 
 DDX::DDX(Configuration c, Parameters p) : 
     c{c}, p{p} 
 {
 }
 
-CavityConfiguration DDX::getOutput()
+void DDX::__repr__()
 {
-    return output;   
+    c.__repr__();
+    p.__repr__();
+    result.__repr__();
 }
 
-int DDX::execute()
+CavityConfiguration DDX::getResult()
+{
+    return result;   
+}
+
+void DDX::printUsage()
+{
+    printf("\nDDX usage:\t-box [ 6.0 6.0 6.0 ]\n");
+    printf("\t\t-seed [ 1 ]\n");
+    printf("\t\t-randomize \n");
+    printf("\t\t-characteristic_length [ 1.0 ]\n");
+    printf("\t\t-characteristic_energy [ 1.0 ]\n");
+    printf("\t\t-precision_parameter [ 0.001 ]\n");
+    printf("\t\t-n_steps [ 1000 ] (roughly reciprocal of precision parameter)\n");
+    printf("\t\t-show_steps (includes steps taken as final column)\n");
+    printf("\t\t-verlet_cutoff [ 100.0 ]\n");
+    printf("\t\t-n [ 1 ]\n");
+    printf("\t\t-volume_sampling \n");
+    printf("\t\t-include_center_energy \n");
+    printf("\t\t-min_diameter [ 0.0 ]");
+    printf("\n");
+}
+
+void DDX::execute()
 {
 
   double sq_distance_from_initial_pt;
@@ -44,24 +70,7 @@ int DDX::execute()
   show_steps = p.getFlagParam((char*)"-show_steps");
   p.getDoubleParam((char*)"-min_diameter", &min_diameter);
 
-  if (p.getFlagParam((char*)"-usage"))
-  {
-    printf("\nusage:\t-box [ 6.0 6.0 6.0 ]\n");
-    printf("\t\t-seed [ 1 ]\n");
-    printf("\t\t-randomize \n");
-    printf("\t\t-characteristic_length [ 1.0 ]\n");
-    printf("\t\t-characteristic_energy [ 1.0 ]\n");
-    printf("\t\t-precision_parameter [ 0.001 ]\n");
-    printf("\t\t-n_steps [ 1000 ] (roughly reciprocal of precision parameter)\n");
-    printf("\t\t-show_steps (includes steps taken as final column)\n");
-    printf("\t\t-verlet_cutoff [ 100.0 ]\n");
-    printf("\t\t-n [ 1 ]\n");
-    printf("\t\t-volume_sampling \n");
-    printf("\t\t-include_center_energy \n");
-    printf("\t\t-min_diameter [ 0.0 ]");
-    printf("\n");
-    exit(0);
-  }
+  if (p.getFlagParam((char*)"-usage")) printUsage();
 
 // was  loadConfiguration(); 
 // now just copy over the records and run the old algorithm
@@ -100,17 +109,16 @@ int DDX::execute()
         while (test_z >= box_z) test_z -= box_z;
         while (test_z < 0) test_z += box_z;
 
-        printf("%lf\t%lf\t%lf\t%lf", test_x, test_y, test_z, diameter);
-        output.pushBack(Cavity(test_x, test_y, test_z, diameter));
-        if (include_center_energy) printf("\t%lf", calculateEnergy(diameter));
-        if (show_steps) printf("\t%d", attempts);
-        printf("\n");
+//        printf("%lf\t%lf\t%lf\t%lf", test_x, test_y, test_z, diameter);
+        result.pushBack(Cavity(test_x, test_y, test_z, diameter));
+//        if (include_center_energy) printf("\t%lf", calculateEnergy(diameter));
+//        if (show_steps) printf("\t%d", attempts);
+//        printf("\n");
         number_of_samples--;
       }
     }
   }
 
-  return 0;
 } // end DDX::execute()
 
 void DDX::generateTestPoint()

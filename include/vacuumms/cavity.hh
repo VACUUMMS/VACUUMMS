@@ -4,11 +4,21 @@
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
 
+#include <vacuumms/parameters.hh>
+
 #include <vector>
 #include <iostream>
 
 
-class Cavity
+#ifdef BUILD_PYBIND_BINDINGS 
+    #include <pybind11/pybind11.h>
+    #ifdef PYBIND11_EXPORTS 
+        #define PYBIND11_EXPORT __attribute__((visibility("default")))
+    #endif
+#endif
+
+
+class PYBIND11_EXPORT Cavity
 {
     public:
 
@@ -35,7 +45,7 @@ class Cavity
 }; // end class Cavity
 
 
-class CavityConfiguration
+class PYBIND11_EXPORT CavityConfiguration
 {
     public:
 
@@ -44,8 +54,6 @@ class CavityConfiguration
         vacuumms_float box_x;
         vacuumms_float box_y;
         vacuumms_float box_z;
-
-        int mirror_depth = 1;
 
         CavityConfiguration();
         CavityConfiguration(const char *filename);
@@ -58,22 +66,39 @@ class CavityConfiguration
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
         int pushBack(Cavity _cavity);
 
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
+
+    private:
+
+        int mirror_depth = 1;
+
 }; // end class CavityConfiguration
 
 
-class CavitySizeDistribution
+class PYBIND11_EXPORT CavitySizeDistribution
 {
     public:
 
-        CavitySizeDistribution(CavityConfiguration cc);
+        CavitySizeDistribution(CavityConfiguration cc, Parameters p);
+        void execute();
+//        Histogram getResult();
 
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
+
+    private:
+
+        Parameters p;
+        CavityConfiguration cc;
         int n_bins = 100;
         double resolution = .01;
         const char *input_file_name;
         int histogram[1000];
 
-        void print();
-
+//        void print();
 }; // end class CavitySizeDistribution
 
 

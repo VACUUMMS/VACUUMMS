@@ -48,6 +48,28 @@ CavityConfiguration::CavityConfiguration()
     records = std::vector<Cavity>();
 }
 
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str CavityConfiguration::__repr__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<records.size(); i++)
+        retval = retval +
+                 pybind11::str(std::to_string(records[i].x)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].y)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].z)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].d)) +
+                 pybind11::str("\n");
+    return retval;
+}
+
+#endif
+
+
 CavityConfiguration::CavityConfiguration(const char *filename)
 {
     FILE* instream=fopen(filename, "r");
@@ -193,9 +215,12 @@ int histogram[1000];
 */
 
 
+CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameters p)
+    : cc(cc), p(p)
+{
+}
 
-
-CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc)
+void CavitySizeDistribution::execute()
 {
     for (int i=0; i<cc.getSize(); i++)
     {
@@ -206,8 +231,29 @@ CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc)
     for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
 }
 
+/*
 void CavitySizeDistribution::print()
 {
     for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
 }
+*/
 
+
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str CavitySizeDistribution::__repr__()
+{
+    pybind11::str retval("");
+
+//    for (int i=0; i<records.size(); i++)
+    for (int i=0; i<n_bins; i++) 
+//        printf("%lf\t%d\n", i*resolution, histogram[i]);
+        retval = retval +
+                 pybind11::str(std::to_string(i)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(histogram[i])) +
+                 pybind11::str("\n");
+    return retval;
+}
+
+#endif

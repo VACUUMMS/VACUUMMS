@@ -44,15 +44,19 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<CavityConfiguration>(m, "CavityConfiguration")
         .def(py::init<char*>())
+        .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
 
+/*
     // CavitySizeDistribution type
 
     py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
         .def(py::init<CavityConfiguration>())
-        .def("print", &CavitySizeDistribution::print)
+//        .def("print", &CavitySizeDistribution::print)
+        .def("__repr__", &CavitySizeDistribution::__repr__)
     ;
+*/
 
 
     // Operations classes
@@ -61,8 +65,19 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<DDX>(m, "DDX")
         .def(py::init<Configuration, Parameters>())
+        .def("printUsage", &DDX::printUsage)
         .def("execute", &DDX::execute)
-        .def("getOutput", &DDX::getOutput)
+        .def("getResult", &DDX::getResult)
+        .def("__repr__", &DDX::__repr__)
+    ;
+
+    // Interface to CSD operation subclass
+
+    py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
+        .def(py::init<CavityConfiguration, Parameters>())
+        .def("execute", &CavitySizeDistribution::execute)
+//        .def("getResult", &CavitySizeDistribution::getResult)
+        .def("__repr__", &CavitySizeDistribution::__repr__)
     ;
 
 }

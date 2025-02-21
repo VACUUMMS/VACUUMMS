@@ -13,7 +13,8 @@ class Operation
 {
     public:
 
-        virtual int execute();
+        virtual void execute() = 0;
+        virtual void printUsage() = 0;
 };
 
 
@@ -22,8 +23,11 @@ class DDX : public Operation
     public:
 
         DDX(Configuration c, Parameters p);
-        CavityConfiguration getOutput();
-        int execute();
+//        CavityConfiguration getOutput();
+        void execute();
+        void printUsage();
+        CavityConfiguration getResult();
+        void __repr__();
 
     private:
 
@@ -35,9 +39,10 @@ class DDX : public Operation
         void makeVerletList();
         void expandTestParticle();
 
-        CavityConfiguration output;
+        CavityConfiguration result;
         Configuration c;
         Parameters p;
+        
 
 	double x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
 	double y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
