@@ -5,6 +5,7 @@
 #include <vacuumms/limits.h>
 
 #include <vacuumms/parameters.hh>
+#include <vacuumms/types.hh>
 
 #include <vector>
 #include <iostream>
@@ -77,13 +78,12 @@ class PYBIND11_EXPORT CavityConfiguration
 }; // end class CavityConfiguration
 
 
-class PYBIND11_EXPORT CavitySizeDistribution
+class PYBIND11_EXPORT CavitySizeDistribution : public Histogram
 {
     public:
 
         CavitySizeDistribution(CavityConfiguration cc, Parameters p);
-        void execute();
-//        Histogram getResult();
+        void writeToFile();
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
@@ -93,12 +93,7 @@ class PYBIND11_EXPORT CavitySizeDistribution
 
         Parameters p;
         CavityConfiguration cc;
-        int n_bins = 100;
-        double resolution = .01;
-        const char *input_file_name;
-        int histogram[1000];
 
-//        void print();
 }; // end class CavitySizeDistribution
 
 

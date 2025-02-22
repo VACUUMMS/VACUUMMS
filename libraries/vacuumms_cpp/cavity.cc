@@ -1,6 +1,7 @@
 /* vacuumms/cavity.cc */
 
 #include <vacuumms/cavity.hh>
+#include <vacuumms/parameters.hh>
 
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
@@ -215,30 +216,31 @@ int histogram[1000];
 */
 
 
-CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameters p)
+CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameters p) 
     : cc(cc), p(p)
 {
-}
-
-void CavitySizeDistribution::execute()
-{
-    for (int i=0; i<cc.getSize(); i++)
+    // set up bins and sizes
+    if (p.getFlagParam((char*)"-n_bins"))
     {
-        int which_bin = (int)(cc.recordAt(i).d / resolution);
-        histogram[which_bin]++;
+        setNumberOfBins(p.getIntParam((char*)"-n_bins"));
+    }
+    if (p.getFlagParam((char*)"-width"))
+    {
+        setWidthOfBins(p.getFloatParam((char*)"-width"));
     }
 
-    for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
+    // // implement later
+    // vacuumms_float start_x = p.getFloatParam((char*)"-start_x"); 
+
+    for (int i=0; i<cc.getSize(); i++)
+    {
+        bin(cc.recordAt(i).d);
+//        int which_bin = (int)(cc.recordAt(i).d / width_of_bins);
+//        histogram[which_bin]++;
+    }
 }
 
-/*
-void CavitySizeDistribution::print()
-{
-    for (int i=0; i<n_bins; i++) printf("%lf\t%d\n", i*resolution, histogram[i]);
-}
-*/
-
-
+        
 #ifdef BUILD_PYBIND_BINDINGS
 
 pybind11::str CavitySizeDistribution::__repr__()
@@ -246,12 +248,12 @@ pybind11::str CavitySizeDistribution::__repr__()
     pybind11::str retval("");
 
 //    for (int i=0; i<records.size(); i++)
-    for (int i=0; i<n_bins; i++) 
+    for (int i=0; i<number_of_bins; i++) 
 //        printf("%lf\t%d\n", i*resolution, histogram[i]);
         retval = retval +
-                 pybind11::str(std::to_string(i)) +
+                 pybind11::str(std::to_string((vacuumms_float)(i * width_of_bins))) +
                  pybind11::str("\t") +
-                 pybind11::str(std::to_string(histogram[i])) +
+                 pybind11::str(std::to_string(bins[i])) +
                  pybind11::str("\n");
     return retval;
 }

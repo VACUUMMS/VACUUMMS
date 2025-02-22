@@ -75,7 +75,7 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
         .def(py::init<CavityConfiguration, Parameters>())
-        .def("execute", &CavitySizeDistribution::execute)
+//        .def("execute", &CavitySizeDistribution::execute)
 //        .def("getResult", &CavitySizeDistribution::getResult)
         .def("__repr__", &CavitySizeDistribution::__repr__)
     ;

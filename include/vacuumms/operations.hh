@@ -8,8 +8,16 @@
 #include <vacuumms/limits.h>
 #define MAX_CLOSE (VACUUMMS_MAX_NUMBER_OF_MOLECULES)
 
+#ifdef BUILD_PYBIND_BINDINGS 
+    #include <pybind11/pybind11.h>
+    #ifdef PYBIND11_EXPORTS 
+        #define PYBIND11_EXPORT __attribute__((visibility("default")))
+    #endif
+#endif
 
-class Operation
+
+
+class PYBIND11_EXPORT Operation
 {
     public:
 
@@ -18,7 +26,7 @@ class Operation
 };
 
 
-class DDX : public Operation
+class PYBIND11_EXPORT DDX : public Operation
 {
     public:
 
@@ -27,7 +35,10 @@ class DDX : public Operation
         void execute();
         void printUsage();
         CavityConfiguration getResult();
-        void __repr__();
+
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
 
     private:
 

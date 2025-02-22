@@ -18,12 +18,16 @@ DDX::DDX(Configuration c, Parameters p) :
 {
 }
 
-void DDX::__repr__()
+#ifdef BUILD_PYBIND_BINDINGS
+pybind11::str DDX::__repr__()
 {
-    c.__repr__();
-    p.__repr__();
-    result.__repr__();
+    pybind11::str retval;
+    retval += c.__repr__();
+    retval += p.__repr__();
+    retval += result.__repr__();
+    return retval;
 }
+#endif
 
 CavityConfiguration DDX::getResult()
 {
