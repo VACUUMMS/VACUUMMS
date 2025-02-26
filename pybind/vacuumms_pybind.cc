@@ -64,8 +64,11 @@ PYBIND11_MODULE(vacuumms, m)
     // Interface to DDX operation subclass
 
     py::class_<DDX>(m, "DDX")
+        .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &DDX::printUsage)
+        .def("setParameters", &DDX::setParameters)
+        .def("setConfiguration", &DDX::setConfiguration)
         .def("execute", &DDX::execute)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
@@ -77,7 +80,25 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<CavityConfiguration, Parameters>())
 //        .def("execute", &CavitySizeDistribution::execute)
 //        .def("getResult", &CavitySizeDistribution::getResult)
+        .def("setWeightingExponent", &Histogram::setWeightingExponent)
+        .def("print", &Histogram::print)
+        .def("normalize", &Histogram::normalize)
+        .def("smooth", &Histogram::smooth)
+        .def("writeToFile", &Histogram::writeToFile)
         .def("__repr__", &CavitySizeDistribution::__repr__)
     ;
 
-}
+
+    // Histogram type
+    
+    py::class_<Histogram>(m, "Histogram")
+        .def(py::init<>())
+        .def(py::init<int, vacuumms_float>())
+        .def("bin", &Histogram::bin)
+        .def("getMisses", &Histogram::getMisses)        
+        .def("writeToFile", &Histogram::writeToFile)
+        .def("setWeightingExponent", &Histogram::setWeightingExponent)
+        .def("__repr__", &Histogram::__repr__)
+        ;
+
+} // end of bindings 

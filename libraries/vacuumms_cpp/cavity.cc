@@ -245,6 +245,8 @@ CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameter
 
 pybind11::str CavitySizeDistribution::__repr__()
 {
+    return Histogram::__repr__();
+/*
     pybind11::str retval("");
 
 //    for (int i=0; i<records.size(); i++)
@@ -256,6 +258,7 @@ pybind11::str CavitySizeDistribution::__repr__()
                  pybind11::str(std::to_string(bins[i])) +
                  pybind11::str("\n");
     return retval;
+*/
 }
 
 #endif

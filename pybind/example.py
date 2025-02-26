@@ -10,3 +10,4 @@ csdp=v.Parameters(['-width', '0.1', '-n_bins', '50'])
 csd=v.CavitySizeDistribution(result, csdp)
 csd
 
+csd.writeToFile('foo.bar')

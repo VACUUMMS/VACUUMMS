@@ -22,7 +22,8 @@ class PYBIND11_EXPORT Operation
     public:
 
         virtual void execute() = 0;
-        virtual void printUsage() = 0;
+//        virtual void printUsage() = 0;
+        static void printUsage();
 };
 
 
@@ -31,9 +32,12 @@ class PYBIND11_EXPORT DDX : public Operation
     public:
 
         DDX(Configuration c, Parameters p);
+        DDX();
 //        CavityConfiguration getOutput();
         void execute();
-        void printUsage();
+        void setParameters(Parameters p);
+        void setConfiguration(Configuration c);
+        static void printUsage();
         CavityConfiguration getResult();
 
 #ifdef BUILD_PYBIND_BINDINGS
@@ -53,47 +57,47 @@ class PYBIND11_EXPORT DDX : public Operation
         CavityConfiguration result;
         Configuration c;
         Parameters p;
-        
 
-	double x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-	double y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-	double z[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-	double sigma[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-	double epsilon[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        // Working vars from C implementation
+        double x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        double y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        double z[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        double sigma[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        double epsilon[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
 
-	double close_x[MAX_CLOSE], close_y[MAX_CLOSE], close_z[MAX_CLOSE];
-	double close_sigma[MAX_CLOSE];
-	double close_sigma6[MAX_CLOSE];
-	double close_sigma12[MAX_CLOSE];
-	double close_epsilon[MAX_CLOSE];
+        double close_x[MAX_CLOSE], close_y[MAX_CLOSE], close_z[MAX_CLOSE];
+        double close_sigma[MAX_CLOSE];
+        double close_sigma6[MAX_CLOSE];
+        double close_sigma12[MAX_CLOSE];
+        double close_epsilon[MAX_CLOSE];
 
-	double box_x=6, box_y=6, box_z=6;
-	double verlet_cutoff=100.0;
+        double box_x=6, box_y=6, box_z=6;
+        double verlet_cutoff=100.0;
 
-	//double step_size_factor = 1.0;
-	int n_steps = 1000;
+        //double step_size_factor = 1.0;
+        int n_steps = 1000;
 
-	int number_of_samples = 1;
-	int volume_sampling = 0;
-	int include_center_energy = 0;
-	int show_steps = 0;
+        int number_of_samples = 1;
+        int volume_sampling = 0;
+        int include_center_energy = 0;
+        int show_steps = 0;
 
-	double test_x0, test_y0, test_z0;
-	double test_x, test_y, test_z;
-	double verlet_center_x, verlet_center_y, verlet_center_z;
-	double diameter = 1.0;
-	double min_diameter = 0.0;
-	double characteristic_length = 1.0;
-	double characteristic_energy = 1.0;
-	double precision_parameter = 0.001; // decimal 
-	int seed = 1;
+        double test_x0, test_y0, test_z0;
+        double test_x, test_y, test_z;
+        double verlet_center_x, verlet_center_y, verlet_center_z;
+        double diameter = 1.0;
+        double min_diameter = 0.0;
+        double characteristic_length = 1.0;
+        double characteristic_energy = 1.0;
+        double precision_parameter = 0.001; // decimal 
+        int seed = 1;
 
-	int number_of_molecules = 0;
-	int close_molecules;
-	int attempts;
+        int number_of_molecules = 0;
+        int close_molecules;
+        int attempts;
 
-	FILE *instream;
+        FILE *instream;
 
-	int verbose;
+        int verbose;
 
 }; // end class DDX

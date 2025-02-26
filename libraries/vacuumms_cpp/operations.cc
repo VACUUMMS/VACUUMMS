@@ -18,6 +18,20 @@ DDX::DDX(Configuration c, Parameters p) :
 {
 }
 
+DDX::DDX()
+{
+}
+
+
+void DDX::setParameters(Parameters _p)
+{
+    p = _p;
+}
+void DDX::setConfiguration(Configuration _c)
+{
+    c = _c;
+}
+
 #ifdef BUILD_PYBIND_BINDINGS
 pybind11::str DDX::__repr__()
 {
@@ -51,6 +65,7 @@ void DDX::printUsage()
     printf("\t\t-min_diameter [ 0.0 ]");
     printf("\n");
 }
+
 
 void DDX::execute()
 {

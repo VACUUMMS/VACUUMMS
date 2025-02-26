@@ -11,7 +11,15 @@
 
 #include <vector>
 
-class Histogram
+#ifdef BUILD_PYBIND_BINDINGS 
+    #include <pybind11/pybind11.h>
+    #ifdef PYBIND11_EXPORTS 
+        #define PYBIND11_EXPORT __attribute__((visibility("default")))
+    #endif
+#endif
+
+
+class PYBIND11_EXPORT Histogram
 {
     public: 
     
@@ -19,17 +27,33 @@ class Histogram
         Histogram(int n_bins, vacuumms_float width);
         void bin(vacuumms_float value);
         int getMisses();
+        void smooth(int);
+        void normalize();
         void writeToFile(char* filename);
+        void setWeightingExponent(vacuumms_float weight);
+        void print();
+
+#ifdef BUILD_PYBIND_BINDINGS 
+
+        pybind11::str __repr__();
+
+#endif
     
     protected:
 
         void setNumberOfBins(int n_bins);
         void setWidthOfBins(vacuumms_float width);
 
+    private:
+
         int number_of_bins = 100;
         vacuumms_float width_of_bins = 1.0;
-        std::vector<int> bins;
+//        std::vector<int> bins;
+        std::vector<vacuumms_float> bins;
         int misses = 0;
+        int scaler = 1;
+        vacuumms_float weight = 1.0f;
+
 };
 
 
