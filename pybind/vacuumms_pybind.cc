@@ -2,6 +2,8 @@
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 #include <vacuumms/operations.hh>
+#include <vacuumms/ddx.hh>
+#include <vacuumms/pddx.hh>
 #include <vacuumms/types.h>
 
 #include <pybind11/pybind11.h>
@@ -28,10 +30,6 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__str__", &Parameters::__str__)
         ;
 
-    // Can declare a module function outside of a class like this
-    // m.def("getlist", &getlist);
-
-
     // Configuration type
 
     py::class_<Configuration>(m, "Configuration")
@@ -48,20 +46,9 @@ PYBIND11_MODULE(vacuumms, m)
         ;
 
 
-/*
-    // CavitySizeDistribution type
-
-    py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
-        .def(py::init<CavityConfiguration>())
-//        .def("print", &CavitySizeDistribution::print)
-        .def("__repr__", &CavitySizeDistribution::__repr__)
-    ;
-*/
-
-
     // Operations classes
 
-    // Interface to DDX operation subclass
+    // Interface to DDX (Operation subclass)
 
     py::class_<DDX>(m, "DDX")
         .def(py::init<>())
@@ -74,12 +61,25 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &DDX::__repr__)
     ;
 
-    // Interface to CSD operation subclass
+    // Interface to PDDX (Operation subclass)
+    
+    py::class_<PDDX>(m, "PDDX")
+        .def(py::init<>())
+        .def(py::init<Configuration, Parameters>())
+        .def("printUsage", &PDDX::printUsage)
+        .def("setParameters", &PDDX::setParameters)
+        .def("setConfiguration", &PDDX::setConfiguration)
+        .def("execute", &PDDX::execute)
+        .def("getResult", &PDDX::getResult)
+        .def("__repr__", &PDDX::__repr__)
+    ;
+
+    // Other classes
+    
+    // Interface to CSD (Histogram subclass)
 
     py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
         .def(py::init<CavityConfiguration, Parameters>())
-//        .def("execute", &CavitySizeDistribution::execute)
-//        .def("getResult", &CavitySizeDistribution::getResult)
         .def("setWeightingExponent", &Histogram::setWeightingExponent)
         .def("print", &Histogram::print)
         .def("normalize", &Histogram::normalize)
@@ -100,5 +100,6 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setWeightingExponent", &Histogram::setWeightingExponent)
         .def("__repr__", &Histogram::__repr__)
         ;
+
 
 } // end of bindings 
