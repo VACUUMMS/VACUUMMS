@@ -1,5 +1,5 @@
 // variational.hh
-#include "configuration.hh"
+#include <vacuumms/configuration.hh>
 #include <vacuumms/types.h>
 
 extern const vacuumms_float machine_epsilon;

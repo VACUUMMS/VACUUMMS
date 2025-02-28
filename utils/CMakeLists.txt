@@ -207,8 +207,10 @@ if (BUILD_VORONOI_UTILS)
 endif()
 
 # vacuumms executable simply returns the version number for the version in play
-add_executable(vacuumms "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")
-target_include_directories(vacuumms PUBLIC "${PROJECT_SOURCE_DIR}/include")
+#add_executable(vacuumms "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")
+#target_include_directories(vacuumms PUBLIC "${PROJECT_SOURCE_DIR}/include")
+add_executable(vacuumms-version "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")
+target_include_directories(vacuumms-version PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 # These are all of the utils in the original distribution
 # vis2pov cav2vis cfg2vis add dst2hst uniq avg a2b clustercat smooth normalize cfg2gfg nsplit fvi2tiff loge log10 exp sum pow sq ck cram wdst2hst max min miss std sew povheader gfg2pov gfgc2pov fvi2pov cav2pov stack_tiffs expr_add expr_multiply dwf sqrt stream2slice truncate stream_multiply replicate_gfg replicate_cav sgfg2fvi
@@ -256,7 +258,8 @@ install(TARGETS
         stream_multiply 
         replicate_gfg 
         replicate_cav 
-        vacuumms
+#        vacuumms
+        vacuumms-version
         DESTINATION bin)
 
 if (BUILD_TIFF_UTILS)

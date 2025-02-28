@@ -1,6 +1,7 @@
 /* vacuumms/cavity.cc */
 
 #include <vacuumms/cavity.hh>
+#include <vacuumms/parameters.hh>
 
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
@@ -48,7 +49,29 @@ CavityConfiguration::CavityConfiguration()
     records = std::vector<Cavity>();
 }
 
-CavityConfiguration::CavityConfiguration(char *filename)
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str CavityConfiguration::__repr__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<records.size(); i++)
+        retval = retval +
+                 pybind11::str(std::to_string(records[i].x)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].y)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].z)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].d)) +
+                 pybind11::str("\n");
+    return retval;
+}
+
+#endif
+
+
+CavityConfiguration::CavityConfiguration(const char *filename)
 {
     FILE* instream=fopen(filename, "r");
     records = std::vector<Cavity>();
@@ -175,3 +198,67 @@ int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, va
     return 0;
 }
 
+/*
+CavitySizeDistribution::CavitySizeDistribution(Parameters p)
+{
+    getStringParam("input_file_name", input_file_name);
+    p.getIntParam((char*)"n_bins", &n_bins);
+    p.getDoubleParam((char*)"resolution", &resolution);
+    
+}
+
+//IN
+int n_bins = 100;
+double resolution = .01;
+const char *input_file_name;
+//OUT
+int histogram[1000];
+*/
+
+
+CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameters p) 
+    : cc(cc), p(p)
+{
+    // set up bins and sizes
+    if (p.getFlagParam((char*)"-n_bins"))
+    {
+        setNumberOfBins(p.getIntParam((char*)"-n_bins"));
+    }
+    if (p.getFlagParam((char*)"-width"))
+    {
+        setWidthOfBins(p.getFloatParam((char*)"-width"));
+    }
+
+    // // implement later
+    // vacuumms_float start_x = p.getFloatParam((char*)"-start_x"); 
+
+    for (int i=0; i<cc.getSize(); i++)
+    {
+        bin(cc.recordAt(i).d);
+//        int which_bin = (int)(cc.recordAt(i).d / width_of_bins);
+//        histogram[which_bin]++;
+    }
+}
+
+        
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str CavitySizeDistribution::__repr__()
+{
+    return Histogram::__repr__();
+/*
+    pybind11::str retval("");
+
+//    for (int i=0; i<records.size(); i++)
+    for (int i=0; i<number_of_bins; i++) 
+//        printf("%lf\t%d\n", i*resolution, histogram[i]);
+        retval = retval +
+                 pybind11::str(std::to_string((vacuumms_float)(i * width_of_bins))) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(bins[i])) +
+                 pybind11::str("\n");
+    return retval;
+*/
+}
+
+#endif
