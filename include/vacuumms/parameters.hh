@@ -5,19 +5,18 @@
 #include <boost/python.hpp>
 #endif
 
-#ifdef BUILD_PYBIND_BINDINGS 
-    #include <pybind11/pybind11.h>
-    #ifdef PYBIND11_EXPORTS 
-        #define PYBIND11_EXPORT __attribute__((visibility("default")))
-    #endif
-#endif
+#include <vacuumms/exports.hh>
 
 #include <string>
 #include <vector>
 
 #include <vacuumms/types.h>
 
-class PYBIND11_EXPORT Parameters
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+Parameters
 {
     private:
 
@@ -39,11 +38,11 @@ class PYBIND11_EXPORT Parameters
 #ifdef BUILD_BOOST_PYTHON_BINDINGS 
 
         Parameters(const boost::python::list&);
-        int getIntParam(char* param_name);
+//        int getIntParam(char* param_name);
         long getLongParam(char* param_name);
-        vacuumms_float getFloatParam(char* param_name);
+//        vacuumms_float getFloatParam(char* param_name);
         double getDoubleParam(char* param_name);
-        const char* getStringParam(char* param_name);
+//        const char* getStringParam(char* param_name);
         boost::python::list getVectorParam(char* param_name);
         boost::python::list getVectorStringParam(char* param_name);
 
@@ -57,15 +56,19 @@ class PYBIND11_EXPORT Parameters
 
 //        Parameters(const boost::python::list&);
 
-        int getIntParam(char* param_name);
-        vacuumms_float getFloatParam(char* param_name);
-        const char* getStringParam(char* param_name);
+//        int getIntParam(char* param_name);
+//        vacuumms_float getFloatParam(char* param_name);
+//        const char* getStringParam(char* param_name);
         pybind11::list getVectorParam(char* param_name);
         pybind11::list getVectorStringParam(char* param_name);
 
 #endif
 // FTW pybind11::list getVectorParam(char* param_name);
 
+// pulling this out of pybind/boost world because it can live without
+        int getIntParam(char* param_name);
+        vacuumms_float getFloatParam(char* param_name);
+        const char* getStringParam(char* param_name);
 
 	/* if a parameter is received, return a true value, otherwise return NULL) */
 	int getIntParam(char *param_name, int *parameter);

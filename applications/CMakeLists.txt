@@ -92,7 +92,12 @@ add_executable(csd
 )
 target_include_directories(csd PUBLIC "${PROJECT_SOURCE_DIR}/include")
 #target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread)
-target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread PRIVATE Python3::Python)
+#target_link_libraries(csd PUBLIC vacuumms_cpp vacuumms_rt m pthread PRIVATE Python3::Python)
+if (BUILD_PYBIND_BINDINGS)
+target_link_libraries(csd PUBLIC vacuumms_rt m pthread vacuumms_cpp python3 )
+else()
+target_link_libraries(csd PUBLIC vacuumms_rt m pthread vacuumms_cpp)
+endif()
 
 add_executable(rog 
     "${PROJECT_SOURCE_DIR}/applications/rog/rog.c" 

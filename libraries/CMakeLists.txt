@@ -43,7 +43,7 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
 )
 
-target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
+target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m pthread)
 
 if (BUILD_PYBIND_BINDINGS)
 #    target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)

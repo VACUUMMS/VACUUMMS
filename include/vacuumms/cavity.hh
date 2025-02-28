@@ -10,16 +10,14 @@
 #include <vector>
 #include <iostream>
 
+#include <vacuumms/exports.hh>
 
-#ifdef BUILD_PYBIND_BINDINGS 
-    #include <pybind11/pybind11.h>
-    #ifdef PYBIND11_EXPORTS 
-        #define PYBIND11_EXPORT __attribute__((visibility("default")))
-    #endif
+
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
 #endif
-
-
-class PYBIND11_EXPORT Cavity
+Cavity
 {
     public:
 
@@ -46,7 +44,11 @@ class PYBIND11_EXPORT Cavity
 }; // end class Cavity
 
 
-class PYBIND11_EXPORT CavityConfiguration
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+CavityConfiguration
 {
     public:
 
@@ -78,7 +80,11 @@ class PYBIND11_EXPORT CavityConfiguration
 }; // end class CavityConfiguration
 
 
-class PYBIND11_EXPORT CavitySizeDistribution : public Histogram
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+CavitySizeDistribution : public Histogram
 {
     public:
 

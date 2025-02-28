@@ -11,15 +11,13 @@
 
 #include <vector>
 
-#ifdef BUILD_PYBIND_BINDINGS 
-    #include <pybind11/pybind11.h>
-    #ifdef PYBIND11_EXPORTS 
-        #define PYBIND11_EXPORT __attribute__((visibility("default")))
-    #endif
+#include <vacuumms/exports.hh>
+
+class 
+#ifdef PYBIND11_EXPORT
+PYBIND11_EXPORT
 #endif
-
-
-class PYBIND11_EXPORT Histogram
+Histogram
 {
     public: 
     

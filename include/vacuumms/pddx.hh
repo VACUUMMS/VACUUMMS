@@ -15,16 +15,15 @@
 
 #define MAX_CLOSE (VACUUMMS_MAX_NUMBER_OF_MOLECULES)
 
-#ifdef BUILD_PYBIND_BINDINGS 
-    #include <pybind11/pybind11.h>
-    #ifdef PYBIND11_EXPORTS 
-        #define PYBIND11_EXPORT __attribute__((visibility("default")))
-    #endif
-#endif
+#include <vacuumms/exports.hh>
 
 void* threadEntry(void* arg);
 
-class PYBIND11_EXPORT PDDX : public Operation
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+PDDX : public Operation
 {
     public:
 

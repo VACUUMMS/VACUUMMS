@@ -174,38 +174,6 @@ boost::python::list Parameters::getVectorStringParam(char *param_name)
 
 #endif
 
-
-#ifdef BUILD_PYBIND_BINDINGS
-
-pybind11::str Parameters::__repr__()
-{
-    pybind11::str retval("");
-
-    for (int i=0; i<command_line_argc; i++)
-        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
-    
-    return retval;
-}
-
-pybind11::str Parameters::__str__()
-{
-    pybind11::str retval("");
-
-    for (int i=0; i<command_line_argc; i++)
-        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
-    return retval;
-}
-
-Parameters::Parameters(const pybind11::list& _argv)
-{   
-    command_line_argc = pybind11::len(_argv);
-
-    for (const auto& item : _argv) 
-    {
-        command_line_argv.push_back(item.cast<std::string>().c_str());
-    } 
-}
-
 int Parameters::getIntParam(char *param_name)
 {
     int parameter, *p_parameter;
@@ -262,6 +230,38 @@ const char* Parameters::getStringParam(char* param_name)
         parameter = command_line_argv[++i].c_str();
     }
     return parameter;
+}
+
+
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str Parameters::__repr__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<command_line_argc; i++)
+        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
+    
+    return retval;
+}
+
+pybind11::str Parameters::__str__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<command_line_argc; i++)
+        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
+    return retval;
+}
+
+Parameters::Parameters(const pybind11::list& _argv)
+{   
+    command_line_argc = pybind11::len(_argv);
+
+    for (const auto& item : _argv) 
+    {
+        command_line_argv.push_back(item.cast<std::string>().c_str());
+    } 
 }
 
 pybind11::list Parameters::getVectorParam(char *param_name)
