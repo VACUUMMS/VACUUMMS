@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
@@ -34,10 +33,40 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/vertex.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/edge.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/param.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/parameters.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pair.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/configuration.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/operations.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/ddx.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pddx.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/types.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
 )
 
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
+
+if (BUILD_PYBIND_BINDINGS)
+#    target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
+    target_link_libraries(vacuumms_cpp PUBLIC Python3::Python)
+
+    # The following is needed so that the pybind types are global symbols. 
+    # See the source files for e.g. parameters.cc. Without this, the generated symbols
+    # are local and only visible within libvacuumms_cpp.so library.
+    target_compile_definitions(vacuumms_cpp PRIVATE PYBIND11_EXPORTS)
+endif()
+
+if (BUILD_BOOST_PYTHON_BINDINGS)
+    target_link_libraries(vacuumms_cpp PUBLIC boost_python312 Python3:Python)
+endif()
+
+#if (BUILD_BOOST_PYTHON_BINDINGS)
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
+#elseif (BUILD_PYBIND_BINDINGS)
+##target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt python3 m Python3::Python)
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
+#else()
+#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
+#endif()
 
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
@@ -55,7 +84,7 @@ if (BUILD_TIFF_UTILS)
     )
     list(APPEND EXTRA_LIBS vacuumms_tiff)
 
-    target_link_libraries(vacuumms_tiff PUBLIC tiff)
+    target_link_libraries(vacuumms_tiff PUBLIC TIFF::tiff)
 
     set_target_properties(vacuumms_tiff PROPERTIES
         POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
@@ -70,13 +99,22 @@ endif() # BUILD_TIFF_UTILS
 
 
 if (BUILD_CUDA_COMPONENTS)
-    cuda_add_library(vacuumms_cuda SHARED
+    add_library(vacuumms_cuda SHARED
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_cuda_utils.cu
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_gfg2fvi.cu
     )
     target_include_directories(vacuumms_cuda PUBLIC
        "${PROJECT_SOURCE_DIR}/include"
     )
+
+    target_link_libraries(vacuumms_cuda PUBLIC cuda CUDA::cudart m)
+
+    set_property(TARGET vacuumms_cuda PROPERTY CUDA_ARCHITECTURES OFF)
+
+target_include_directories(vacuumms_cpp PUBLIC
+    "${PROJECT_SOURCE_DIR}/include"
+)
+
 endif()
 
 install(TARGETS vacuumms_rt vacuumms_cpp

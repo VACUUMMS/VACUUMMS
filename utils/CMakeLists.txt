@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
@@ -143,17 +142,17 @@ if (BUILD_TIFF_UTILS)
     add_executable(stack_tiffs "${PROJECT_SOURCE_DIR}/utils/stack_tiffs.c")
     target_include_directories(stack_tiffs PUBLIC "${PROJECT_SOURCE_DIR}/include")
     target_include_directories(stack_tiffs PUBLIC "${TIFF_INCLUDE_DIRS}")
-    target_link_libraries(stack_tiffs PUBLIC vacuumms_rt m vacuumms_tiff tiff)
+    target_link_libraries(stack_tiffs PUBLIC vacuumms_rt m vacuumms_tiff TIFF::tiff)
 
     add_executable(readtiff "${PROJECT_SOURCE_DIR}/utils/readtiff.c")
     target_include_directories(readtiff PUBLIC "${PROJECT_SOURCE_DIR}/include")
     target_include_directories(readtiff PUBLIC "${TIFF_INCLUDE_DIRS}")
-    target_link_libraries(readtiff PUBLIC vacuumms_rt m vacuumms_tiff tiff)
+    target_link_libraries(readtiff PUBLIC vacuumms_rt m vacuumms_tiff TIFF::tiff)
 
     add_executable(fvi2tiff "${PROJECT_SOURCE_DIR}/utils/fvi2tiff.c")
     target_include_directories(fvi2tiff PUBLIC "${PROJECT_SOURCE_DIR}/include")
     target_include_directories(fvi2tiff PUBLIC "${TIFF_INCLUDE_DIRS}")
-    target_link_libraries(fvi2tiff PUBLIC vacuumms_rt m vacuumms_tiff tiff)
+    target_link_libraries(fvi2tiff PUBLIC vacuumms_rt m vacuumms_tiff TIFF::tiff)
 endif()
 
 add_executable(expr_add "${PROJECT_SOURCE_DIR}/utils/expr_add.c")
@@ -195,11 +194,11 @@ target_link_libraries(replicate_cav PUBLIC vacuumms_rt m pthread)
 if (BUILD_CUDA_COMPONENTS)
     add_executable(sgfg2fvi "${PROJECT_SOURCE_DIR}/utils/sgfg2fvi.c")
     target_include_directories(sgfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda)
+    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda CUDA::cudart)
 
     add_executable(gfg2fvi "${PROJECT_SOURCE_DIR}/utils/gfg2fvi.c")
     target_include_directories(gfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(gfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda)
+    target_link_libraries(gfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda CUDA::cudart)
 endif()
 
 if (BUILD_VORONOI_UTILS)
@@ -212,8 +211,10 @@ if (BUILD_VORONOI_UTILS)
 endif()
 
 # vacuumms executable simply returns the version number for the version in play
-add_executable(vacuumms "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")
-target_include_directories(vacuumms PUBLIC "${PROJECT_SOURCE_DIR}/include")
+#add_executable(vacuumms "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")
+#target_include_directories(vacuumms PUBLIC "${PROJECT_SOURCE_DIR}/include")
+add_executable(vacuumms-version "${PROJECT_SOURCE_DIR}/utils/vacuumms.c")
+target_include_directories(vacuumms-version PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 # These are all of the utils in the original distribution
 # vis2pov cav2vis cfg2vis add dst2hst uniq avg a2b clustercat smooth normalize cfg2gfg nsplit fvi2tiff loge log10 exp sum pow sq ck cram wdst2hst max min miss std sew povheader gfg2pov gfgc2pov fvi2pov cav2pov stack_tiffs expr_add expr_multiply dwf sqrt stream2slice truncate stream_multiply replicate_gfg replicate_cav sgfg2fvi
@@ -262,7 +263,8 @@ install(TARGETS
         stream_multiply 
         replicate_gfg 
         replicate_cav 
-        vacuumms
+#        vacuumms
+        vacuumms-version
         DESTINATION bin)
 
 if (BUILD_TIFF_UTILS)

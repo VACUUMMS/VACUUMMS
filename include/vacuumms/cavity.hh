@@ -1,13 +1,25 @@
-/* vacuumms/cavity.hh */
+// vacuumms/cavity.hh 
+#pragma once
 
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
+
+#include <vacuumms/parameters.hh>
+#include <vacuumms/types.hh>
 
 #include <vector>
 #include <iostream>
 
 
-class Cavity
+#ifdef BUILD_PYBIND_BINDINGS 
+    #include <pybind11/pybind11.h>
+    #ifdef PYBIND11_EXPORTS 
+        #define PYBIND11_EXPORT __attribute__((visibility("default")))
+    #endif
+#endif
+
+
+class PYBIND11_EXPORT Cavity
 {
     public:
 
@@ -34,7 +46,7 @@ class Cavity
 }; // end class Cavity
 
 
-class CavityConfiguration
+class PYBIND11_EXPORT CavityConfiguration
 {
     public:
 
@@ -44,10 +56,8 @@ class CavityConfiguration
         vacuumms_float box_y;
         vacuumms_float box_z;
 
-        int mirror_depth = 1;
-
         CavityConfiguration();
-        CavityConfiguration(char *filename);
+        CavityConfiguration(const char *filename);
         CavityConfiguration(FILE *instream);
         void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
         void setMirrorDepth(int _mirror_depth);
@@ -57,5 +67,33 @@ class CavityConfiguration
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
         int pushBack(Cavity _cavity);
 
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
+
+    private:
+
+        int mirror_depth = 1;
+
 }; // end class CavityConfiguration
+
+
+class PYBIND11_EXPORT CavitySizeDistribution : public Histogram
+{
+    public:
+
+        CavitySizeDistribution(CavityConfiguration cc, Parameters p);
+        void writeToFile();
+
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
+
+    private:
+
+        Parameters p;
+        CavityConfiguration cc;
+
+}; // end class CavitySizeDistribution
+
 

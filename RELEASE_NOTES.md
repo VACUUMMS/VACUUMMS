@@ -2,6 +2,12 @@
 
 ---
 
+## 1.2.1:
+
+- Patch release with minor fixes to build system for TIFF and CUDA components, precipitated by changes in how CMake handles CUDA.
+
+---
+
 ## 1.2.0:
 
 - Introduction of optional modules and First release of the variational module
