@@ -20,13 +20,14 @@ Parameters
 {
     private:
 
-        int command_line_argc;
-        std::vector<std::string> command_line_argv;
+        int parameter_argc;
+        std::vector<std::string> parameter_argv;
 
     public:
 
         Parameters();
         Parameters(int argc, char **argv);
+        Parameters(std::vector<std::string>);
 
 #ifdef BUILD_PYBIND_BINDINGS 
         Parameters(const pybind11::list&);

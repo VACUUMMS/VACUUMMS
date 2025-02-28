@@ -101,6 +101,9 @@ add_subdirectory(libraries)
 add_subdirectory(utils)
 add_subdirectory(applications)
 
+#FTW
+add_subdirectory(examples/cpp_interface)
+
 # This may be erroneous, maybe needs removed
 file(COPY conda DESTINATION conda)
 
