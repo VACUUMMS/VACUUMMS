@@ -12,11 +12,11 @@
 
 #include <vacuumms/types.h>
 
-class 
 #ifdef PYBIND11_EXPORTS 
-PYBIND11_EXPORT 
+class PYBIND11_EXPORT Parameters
+#else
+class Parameters
 #endif
-Parameters
 {
     private:
 

@@ -21,6 +21,12 @@ ConfigurationRecord
         vacuumms_float z;
         vacuumms_float sigma;
         vacuumms_float epsilon;
+        int type;
+//        void set_x();
+//        void set_y();
+//        void set_z();
+//        void set_sigma();
+//        void set_epsilon();
 
         ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon);
 };
@@ -31,6 +37,8 @@ PYBIND11_EXPORT
 #endif
 Configuration
 {
+    protected:
+
         std::vector<ConfigurationRecord> records;
 
         vacuumms_float box_x;
@@ -53,10 +61,11 @@ Configuration
         void deleteRecordAt(int i);
         int getSize();
         int pushBack(ConfigurationRecord);
+        void cram();
+
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
 #endif
 };
-
 

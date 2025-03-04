@@ -4,6 +4,8 @@
 #include <vacuumms/operations.hh>
 #include <vacuumms/ddx.hh>
 #include <vacuumms/pddx.hh>
+#include <vacuumms/lammps.hh>
+
 #include <vacuumms/types.h>
 
 #include <pybind11/pybind11.h>
@@ -34,6 +36,12 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<Configuration>(m, "Configuration")
         .def(py::init<char*>())
+        .def("__repr__", &Configuration::__repr__)
+        ;
+
+    py::class_<LAMMPSConfiguration>(m, "LAMMPSConfiguration")
+        .def(py::init<char*>())
+//        .def(py::init<char*>(std::string filename))
         .def("__repr__", &Configuration::__repr__)
         ;
 

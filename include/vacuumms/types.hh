@@ -14,7 +14,7 @@
 #include <vacuumms/exports.hh>
 
 class 
-#ifdef PYBIND11_EXPORT
+#ifdef PYBIND11_EXPORTS
 PYBIND11_EXPORT
 #endif
 Histogram

@@ -1,4 +1,5 @@
 /* vacuumms/pair.hh */
+#pragma once
 
 #include <vacuumms/types.h>
 #include <vacuumms/limits.h>
@@ -33,4 +34,21 @@ class IndexPairList
         int pushBack(IndexPair _index_pair);
 
 }; // end class IndexPairList
+
+
+class PairCoefficient
+{
+
+    public:
+
+        int index;
+        vacuumms_float sigma;
+        vacuumms_float epsilon;
+
+        PairCoefficient();
+
+        PairCoefficient(int _index, vacuumms_float _sigma, vacuumms_float _epsilon);
+
+};
+
 

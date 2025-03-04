@@ -123,6 +123,16 @@ int Configuration::pushBack(ConfigurationRecord record)
     return records.size();
 }
 
+void Configuration::cram()
+{
+    for (int i=0; i<records.size(); i++)
+    {
+        while (records[i].x > box_x) records[i].x -= box_x;
+        while (records[i].y > box_y) records[i].y -= box_y;
+        while (records[i].z > box_z) records[i].z -= box_z;
+    }
+}
+
 
 #ifdef BUILD_PYBIND_BINDINGS
 
@@ -148,3 +158,4 @@ pybind11::str Configuration::__repr__()
 }
 
 #endif
+
