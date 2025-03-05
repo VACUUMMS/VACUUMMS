@@ -24,6 +24,10 @@ LAMMPSConfiguration : public Configuration
 
         LAMMPSConfiguration(std::string filename);
       
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
+
     private:
 
         std::map<int, PairCoefficient> pairs;
@@ -34,7 +38,4 @@ LAMMPSConfiguration : public Configuration
         vacuumms_float ylo, yhi;
         vacuumms_float zlo, zhi;
 
-#ifdef BUILD_PYBIND_BINDINGS
-        pybind11::str __repr__();
-#endif
 };

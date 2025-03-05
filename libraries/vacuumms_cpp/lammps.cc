@@ -69,13 +69,15 @@ LAMMPSConfiguration::LAMMPSConfiguration(std::string filename)
                          &dummy1, &dummy2, &type, &f_dummy, 
                          &x, &y, &z, &dummy4, &dummy5, &dummy6) > 0)
             {
-                ConfigurationRecord record(x, y, z, 0, 0);
+                ConfigurationRecord record(x, y, z, pairs[type].sigma, pairs[type].epsilon);
+                record.type = type;
+                records.push_back(record);
             }
         }
 
         // now find the pairs
 
-        retval = strstr(line, "Pair");
+        retval = strstr(line, "Pair Coeffs");
         if (retval != NULL) 
         {
             // found it, so do the work
@@ -90,20 +92,39 @@ LAMMPSConfiguration::LAMMPSConfiguration(std::string filename)
         }
     } // loop back to beginning of while
 
-    vacuumms_float box_x = xhi - xlo;
-    vacuumms_float box_y = yhi - ylo;
-    vacuumms_float box_z = zhi - zlo;
+    box_x = xhi - xlo;
+    box_y = yhi - ylo;
+    box_z = zhi - zlo;
 
-    fprintf(stderr, "-box %f %f %f\n", box_x, box_y, box_z);
-
+/* This isn't necessary because Pair section is read first, and records 
+ * are initialized with pair cofficients when Atom section is read.
+ 
     // use the pair data to finalize sigma and epsilon values
     for (int i=0; i<records.size(); i++)
     {
         records[i].sigma = pairs[records[i].type].sigma;
         records[i].epsilon = pairs[records[i].type].epsilon;
-
-        // write the box data 
-//        printf("%f\t%f\t%f\t%f\t%f\n", atoms[i].x, atoms[i].y, atoms[i].z, atoms[i].sigma, atoms[i].epsilon);
     }
+*/
+
 }
+
+
+#ifdef BUILD_PYBIND_BINDINGS
+pybind11::str LAMMPSConfiguration::__repr__()
+{
+// just dump superclass output
+    pybind11::str retval = Configuration::__repr__();
+    retval += pybind11::str("box_x: ");
+    retval += pybind11::str(std::to_string(box_x));
+    retval += pybind11::str("\n");
+    retval += pybind11::str("box_y: ");
+    retval += pybind11::str(std::to_string(box_y));
+    retval += pybind11::str("\n");
+    retval += pybind11::str("box_z: ");
+    retval += pybind11::str(std::to_string(box_z));
+    retval += pybind11::str("\n");
+    return retval;
+}
+#endif
 
