@@ -31,8 +31,6 @@ LAMMPSConfiguration : public Configuration
     private:
 
         std::map<int, PairCoefficient> pairs;
-// replace with std::vector<ConfigurationRecord>
-//        std::vector<Atom> atoms;
 
         vacuumms_float xlo, xhi;
         vacuumms_float ylo, yhi;

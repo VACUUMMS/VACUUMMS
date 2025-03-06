@@ -202,12 +202,17 @@ if (BUILD_CUDA_COMPONENTS)
 endif()
 
 if (BUILD_VORONOI_UTILS)
-    add_executable(gfg2voro "${PROJECT_SOURCE_DIR}/utils/gfg2voro.cc")
-    #FTW: need to include the voro++ includes and linkage
-    message("using VOROPP_HOME set to >>>${VOROPP_HOME}<<<")
+    # Add a directory to the library search path
+    set(CMAKE_LIBRARY_PATH "${VOROPP_HOME}/lib" ${CMAKE_LIBRARY_PATH})
 
-    target_include_directories(gfg2voro PUBLIC "${VOROPP_HOME}/include/voro++")
-    target_link_libraries(gfg2voro PUBLIC vacuumms_rt vacuumms_cpp m voro++)
+    find_library(VOROPP voro++)
+    if(NOT VOROPP)
+        message(FATAL_ERROR "Could not find VOROPP. Make sure VOROPP_HOME is set.")
+    endif()
+
+    add_executable(gfg2voro "${PROJECT_SOURCE_DIR}/utils/gfg2voro.cc")
+    target_include_directories(gfg2voro PUBLIC "${VOROPP_HOME}/include")
+    target_link_libraries(gfg2voro PUBLIC vacuumms_rt vacuumms_cpp m ${VOROPP})
 endif()
 
 # vacuumms executable simply returns the version number for the version in play
