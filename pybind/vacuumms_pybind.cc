@@ -5,6 +5,7 @@
 #include <vacuumms/ddx.hh>
 #include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
+#include <vacuumms/voronoi.hh>
 
 #include <vacuumms/exports.hh>
 
@@ -39,6 +40,8 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<Configuration>(m, "Configuration")
         .def(py::init<char*>())
         .def("__repr__", &Configuration::__repr__)
+        .def("setBoxDimensions", &Configuration::setBoxDimensions)
+        .def("cram", &Configuration::cram)
         ;
 
     py::class_<LAMMPSConfiguration>(m, "LAMMPSConfiguration")
@@ -82,6 +85,19 @@ PYBIND11_MODULE(vacuumms, m)
         .def("execute", &PDDX::execute)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
+    ;
+
+    // Interface to Voronoi (Operation subclass)
+    
+    py::class_<Voronoi>(m, "Voronoi")
+        .def(py::init<>())
+        .def(py::init<Configuration, Parameters>())
+//        .def("printUsage", &Voronoi::printUsage)
+//        .def("setParameters", &Voronoi::setParameters)
+//        .def("setConfiguration", &Voronoi::setConfiguration)
+//        .def("execute", &Voronoi::execute)
+//        .def("getResult", &Voronoi::getResult)
+//        .def("__repr__", &Voronoi::__repr__)
     ;
 
     // Other classes

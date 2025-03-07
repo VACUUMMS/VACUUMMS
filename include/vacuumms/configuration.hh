@@ -39,15 +39,15 @@ Configuration
 {
     protected:
 
-        std::vector<ConfigurationRecord> records;
 
+    public:
+   
         vacuumms_float box_x;
         vacuumms_float box_y;
         vacuumms_float box_z;
 
+        std::vector<ConfigurationRecord> records;
         int mirror_depth = 1;
-    
-    public:
 
         Configuration(const char *filename);
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
