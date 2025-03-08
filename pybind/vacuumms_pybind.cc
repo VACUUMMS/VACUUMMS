@@ -1,3 +1,5 @@
+#include <vacuumms/exports.hh>
+
 #include <vacuumms/parameters.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
@@ -6,8 +8,6 @@
 #include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
 #include <vacuumms/voronoi.hh>
-
-#include <vacuumms/exports.hh>
 
 #include <vacuumms/types.h>
 
@@ -42,6 +42,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &Configuration::__repr__)
         .def("setBoxDimensions", &Configuration::setBoxDimensions)
         .def("cram", &Configuration::cram)
+        .def("isCrammed", &Configuration::isCrammed)
         ;
 
     py::class_<LAMMPSConfiguration>(m, "LAMMPSConfiguration")
@@ -92,12 +93,31 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<Voronoi>(m, "Voronoi")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
+        .def("getVertices", &Voronoi::getVertices)
+        .def("getEdges", &Voronoi::getEdges)
 //        .def("printUsage", &Voronoi::printUsage)
 //        .def("setParameters", &Voronoi::setParameters)
 //        .def("setConfiguration", &Voronoi::setConfiguration)
 //        .def("execute", &Voronoi::execute)
 //        .def("getResult", &Voronoi::getResult)
 //        .def("__repr__", &Voronoi::__repr__)
+    ;
+
+    // Declare the Vertex and Edge classes so they can be mapped in python
+
+    py::class_<VoronoiVertex>(m, "VoronoiVertex")
+        .def(py::init<>())
+        .def_readwrite("x", &VoronoiVertex::x)
+        .def_readwrite("y", &VoronoiVertex::y)
+        .def_readwrite("z", &VoronoiVertex::z)
+        .def("__repr__", &VoronoiVertex::__repr__)
+    ;
+
+    py::class_<VoronoiEdge>(m, "VoronoiEdge")
+        .def(py::init<>())
+        .def_readwrite("v1", &VoronoiEdge::v1)
+        .def_readwrite("v2", &VoronoiEdge::v2)
+        .def("__repr__", &VoronoiEdge::__repr__)
     ;
 
     // Other classes

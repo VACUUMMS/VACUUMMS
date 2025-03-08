@@ -125,16 +125,19 @@ int Configuration::pushBack(ConfigurationRecord record)
 
 void Configuration::cram()
 {
-printf("size = %d\n", records.size());
-printf("box = (%f, %f, %f)%d\n", box_x, box_y, box_z);
     for (int i=0; i<records.size(); i++)
     {
-printf("Fixing record %d of %f, %f, %f\n", i, records[i].x, records[i].y, records[i].z);
         while (records[i].x > box_x) records[i].x -= box_x;
         while (records[i].y > box_y) records[i].y -= box_y;
         while (records[i].z > box_z) records[i].z -= box_z;
     }
-printf("here.\n");
+    crammed = 1;
+}
+
+
+int Configuration::isCrammed()
+{
+    return crammed;
 }
 
 

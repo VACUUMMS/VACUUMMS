@@ -62,10 +62,14 @@ Configuration
         int getSize();
         int pushBack(ConfigurationRecord);
         void cram();
+        int isCrammed();
 
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
 #endif
+
+    private:
+        int crammed = 0;
 };
 
