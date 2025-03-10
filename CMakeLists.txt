@@ -66,6 +66,23 @@ if (ENABLE_TESTING)
     add_subdirectory(test)
 endif()
 
+if (BUILD_VORONOI_UTILS)
+    add_definitions(-DBUILD_VORONOI_UTILS)
+    # There's no find_package for voropp, so just add a path
+    # Use the environment variable if it exists
+    set(VOROPP_HOME $ENV{VOROPP_HOME})
+
+    if(NOT VOROPP_HOME)
+        # Optionally provide a default if the env var isn't set
+        # set(MY_LIBRARY_PATH "/usr/lib")
+        message("voro++ support requested but voro++ not found.")
+        message("Set the VOROPP_HOME environment variable to point to it.")
+        message(FATAL_ERROR)
+    else()
+        message("Setting voropp paths... VOROPP_HOME=${VOROPP_HOME}")
+    endif()
+endif()
+    
 if (BUILD_CUDA_COMPONENTS)
     find_package(CUDA)
     find_package(CUDAToolkit)
@@ -107,15 +124,16 @@ add_subdirectory(examples/cpp_interface)
 # This may be erroneous, maybe needs removed
 file(COPY conda DESTINATION conda)
 
-# There's no find_package for voropp, so just add a path
-if (BUILD_VORONOI_UTILS)
-# how do we set VOROPP_HOME? and check it is set?
-    # set paths here
-    add_library(voro++ SHARED IMPORTED)
-    message("Setting voropp paths... VOROPP_HOME=${VOROPP_HOME}")
-    #    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib")
-    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib/libvoro++.a")
-endif()
+
+#FTW this section probably needs deleted
+#    # Use it in your project
+#    link_directories(${VOROPP_HOME}/lib)
+
+#    # set paths here
+#    add_library(voro++ SHARED IMPORTED)
+#    message("Setting voropp paths... VOROPP_HOME=${VOROPP_HOME}")
+#    #    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib")
+#    set_target_properties(voro++ PROPERTIES IMPORTED_LOCATION "${VOROPP_HOME}/lib/libvoro++.a")
 
 # optional modules
 

@@ -44,6 +44,15 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
 )
 
+# conditionally add voronoi.cc
+if(BUILD_VORONOI_UTILS)
+    target_sources(vacuumms_cpp INTERFACE
+        ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/voronoi.cc
+    )
+    target_include_directories(vacuumms_cpp PUBLIC ${VOROPP_HOME}/include)
+    target_link_libraries(vacuumms_cpp PUBLIC voro++ )
+endif()
+
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m pthread)
 
 if (BUILD_PYBIND_BINDINGS)
