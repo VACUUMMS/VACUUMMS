@@ -9,6 +9,8 @@
 #include <math.h>
 #include <pthread.h>
 
+#include <cassert>
+
 
 PDDX::PDDX(Configuration c, Parameters p) : 
     c{c}, p{p} 

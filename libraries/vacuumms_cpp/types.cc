@@ -73,6 +73,15 @@ void Histogram::writeToFile(char* filename)
     fclose(f);
 }
 
+void Histogram::print()
+{
+    for (int i = 0; i < number_of_bins; i++)
+    {
+        vacuumms_float value = pow(bins[i], weight);
+        printf("%f\t%f\n", (vacuumms_float)(i * width_of_bins), value);
+    }
+}
+
 void Histogram::setNumberOfBins(int n_bins)
 {
     number_of_bins = n_bins;
@@ -106,15 +115,6 @@ pybind11::str Histogram::__repr__()
         retval += pybind11::str("\n");
     }
     return retval;
-}
-
-void Histogram::print()
-{
-    for (int i = 0; i < number_of_bins; i++)
-    {
-        vacuumms_float value = pow(bins[i], weight);
-        printf("%f\t%f\n", (vacuumms_float)(i * width_of_bins), value);
-    }
 }
 
 #endif

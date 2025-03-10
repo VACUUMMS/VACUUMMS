@@ -54,3 +54,17 @@ int IndexPairList::pushBack(IndexPair _index_pair)
     return records.size();
 }
 
+
+PairCoefficient::PairCoefficient()
+{
+}
+
+PairCoefficient::PairCoefficient(int _index, vacuumms_float _sigma, vacuumms_float _epsilon)
+{
+    index = _index;
+    sigma = _sigma;
+    epsilon = _epsilon;
+}
+
+
+

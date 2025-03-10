@@ -16,41 +16,46 @@
 
 Parameters::Parameters(int argc, char **argv)
 {
-    command_line_argc = argc;
-    for (int i=0; i<argc; i++) command_line_argv.push_back(argv[i]);
+    parameter_argc = argc;
+    for (int i=0; i<argc; i++) parameter_argv.push_back(argv[i]);
 }
 
 
 Parameters::Parameters()
 {
-    command_line_argc = 0;
+    parameter_argc = 0;
+}
+
+Parameters::Parameters(std::vector<std::string> p) : parameter_argv{p}
+{
+    parameter_argc = parameter_argc = parameter_argv.size();
 }
 
 #ifdef BUILD_BOOST_PYTHON_BINDINGS
 
 Parameters::Parameters(const boost::python::list& _argv)
 {
-    command_line_argc = boost::python::len(_argv);
+    parameter_argc = boost::python::len(_argv);
 
-    for (int i=0; i<command_line_argc; i++)
+    for (int i=0; i<parameter_argc; i++)
     {
         char *arg = boost::python::extract<char*>(_argv[i]);
-        command_line_argv.push_back(arg);
+        parameter_argv.push_back(arg);
     }
 }
 
 
 const char* Parameters::getStringParam(char *param_name)
 {
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("reached EOL with no value specified for %s\n", param_name);
 	    exit(1);
 	}
-	return command_line_argv[++i].c_str();
+	return parameter_argv[++i].c_str();
     }
     return NULL;
 }
@@ -64,16 +69,16 @@ int Parameters::getIntParam(char *param_name)
     p_parameter = &parameter;
     *p_parameter = 0;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	*p_parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
     return parameter;
@@ -83,16 +88,16 @@ long Parameters::getLongParam(char* param_name)
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	retval = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	retval = (strtol(parameter_argv[++i].c_str(), NULL, 10));
     }
     return retval;
 }
@@ -101,31 +106,31 @@ vacuumms_float Parameters::getFloatParam(char *param_name)
 {
     vacuumms_float retval = -0.0f;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	retval = (vacuumms_float)strtod(command_line_argv[++i].c_str(), NULL);
+	retval = (vacuumms_float)strtod(parameter_argv[++i].c_str(), NULL);
     }
     return retval;
 }
 
 double Parameters::getDoubleParam(char *param_name)
 {
-    for(int i=0; i<command_line_argc; i++)
-        if (command_line_argv[i] == param_name)
+    for(int i=0; i<parameter_argc; i++)
+        if (parameter_argv[i] == param_name)
         {
-            if (i+1>=command_line_argc) 
+            if (i+1>=parameter_argc) 
             {
 	        printf("no value specified for %s\n", param_name);
                 exit(1);
             }
-            return strtod(command_line_argv[++i].c_str(), NULL);
+            return strtod(parameter_argv[++i].c_str(), NULL);
         }
     return -0.0f;
 }
@@ -135,18 +140,18 @@ boost::python::list Parameters::getVectorParam(char *param_name)
     //std::vector<double> retval;
     boost::python::list retval;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+3>=command_line_argc) 
+	if (i+3>=parameter_argc) 
 	{
 	    printf("not enough values specified for %s\n", param_name);
 	    exit(1);
 	}
 
-        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
-        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
-        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
+        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
+        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
     }
     return retval;
 }
@@ -156,55 +161,23 @@ boost::python::list Parameters::getVectorStringParam(char *param_name)
     //std::vector<std::string> retval;
     boost::python::list retval;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+3>=command_line_argc) 
+	if (i+3>=parameter_argc) 
 	{
 	    printf("not enough values specified for %s\n", param_name);
 	    exit(1);
 	}
 
-        retval.append(command_line_argv[++i].c_str());
-        retval.append(command_line_argv[++i].c_str());
-        retval.append(command_line_argv[++i].c_str());
+        retval.append(parameter_argv[++i].c_str());
+        retval.append(parameter_argv[++i].c_str());
+        retval.append(parameter_argv[++i].c_str());
     }
     return retval;
 }
 
 #endif
-
-
-#ifdef BUILD_PYBIND_BINDINGS
-
-pybind11::str Parameters::__repr__()
-{
-    pybind11::str retval("");
-
-    for (int i=0; i<command_line_argc; i++)
-        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
-    
-    return retval;
-}
-
-pybind11::str Parameters::__str__()
-{
-    pybind11::str retval("");
-
-    for (int i=0; i<command_line_argc; i++)
-        retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
-    return retval;
-}
-
-Parameters::Parameters(const pybind11::list& _argv)
-{   
-    command_line_argc = pybind11::len(_argv);
-
-    for (const auto& item : _argv) 
-    {
-        command_line_argv.push_back(item.cast<std::string>().c_str());
-    } 
-}
 
 int Parameters::getIntParam(char *param_name)
 {
@@ -212,16 +185,16 @@ int Parameters::getIntParam(char *param_name)
     p_parameter = &parameter;
     *p_parameter = -1;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-        if (i+1>=command_line_argc) 
+        if (i+1>=parameter_argc) 
         {
             printf("no value specified for %s\n", param_name);
             break;
         }
 
-        *p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+        *p_parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
     }
     return parameter;
 }
@@ -232,16 +205,16 @@ vacuumms_float Parameters::getFloatParam(char *param_name)
     p_parameter = &parameter;
     *p_parameter = -0.0;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-        if (i+1>=command_line_argc) 
+        if (i+1>=parameter_argc) 
         {
             printf("no value specified for %s\n", param_name);
             break;
         }
 
-        *p_parameter = (strtod(command_line_argv[++i].c_str(), NULL));
+        *p_parameter = (strtod(parameter_argv[++i].c_str(), NULL));
     }
     return parameter;
 }
@@ -250,36 +223,68 @@ const char* Parameters::getStringParam(char* param_name)
 {
     const char* parameter;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-        if (i+1>=command_line_argc) 
+        if (i+1>=parameter_argc) 
         {
             printf("no value specified for %s\n", param_name);
             break;
         }
 
-        parameter = command_line_argv[++i].c_str();
+        parameter = parameter_argv[++i].c_str();
     }
     return parameter;
+}
+
+
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str Parameters::__repr__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<parameter_argc; i++)
+        retval = retval + pybind11::str(parameter_argv[i]) + pybind11::str("\n");
+    
+    return retval;
+}
+
+pybind11::str Parameters::__str__()
+{
+    pybind11::str retval("");
+
+    for (int i=0; i<parameter_argc; i++)
+        retval = retval + pybind11::str(parameter_argv[i]) + pybind11::str("\n");
+    return retval;
+}
+
+Parameters::Parameters(const pybind11::list& _argv)
+{   
+    parameter_argc = pybind11::len(_argv);
+
+    for (const auto& item : _argv) 
+    {
+        parameter_argv.push_back(item.cast<std::string>().c_str());
+    } 
 }
 
 pybind11::list Parameters::getVectorParam(char *param_name)
 {
     pybind11::list retval;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-        if (i+3>=command_line_argc) 
+        if (i+3>=parameter_argc) 
         {
             printf("not enough values specified for %s\n", param_name);
             break;
         }
 
-        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
-        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
-        retval.append(strtod(command_line_argv[++i].c_str(), NULL));
+        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
+        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
+        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
     }
     return retval;
 }
@@ -288,18 +293,18 @@ pybind11::list Parameters::getVectorStringParam(char* param_name)
 {
     pybind11::list retval;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-        if (i+3>=command_line_argc) 
+        if (i+3>=parameter_argc) 
         {
             printf("not enough values specified for %s\n", param_name);
             break;
         }
 
-        retval.append(command_line_argv[++i].c_str());
-        retval.append(command_line_argv[++i].c_str());
-        retval.append(command_line_argv[++i].c_str());
+        retval.append(parameter_argv[++i].c_str());
+        retval.append(parameter_argv[++i].c_str());
+        retval.append(parameter_argv[++i].c_str());
     }
     return retval;
 }
@@ -310,9 +315,9 @@ pybind11::list Parameters::getVectorStringParam(char* param_name)
 
 int Parameters::addParameter(const char* parameter)
 {
-    command_line_argv.push_back(parameter);
-    command_line_argc = command_line_argv.size();
-    return command_line_argc;
+    parameter_argv.push_back(parameter);
+    parameter_argc = parameter_argv.size();
+    return parameter_argc;
 }
 
 
@@ -320,17 +325,17 @@ int Parameters::getStringParam(char *param_name, const char **parameter)
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("reached EOL with no value specified for %s\n", param_name);
 	    exit(1);
 	}
-	// parameter = &command_line_argv[++i];
-	//FTW*parameter = command_line_argv[++i];
-	*parameter = command_line_argv[++i].c_str();
+	// parameter = &parameter_argv[++i];
+	//FTW*parameter = parameter_argv[++i];
+	*parameter = parameter_argv[++i].c_str();
 	retval = 1;
     }
     return retval;
@@ -341,16 +346,16 @@ int Parameters::getIntParam(char *param_name, int *p_parameter)
 {
     int retval = 0;
 
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	*p_parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	*p_parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
     return retval;
@@ -361,16 +366,16 @@ int Parameters::getLongParam(char *param_name, long *parameter)
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	*parameter = (strtol(command_line_argv[++i].c_str(), NULL, 10));
+	*parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
 	retval = 1;
     }
     return retval;
@@ -381,16 +386,16 @@ int Parameters::getFloatParam(char *param_name, vacuumms_float *parameter)
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	*parameter = (vacuumms_float)strtod(command_line_argv[++i].c_str(), NULL);
+	*parameter = (vacuumms_float)strtod(parameter_argv[++i].c_str(), NULL);
 	retval = 1;
     }
     return retval;
@@ -401,16 +406,16 @@ int Parameters::getDoubleParam(char *param_name, double *parameter)
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+1>=command_line_argc) 
+	if (i+1>=parameter_argc) 
 	{
 	    printf("no value specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	*parameter = (strtod(command_line_argv[++i].c_str(), NULL));
+	*parameter = (strtod(parameter_argv[++i].c_str(), NULL));
 	retval = 1;
     }
     return retval;
@@ -424,18 +429,18 @@ int Parameters::getVectorParam(char *param_name,
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name) 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
     {
-	if (i+3>=command_line_argc) 
+	if (i+3>=parameter_argc) 
 	{
 	    printf("not enough values specified for %s\n", param_name);
 	    exit(1);
 	}
 
-	*parameter1 = (strtod(command_line_argv[++i].c_str(), NULL));
-	*parameter2 = (strtod(command_line_argv[++i].c_str(), NULL));
-	*parameter3 = (strtod(command_line_argv[++i].c_str(), NULL));
+	*parameter1 = (strtod(parameter_argv[++i].c_str(), NULL));
+	*parameter2 = (strtod(parameter_argv[++i].c_str(), NULL));
+	*parameter3 = (strtod(parameter_argv[++i].c_str(), NULL));
 	retval = 1;
     }
     return retval;
@@ -449,18 +454,18 @@ int Parameters::getVectorStringParam(char *param_name,
 {
     int retval = 0;
  
-    for (int i=0; i<command_line_argc; i++)
-    if (command_line_argv[i] == param_name)
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
     {
-        if (i+3>=command_line_argc) 
+        if (i+3>=parameter_argc) 
         {
             printf("not enough values specified for %s\n", param_name);
             exit(1);
         }
 
-        *parameter1 = command_line_argv[++i].c_str();
-        *parameter2 = command_line_argv[++i].c_str();
-        *parameter3 = command_line_argv[++i].c_str();
+        *parameter1 = parameter_argv[++i].c_str();
+        *parameter2 = parameter_argv[++i].c_str();
+        *parameter3 = parameter_argv[++i].c_str();
         retval = 1;
     }
     return retval;
@@ -469,7 +474,7 @@ int Parameters::getVectorStringParam(char *param_name,
 
 int Parameters::getFlagParam(char *param_name)
 {
-    for (int i=0; i<command_line_argc; i++) if (command_line_argv[i] == param_name) return 1;
+    for (int i=0; i<parameter_argc; i++) if (parameter_argv[i] == param_name) return 1;
 
     return 0;
 }

@@ -28,6 +28,7 @@ typedef struct vacuumms_vector
 
 struct Atom
 {
+  int type;
   float x;
   float y;
   float z;
