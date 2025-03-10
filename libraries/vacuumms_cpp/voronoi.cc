@@ -1,3 +1,4 @@
+/* libraries/vacuumms_cpp/voronoi.cc */
 
 #include <iostream>
 #include <vector>
@@ -114,7 +115,7 @@ pybind11::str VoronoiVertex::__repr__()
         pybind11::str(std::to_string(y)) +
         pybind11::str(", ") +
         pybind11::str(std::to_string(z)) +
-        pybind11::str(")");
+        pybind11::str(")\n");
     return retval;
 }
 
@@ -126,7 +127,7 @@ pybind11::str VoronoiEdge::__repr__()
         pybind11::str(std::to_string(v1)) +
         pybind11::str(", ") +
         pybind11::str(std::to_string(v2)) +
-        pybind11::str(")");
+        pybind11::str(")\n");
     return retval;
 }
 

@@ -7,7 +7,10 @@
 #include <vacuumms/ddx.hh>
 #include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
+
+#ifdef BUILD_VORONOI_UTILS
 #include <vacuumms/voronoi.hh>
+#endif
 
 #include <vacuumms/types.h>
 
@@ -88,6 +91,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &PDDX::__repr__)
     ;
 
+#ifdef BUILD_VORONOI_UTILS
+
     // Interface to Voronoi (Operation subclass)
     
     py::class_<Voronoi>(m, "Voronoi")
@@ -119,6 +124,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def_readwrite("v2", &VoronoiEdge::v2)
         .def("__repr__", &VoronoiEdge::__repr__)
     ;
+
+#endif
 
     // Other classes
     
