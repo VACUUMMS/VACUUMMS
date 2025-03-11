@@ -84,6 +84,7 @@ if (BUILD_VORONOI_UTILS)
 endif()
     
 if (BUILD_CUDA_COMPONENTS)
+    add_definitions(-DBUILD_CUDA_COMPONENTS)
     find_package(CUDA)
     find_package(CUDAToolkit)
 endif()

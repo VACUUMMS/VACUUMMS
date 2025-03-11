@@ -109,21 +109,19 @@ endif() # BUILD_TIFF_UTILS
 
 
 if (BUILD_CUDA_COMPONENTS)
+
     add_library(vacuumms_cuda SHARED
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_cuda_utils.cu
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_gfg2fvi.cu
-    )
+        ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/fvi.cu
+        )
     target_include_directories(vacuumms_cuda PUBLIC
        "${PROJECT_SOURCE_DIR}/include"
-    )
+        )
 
-    target_link_libraries(vacuumms_cuda PUBLIC cuda CUDA::cudart m)
+    target_link_libraries(vacuumms_cuda PUBLIC cuda CUDA::cudart m vacuumms_cpp)
 
     set_property(TARGET vacuumms_cuda PROPERTY CUDA_ARCHITECTURES OFF)
-
-target_include_directories(vacuumms_cpp PUBLIC
-    "${PROJECT_SOURCE_DIR}/include"
-)
 
 endif()
 

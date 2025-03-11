@@ -165,7 +165,7 @@ extern "C" vacuumms_EnergyArray256 *GFGToRepulsion256_612(vacuumms_GFG65536 *gfg
   dim3 dimBlock(256, 1, 1);
 
   EnergyKernel256_612<<< dimGrid, dimBlock >>>(d_configuration, NULL, d_repulsion, NULL);
-  cudaThreadSynchronize(); // block until the device has completed
+  cudaDeviceSynchronize(); // block until the device has completed
   err = cudaGetLastError();
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
@@ -215,7 +215,7 @@ fprintf(stderr, "mem copying...\n");
 fprintf(stderr, "launching kernel...\n");
   EnergyKernel512_612<<< dimGrid, dimBlock >>>(d_configuration, NULL, d_repulsion, NULL);
 fprintf(stderr, "synchronizing...\n");
-  cudaThreadSynchronize(); // block until the device has completed
+  cudaDeviceSynchronize(); // block until the device has completed
   err = cudaGetLastError();
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
@@ -260,7 +260,7 @@ extern "C" vacuumms_EnergyArray256 *GFGToRepulsion256(vacuumms_GFG65536 *gfg, fl
   dim3 dimBlock(256, 1, 1);
 
   EnergyKernel256<<< dimGrid, dimBlock >>>(d_configuration, NULL, d_repulsion, NULL);
-  cudaThreadSynchronize(); // block until the device has completed
+  cudaDeviceSynchronize(); // block until the device has completed
   err = cudaGetLastError();
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
@@ -304,7 +304,7 @@ extern "C" vacuumms_EnergyArray256 *GFGToEnergyArray256(vacuumms_GFG65536 *gfg, 
   dim3 dimBlock(256, 1, 1);
 
   EnergyKernel256<<< dimGrid, dimBlock >>>(d_configuration, NULL, NULL, d_energy_array);
-  cudaThreadSynchronize(); // block until the device has completed
+  cudaDeviceSynchronize(); // block until the device has completed
   err = cudaGetLastError();
   if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
@@ -392,7 +392,7 @@ extern "C" vacuumms_EnergyArray1024 *GFGToEnergyArray1024_612(vacuumms_GFG65536 
   for (int chunk=0; chunk < chunks; chunk++)
   {
     EnergyKernel1024_612<<< dimGrid, dimBlock >>>(d_configuration, NULL, NULL, d_energy_array_chunk, chunk, chunk_size);
-    cudaThreadSynchronize(); // block until the device has completed
+    cudaDeviceSynchronize(); // block until the device has completed
     err = cudaGetLastError();
     if (err != cudaSuccess) {printf("CUDA error:  %s\n", cudaGetErrorString(err)); exit(1);}
     // retrieve result
@@ -438,7 +438,7 @@ extern "C" vacuumms_EnergyArray1024 *GFGToRepulsion1024_612(vacuumms_GFG65536 *g
   for (int chunk=0; chunk < chunks; chunk++)
   {
     EnergyKernel1024_612<<< dimGrid, dimBlock >>>(d_configuration, NULL, d_repulsion_chunk, NULL, chunk, chunk_size);
-    cudaThreadSynchronize(); // block until the device has completed
+    cudaDeviceSynchronize(); // block until the device has completed
     err = cudaGetLastError();
     if (err != cudaSuccess) {printf("CUDA error:  %s\n", cudaGetErrorString(err)); exit(1);}
     // retrieve result

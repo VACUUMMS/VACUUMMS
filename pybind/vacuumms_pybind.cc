@@ -12,6 +12,10 @@
 #include <vacuumms/voronoi.hh>
 #endif
 
+#ifdef BUILD_CUDA_COMPONENTS
+#include <vacuumms/cuda.hh>
+#endif
+
 #include <vacuumms/types.h>
 
 //#include <pybind11/pybind11.h>
@@ -124,6 +128,22 @@ PYBIND11_MODULE(vacuumms, m)
         .def_readwrite("v2", &VoronoiEdge::v2)
         .def("__repr__", &VoronoiEdge::__repr__)
     ;
+
+#endif
+
+#ifdef BUILD_CUDA_COMPONENTS
+
+    py::class_<FVIX>(m, "FVIX")
+        .def(py::init<>())
+        .def(py::init<Configuration, Parameters>())
+//        .def("printUsage", &FVIX::printUsage)
+//        .def("setParameters", &FVIX::setParameters)
+//        .def("setConfiguration", &FVIX::setConfiguration)
+//        .def("execute", &FVIX::execute)
+//        .def("getResult", &FVIX::getResult)
+//        .def("__repr__", &FVIX::__repr__)
+    ;
+
 
 #endif
 

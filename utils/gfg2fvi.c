@@ -7,10 +7,11 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <cuda_runtime.h>
 
 float attenuator = 1.0;
 
-main(int argc, char *argv[]) 
+int main(int argc, char *argv[]) 
 {
   int i,j,k;
   double box_x=10, box_y=10, box_z=10;
@@ -109,5 +110,7 @@ main(int argc, char *argv[])
     printf("unknown resolution/potential combination %d/%d\n", resolution, potential);
     exit(1);
   }
+
+  return 0;
 }
 
