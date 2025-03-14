@@ -81,6 +81,10 @@ class Parameters
                                  double *parameter1,  
                                  double *parameter2, 
                                  double *parameter3);
+	int getVectorParam(char *param_name, 
+                                 vacuumms_float *parameter1,  
+                                 vacuumms_float *parameter2, 
+                                 vacuumms_float *parameter3);
 	int getVectorStringParam(char *param_name, 
                                  const char **parameter1, 
                                  const char **parameter2, 

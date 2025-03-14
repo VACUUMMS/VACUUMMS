@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 
-main(int argc, char *argv[]) 
+int main(int argc, char *argv[]) 
 {
   int i,j,k;
   double box_x=10, box_y=10, box_z=10;
@@ -95,5 +95,7 @@ main(int argc, char *argv[])
 
     printf("%f\t%f\t%f\t%f\n", test_x, test_y, test_z, preexponential * exp( - repulsion / temperature ) ); 
   }
+
+  return 0;
 }
 

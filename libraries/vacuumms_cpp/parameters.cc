@@ -423,6 +423,31 @@ int Parameters::getDoubleParam(char *param_name, double *parameter)
 
 
 int Parameters::getVectorParam(char *param_name, 
+                               vacuumms_float *parameter1,  
+                               vacuumms_float *parameter2, 
+                               vacuumms_float *parameter3)
+{
+    int retval = 0;
+ 
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
+    {
+	if (i+3>=parameter_argc) 
+	{
+	    printf("not enough values specified for %s\n", param_name);
+	    exit(1);
+	}
+
+	*parameter1 = (strtod(parameter_argv[++i].c_str(), NULL));
+	*parameter2 = (strtod(parameter_argv[++i].c_str(), NULL));
+	*parameter3 = (strtod(parameter_argv[++i].c_str(), NULL));
+	retval = 1;
+    }
+    return retval;
+}
+
+
+int Parameters::getVectorParam(char *param_name, 
                                double *parameter1,  
                                double *parameter2, 
                                double *parameter3)

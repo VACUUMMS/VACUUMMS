@@ -42,7 +42,9 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/types.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/FVI.cc
 )
+
 
 # conditionally add voronoi.cc
 if(BUILD_VORONOI_UTILS)
@@ -54,6 +56,11 @@ if(BUILD_VORONOI_UTILS)
 endif()
 
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m pthread)
+
+if(BUILD_CUDA_COMPONENTS)
+    target_link_libraries(vacuumms_cpp PUBLIC)
+    target_sources(vacuumms_cpp PRIVATE ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cu)
+endif()
 
 if (BUILD_PYBIND_BINDINGS)
 #    target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
@@ -113,7 +120,6 @@ if (BUILD_CUDA_COMPONENTS)
     add_library(vacuumms_cuda SHARED
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_cuda_utils.cu
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_gfg2fvi.cu
-        ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/fvi.cu
         )
     target_include_directories(vacuumms_cuda PUBLIC
        "${PROJECT_SOURCE_DIR}/include"

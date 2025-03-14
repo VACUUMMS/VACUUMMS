@@ -39,6 +39,7 @@ Configuration
 {
     protected:
 
+        int crammed = 0;
 
     public:
    
@@ -48,6 +49,7 @@ Configuration
 
         std::vector<ConfigurationRecord> records;
         int mirror_depth = 1;
+        int replication_depth = 0;
 
         Configuration(const char *filename);
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
@@ -63,13 +65,11 @@ Configuration
         int pushBack(ConfigurationRecord);
         void cram();
         int isCrammed();
-
+        void replicate(int depth);
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
 #endif
 
-    private:
-        int crammed = 0;
 };
 

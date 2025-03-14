@@ -1,3 +1,5 @@
+/* pybind/vacuumms_pybind.cc */
+
 #include <vacuumms/exports.hh>
 
 #include <vacuumms/parameters.hh>
@@ -18,8 +20,6 @@
 
 #include <vacuumms/types.h>
 
-//#include <pybind11/pybind11.h>
-//#include <pybind11/stl.h>
 #include <iostream>
 
 
@@ -136,16 +136,17 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<FVIX>(m, "FVIX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
-//        .def("printUsage", &FVIX::printUsage)
-//        .def("setParameters", &FVIX::setParameters)
-//        .def("setConfiguration", &FVIX::setConfiguration)
-//        .def("execute", &FVIX::execute)
-//        .def("getResult", &FVIX::getResult)
-//        .def("__repr__", &FVIX::__repr__)
+        .def("printUsage", &FVIX::printUsage)
+        .def("setParameters", &FVIX::setParameters)
+        .def("setConfiguration", &FVIX::setConfiguration)
+        .def("execute", &FVIX::execute)
+        .def("getResult", &FVIX::getResult)
+        .def("printResult", &FVIX::printResult)
+        .def("__repr__", &FVIX::__repr__)
     ;
 
-
 #endif
+
 
     // Other classes
     

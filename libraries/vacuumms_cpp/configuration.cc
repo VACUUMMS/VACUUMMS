@@ -141,6 +141,30 @@ int Configuration::isCrammed()
 }
 
 
+void Configuration::replicate(int depth)
+{
+    // Use size of original vector
+    size_t size = records.size();
+
+    for (int r = 0; r < size; r++)
+    {
+        for (int i=-depth; i<=depth; i++)
+        for (int j=-depth; j<=depth; j++)
+        for (int k=-depth; k<=depth; k++)
+        {
+            // skip the center box
+            if (!(i==0)&&(j==0)&&(k==0))
+                pushBack(ConfigurationRecord((box_x * i) + records[r].x, 
+                                             (box_y * j) + records[r].y, 
+                                             (box_z * k) + records[r].z, 
+                                             records[r].sigma, 
+                                             records[r].epsilon)); 
+        }
+    }
+    replication_depth = depth;
+}
+
+
 #ifdef BUILD_PYBIND_BINDINGS
 
 pybind11::str Configuration::__repr__()

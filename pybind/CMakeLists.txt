@@ -9,7 +9,7 @@ target_include_directories(vacuumms PUBLIC
     )
 
 # vacuumms is the name of the binding module, what gets imported to python
-target_link_libraries(vacuumms PUBLIC vacuumms_rt vacuumms_cpp)
+target_link_libraries(vacuumms PUBLIC vacuumms_rt vacuumms_cpp vacuumms_cuda)
 
 install(TARGETS vacuumms
         DESTINATION lib)
