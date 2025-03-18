@@ -34,6 +34,7 @@ FVIX : public Operation
 
         // wrapper to CUDA kernel
         vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg);
+        void runKernel();
 
         ~FVIX();
 

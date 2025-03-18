@@ -68,7 +68,9 @@ void FVIX::execute()
 
     p.getVectorParam((char*)"-box", &c.box_x, &c.box_y, &c.box_z);
 
-    ea = calculateRepulsions(c);
+//    ea = calculateRepulsions(c);
+
+    runKernel();
 
 } // end FVI::execute()
 
