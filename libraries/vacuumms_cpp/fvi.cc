@@ -41,6 +41,19 @@ Configuration FVIX::getConfiguration()
     return c;
 }
 
+void FVIX::setDimensions(std::vector<size_t> _dimensions)
+{
+    dimensions = _dimensions;
+}
+
+
+#ifdef BUILD_PYBIND_BINDINGS
+pybind11::array_t<vacuumms_float>FVIX::getRepulsion()
+{
+    return pybind11::array_t<vacuumms_float>(dimensions, repulsion.data());
+}
+#endif
+
 
 void FVIX::execute()
 {
@@ -70,7 +83,6 @@ void FVIX::printResult()
                k*c.box_z / resolution, 
                preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
 }
-
 
 //CavityConfiguration DDX::getResult()
 // Need to think about how to return the huge result...

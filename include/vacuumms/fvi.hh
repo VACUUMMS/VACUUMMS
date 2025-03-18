@@ -25,6 +25,7 @@ FVIX : public Operation
         Parameters getParameters();
         void setConfiguration(Configuration);
         Configuration getConfiguration();
+        void setDimensions(std::vector<size_t>);
         void execute();
         void* getResult();
         void printResult();
@@ -37,6 +38,7 @@ FVIX : public Operation
         ~FVIX();
 
 #ifdef BUILD_PYBIND_BINDINGS
+        pybind11::array_t<vacuumms_float>getRepulsion();
         pybind11::str __repr__();
 #endif
 
@@ -45,13 +47,18 @@ FVIX : public Operation
         Parameters p;
         Configuration c;
         vacuumms_EnergyArray16* ea;
+        
+        std::vector<size_t> dimensions = {2,2,2};
+        std::vector<vacuumms_float> attraction;
+        std::vector<vacuumms_float> repulsion;
+        std::vector<vacuumms_float> energy;
 
         int resolution = 16;
-        float attenuator = 1.0;
-        float preexponential = 1.0;
-        float sigma=0.0;
-        float epsilon=1.0;
-        float temperature = 1.0;
+        vacuumms_float attenuator = 1.0;
+        vacuumms_float preexponential = 1.0;
+        vacuumms_float sigma=0.0;
+        vacuumms_float epsilon=1.0;
+        vacuumms_float temperature = 1.0;
 
 };
  
