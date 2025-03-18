@@ -11,27 +11,29 @@
 __global__ void EnergyKernel16_612(
     ConfigurationRecord* d_configuration, 
     int     n_records, 
-    float   box_x, 
-    float   box_y, 
-    float   box_z,
-    vacuumms_EnergyArray16 *d_repulsion)
+    vacuumms_float   box_x, 
+    vacuumms_float   box_y, 
+    vacuumms_float   box_z,
+    vacuumms_EnergyArray16 *d_attraction,
+    vacuumms_EnergyArray16 *d_repulsion,
+    vacuumms_EnergyArray16 *d_total)
 {
     // blockIdx values are provided by CUDA
     unsigned int idx = blockIdx.x;
     unsigned int idy = blockIdx.y;
     unsigned int idz = threadIdx.x;
 
-    float repulsion=0;
-//    float attraction=0;
-    float sigma_over_r_sq;
-    float dx, dy, dz, dd;
-    float f_resolution_x = box_x / 16.0f;
-    float f_resolution_y = box_y / 16.0f;
-    float f_resolution_z = box_z / 16.0f;
+    vacuumms_float repulsion=0;
+    vacuumms_float attraction=0;
+    vacuumms_float sigma_over_r_sq;
+    vacuumms_float dx, dy, dz, dd;
+    vacuumms_float f_resolution_x = box_x / 16.0f;
+    vacuumms_float f_resolution_y = box_y / 16.0f;
+    vacuumms_float f_resolution_z = box_z / 16.0f;
 
-    float cuda_x = idx * f_resolution_x;
-    float cuda_y = idy * f_resolution_y;
-    float cuda_z = idz * f_resolution_z;
+    vacuumms_float cuda_x = idx * f_resolution_x;
+    vacuumms_float cuda_y = idy * f_resolution_y;
+    vacuumms_float cuda_z = idz * f_resolution_z;
 
     // evaluate energy at (cuda_x, cuda_y, cuda_z);
     for (int i=0; i< n_records; i++) 
@@ -44,25 +46,16 @@ __global__ void EnergyKernel16_612(
         sigma_over_r_sq = d_configuration[i].sigma 
                         * d_configuration[i].sigma 
                         / dd; 
-        repulsion += d_configuration[i].epsilon 
-                  * sigma_over_r_sq 
-                  * sigma_over_r_sq 
-                  * sigma_over_r_sq 
-                  * sigma_over_r_sq 
-                  * sigma_over_r_sq 
-                  * sigma_over_r_sq;
-
- //       attraction += d_configuration->atom[i].epsilon 
- //                 * sigma_over_r_sq 
- //                 * sigma_over_r_sq 
- //                 * sigma_over_r_sq;
+        vacuumms_float sigma_over_r_6 = sigma_over_r_sq * sigma_over_r_sq * sigma_over_r_sq;
+        vacuumms_float sigma_over_r_12 = sigma_over_r_6 * sigma_over_r_6;
+        repulsion += d_configuration[i].epsilon * sigma_over_r_12;
+        attraction += d_configuration[i].epsilon * sigma_over_r_6;
     } 
 
-// If NULL pointers are passed for the attraction or repulsion, no values are returned.
-//    if (d_attraction) d_attraction->energy[idx][idy][idz] = 4 * attraction;
-//    if (d_repulsion) d_repulsion->energy[idx][idy][idz] = 4 * repulsion;
-//    if (d_total) d_total->energy[idx][idy][idz] = 4 * repulsion - 4 * attraction;
-    d_repulsion->energy[idx][idy][idz] = 4 * repulsion;
+    // If NULL pointers are passed for the attraction or repulsion, no values are returned.
+    if (d_attraction) d_attraction->energy[idx][idy][idz] = 4 * attraction;
+    if (d_repulsion) d_repulsion->energy[idx][idy][idz] = 4 * repulsion;
+    if (d_total) d_total->energy[idx][idy][idz] = 4 * repulsion - 4 * attraction;
 }
 
 
@@ -138,7 +131,7 @@ printf("sync device\n");
 printf("running kernel\n");
 
     //EnergyKernel256_612<<< dimGrid, dimBlock >>>(d_configuration, NULL, d_repulsion, NULL);
-    EnergyKernel16_612<<< dimGrid, dimBlock >>>(d_records, n_records, gfg.box_x, gfg.box_y, gfg.box_z, d_repulsion);
+    EnergyKernel16_612<<< dimGrid, dimBlock >>>(d_records, n_records, gfg.box_x, gfg.box_y, gfg.box_z, NULL, d_repulsion, NULL);
 
 printf("sync device\n");
 

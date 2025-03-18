@@ -22,6 +22,7 @@ FVIX : public Operation
         FVIX(Configuration, Parameters);
         void printUsage();
         void setParameters(Parameters);
+        Parameters getParameters();
         void setConfiguration(Configuration);
         Configuration getConfiguration();
         void execute();

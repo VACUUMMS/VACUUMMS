@@ -26,6 +26,11 @@ void FVIX::setParameters(Parameters _p)
     p = _p;
 }
 
+Parameters FVIX::getParameters()
+{
+    return p;
+}
+
 void FVIX::setConfiguration(Configuration _c)
 {
     c = _c;
@@ -39,18 +44,6 @@ Configuration FVIX::getConfiguration()
 
 void FVIX::execute()
 {
-
-/*
-    int resolution = 16;
-    float attenuator = 1.0;
-    float preexponential = 1.0;
-    float sigma=0.0;
-    float epsilon=1.0;
-    float temperature = 1.0;
-*/
-
-//FTW: move this all to constructor?
-//
     p.getIntParam((char*)"-resolution", &resolution);
     p.getFloatParam((char*)"-attenuator", &attenuator);
     p.getFloatParam((char*)"-preexponential", &preexponential);
