@@ -1,10 +1,11 @@
-/* vacuumms/cuda.hh */
+/* vacuumms/fvi.hh */
 
 #pragma once
 
 #include <vacuumms/operations.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/parameters.hh>
+#include <vacuumms/types.hh>
 
 #include <vacuumms/exports.hh>
 
@@ -22,9 +23,15 @@ FVIX : public Operation
         void printUsage();
         void setParameters(Parameters);
         void setConfiguration(Configuration);
+        Configuration getConfiguration();
         void execute();
         void* getResult();
         void printResult();
+
+        template<size_t resolution> FVIArray<resolution>* calculateFVI(Configuration);
+
+        // wrapper to CUDA kernel
+        vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg);
 
         ~FVIX();
 
@@ -48,6 +55,8 @@ FVIX : public Operation
 };
  
 
-// wrapper to CUDA kernel
-vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg);
+
+
+
+
 

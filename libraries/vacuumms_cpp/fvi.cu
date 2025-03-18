@@ -2,8 +2,9 @@
 
 #include <cuda_runtime.h>
 #include <vector>
+
 #include <vacuumms/cuda.h>
-#include <vacuumms/cuda.hh>
+#include <vacuumms/fvi.hh>
 
 // This is the kernel, called by the GFGToRepulsionX() functions, 
 // which are, in turn, exposed as the API.
@@ -65,8 +66,15 @@ __global__ void EnergyKernel16_612(
 }
 
 
+template <size_t resolution>
+FVIArray<resolution>* calculateFVI(Configuration gfg)
+{
+    fprintf(stderr, "calculateFVI not implemented and resolution = %d.\n", resolution);
+    return nullptr;
+}
 
-vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg)
+
+vacuumms_EnergyArray16* FVIX::calculateRepulsions(Configuration gfg)
 {
     vacuumms_EnergyArray16 	*d_repulsion;
 

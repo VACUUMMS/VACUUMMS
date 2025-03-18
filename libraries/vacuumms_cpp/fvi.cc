@@ -1,9 +1,9 @@
-/* libraries/vacuumms_cpp/FVI.cc */
+/* libraries/vacuumms_cpp/fvi.cc */
 
 #include <vacuumms/ddx.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
-#include <vacuumms/cuda.hh>
+#include <vacuumms/fvi.hh>
 
 #include <vacuumms/limits.h>
 #include <vacuumms/rng.h>
@@ -29,6 +29,11 @@ void FVIX::setParameters(Parameters _p)
 void FVIX::setConfiguration(Configuration _c)
 {
     c = _c;
+}
+
+Configuration FVIX::getConfiguration()
+{
+    return c;
 }
 
 

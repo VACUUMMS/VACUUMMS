@@ -269,6 +269,7 @@ Parameters::Parameters(const pybind11::list& _argv)
     } 
 }
 
+/* FTW can i replace with std::vector type? yes
 pybind11::list Parameters::getVectorParam(char *param_name)
 {
     pybind11::list retval;
@@ -288,6 +289,7 @@ pybind11::list Parameters::getVectorParam(char *param_name)
     }
     return retval;
 }
+*/
 
 pybind11::list Parameters::getVectorStringParam(char* param_name)
 {
@@ -418,6 +420,43 @@ int Parameters::getDoubleParam(char *param_name, double *parameter)
 	*parameter = (strtod(parameter_argv[++i].c_str(), NULL));
 	retval = 1;
     }
+    return retval;
+}
+
+
+std::vector<vacuumms_float> Parameters::getVectorParam(const char* param_name)
+{
+    return Parameters::getVectorParam(std::string(param_name));
+}
+
+
+std::vector<vacuumms_float> Parameters::getVectorParam(char* param_name)
+{
+    return Parameters::getVectorParam(std::string(param_name));
+}
+
+
+std::vector<vacuumms_float> Parameters::getVectorParam(std::string param_name)
+{
+    std::vector<vacuumms_float> retval(3);
+
+    int found = 0;
+
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name) 
+    {
+        found = 1;
+        if (i+3>=parameter_argc) 
+        {
+            fprintf(stderr, "not enough values specified for %s\n", param_name);
+            return retval;
+        }
+
+        retval[0] = (strtod(parameter_argv[++i].c_str(), NULL));
+        retval[1] = (strtod(parameter_argv[++i].c_str(), NULL));
+        retval[2] = (strtod(parameter_argv[++i].c_str(), NULL));
+    }
+    if (!found) fprintf(stderr, "getVectorParam <<<%s>>> not found.\n", param_name.c_str());
     return retval;
 }
 

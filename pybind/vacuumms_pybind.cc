@@ -15,7 +15,7 @@
 #endif
 
 #ifdef BUILD_CUDA_COMPONENTS
-#include <vacuumms/cuda.hh>
+#include <vacuumms/fvi.hh>
 #endif
 
 #include <vacuumms/types.h>
@@ -36,7 +36,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getIntParam", [](Parameters& self, char* arg) -> int {return self.getIntParam(arg);} )
         .def("getFloatParam", [](Parameters& self, char* arg) -> vacuumms_float {return self.getFloatParam(arg);})
         .def("getStringParam", [](Parameters& self, char* arg) -> py::str {return self.getStringParam(arg);})
-        .def("getVectorParam", [](Parameters& self, char* arg)-> py::list {return self.getVectorParam(arg); })
+        .def("getVectorParam", [](Parameters& self, char* arg)-> std::vector<vacuumms_float> {return self.getVectorParam(arg); })
         .def("getVectorStringParam", [](Parameters& self, char* arg)-> py::list {return self.getVectorStringParam(arg); })
         .def("__repr__", &Parameters::__repr__)
         .def("__str__", &Parameters::__str__)
@@ -48,12 +48,20 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<char*>())
         .def("__repr__", &Configuration::__repr__)
         .def("setBoxDimensions", &Configuration::setBoxDimensions)
+        .def("getBoxDimensions", &Configuration::getBoxDimensions)
         .def("cram", &Configuration::cram)
         .def("isCrammed", &Configuration::isCrammed)
+        .def("replicate", &Configuration::replicate)
+        .def("getSize", &Configuration::getSize)
         ;
 
     py::class_<LAMMPSConfiguration>(m, "LAMMPSConfiguration")
         .def(py::init<std::string>())
+        .def("setBoxDimensions", &LAMMPSConfiguration::setBoxDimensions)
+        .def("getBoxDimensions", &LAMMPSConfiguration::getBoxDimensions)
+        .def("cram", &LAMMPSConfiguration::cram)
+        .def("isCrammed", &LAMMPSConfiguration::isCrammed)
+        .def("replicate", &LAMMPSConfiguration::replicate)
         .def("getSize", &LAMMPSConfiguration::getSize)
         .def("__repr__", &LAMMPSConfiguration::__repr__)
         ;
@@ -77,6 +85,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("printUsage", &DDX::printUsage)
         .def("setParameters", &DDX::setParameters)
         .def("setConfiguration", &DDX::setConfiguration)
+        .def("getConfiguration", &DDX::getConfiguration)
         .def("execute", &DDX::execute)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
@@ -90,6 +99,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("printUsage", &PDDX::printUsage)
         .def("setParameters", &PDDX::setParameters)
         .def("setConfiguration", &PDDX::setConfiguration)
+        .def("getConfiguration", &PDDX::getConfiguration)
         .def("execute", &PDDX::execute)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
@@ -133,17 +143,25 @@ PYBIND11_MODULE(vacuumms, m)
 
 #ifdef BUILD_CUDA_COMPONENTS
 
+//    py::class_<FVIArray<resolution>>(m, "FVIArray")
+//        .def("get_data", &FVIArray<resolution>::getData);
+
     py::class_<FVIX>(m, "FVIX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &FVIX::printUsage)
         .def("setParameters", &FVIX::setParameters)
         .def("setConfiguration", &FVIX::setConfiguration)
+        .def("getConfiguration", &FVIX::getConfiguration)
         .def("execute", &FVIX::execute)
         .def("getResult", &FVIX::getResult)
         .def("printResult", &FVIX::printResult)
+//        .def("calculateFVI", &FVIX::calculateFVI<size_t resolution>)
         .def("__repr__", &FVIX::__repr__)
     ;
+
+// template<size_t resolution>
+// FVIArray<resolution>* calculateRepulsions(Configuration gfg);
 
 #endif
 

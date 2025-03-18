@@ -24,9 +24,15 @@ void DDX::setParameters(Parameters _p)
 {
     p = _p;
 }
+
 void DDX::setConfiguration(Configuration _c)
 {
     c = _c;
+}
+
+Configuration DDX::getConfiguration()
+{
+    return c;
 }
 
 #ifdef BUILD_PYBIND_BINDINGS

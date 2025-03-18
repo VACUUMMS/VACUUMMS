@@ -3,7 +3,8 @@
 #include <math.h>
 
 #include <vacuumms/variational/variational.hh>
-#include <vacuumms/param.hh>
+//#include <vacuumms/param.hh>
+#include <vacuumms/parameters.hh>
 
 /*
 extern "C" 
@@ -43,18 +44,23 @@ float alpha_max = 1.0;
 
 int main(int argc, char** argv)
 {
-    setCommandLineParameters(argc, argv);
-    getFloatParam((char*)"-alpha", &alpha);
-    getFloatParam((char*)"-alpha_max", &alpha_max);
-    getIntParam((char*)"-n_iter", &n_iter);
-    getIntParam((char*)"-n_var_points", &n_var_points);
-    getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
-    getVectorParam((char*)"-start", &start_x, &start_y, &start_z);
-    getVectorParam((char*)"-end", &end_x, &end_y, &end_z);
+    Parameters p(argc, argv);
+//    setCommandLineParameters(argc, argv);
+    p.getFloatParam((char*)"-alpha", &alpha);
+    p.getFloatParam((char*)"-alpha_max", &alpha_max);
+    p.getIntParam((char*)"-n_iter", &n_iter);
+    p.getIntParam((char*)"-n_var_points", &n_var_points);
+//    getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
+    p.getVectorParam((char*)"-start", &start_x, &start_y, &start_z);
+    p.getVectorParam((char*)"-end", &end_x, &end_y, &end_z);
+
+    // using the new containers
+    std::vector<vacuumms_float> box_dims = p.getVectorParam(std::string("-box"));
 
     char filename[] = "ljx.gfg";
     Configuration c = Configuration(filename);
-    c.setBoxDimensions(box_x, box_y, box_z);
+    //c.setBoxDimensions(box_x, box_y, box_z);
+    c.setBoxDimensions(box_dims);
 
     printf("dumping configuration:\n");
     c.dumpContents();

@@ -42,7 +42,7 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/types.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
-    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/FVI.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cc
 )
 
 

@@ -55,21 +55,19 @@ class Parameters
         pybind11::str __str__();
         pybind11::str __repr__();
 
-//        Parameters(const boost::python::list&);
-
-//        int getIntParam(char* param_name);
-//        vacuumms_float getFloatParam(char* param_name);
-//        const char* getStringParam(char* param_name);
-        pybind11::list getVectorParam(char* param_name);
         pybind11::list getVectorStringParam(char* param_name);
 
 #endif
-// FTW pybind11::list getVectorParam(char* param_name);
 
-// pulling this out of pybind/boost world because it can live without
-        int getIntParam(char* param_name);
-        vacuumms_float getFloatParam(char* param_name);
-        const char* getStringParam(char* param_name);
+
+    // pulling these out of pybind/boost world because it can live without
+   
+    int getIntParam(char* param_name);
+    vacuumms_float getFloatParam(char* param_name);
+    const char* getStringParam(char* param_name);
+    std::vector<vacuumms_float> getVectorParam(std::string);
+    std::vector<vacuumms_float> getVectorParam(const char*);
+    std::vector<vacuumms_float> getVectorParam(char*);
 
 	/* if a parameter is received, return a true value, otherwise return NULL) */
 	int getIntParam(char *param_name, int *parameter);

@@ -55,13 +55,14 @@ Histogram
 };
 
 
-/*
-  
-class EnergyArray
+template<size_t resolution>
+class FVIArray
 {
-//  float energy[][][];
+    float energy[resolution][resolution][resolution];
+    
 };
 
+/*
 
 class FVI
 {
