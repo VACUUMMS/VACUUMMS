@@ -61,9 +61,8 @@ target_link_libraries(vddx PUBLIC vacuumms_rt m pthread)
 
 add_executable(vuniq "${PROJECT_SOURCE_DIR}/applications/ddx/vuniq.cc") 
 target_include_directories(vuniq PUBLIC "${PROJECT_SOURCE_DIR}/include")
-if (BUILD_BOOST_PYTHON_BINDINGS)
-target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp boost_python312 python3 )
-elseif (BUILD_PYBIND_BINDINGS)
+
+if (BUILD_PYBIND_BINDINGS)
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp python3 )
 else()
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp)

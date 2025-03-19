@@ -72,19 +72,6 @@ if (BUILD_PYBIND_BINDINGS)
     target_compile_definitions(vacuumms_cpp PRIVATE PYBIND11_EXPORTS)
 endif()
 
-if (BUILD_BOOST_PYTHON_BINDINGS)
-    target_link_libraries(vacuumms_cpp PUBLIC boost_python312 Python3:Python)
-endif()
-
-#if (BUILD_BOOST_PYTHON_BINDINGS)
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
-#elseif (BUILD_PYBIND_BINDINGS)
-##target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt python3 m Python3::Python)
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
-#else()
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
-#endif()
-
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
     )

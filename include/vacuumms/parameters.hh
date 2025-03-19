@@ -1,10 +1,6 @@
 /* vacuumms/parameters.hh */
 #pragma once
 
-#ifdef BUILD_BOOST_PYTHON_BINDINGS 
-#include <boost/python.hpp>
-#endif
-
 #include <vacuumms/exports.hh>
 
 #include <string>
@@ -30,27 +26,8 @@ class Parameters
         Parameters(std::vector<std::string>);
 
 #ifdef BUILD_PYBIND_BINDINGS 
+
         Parameters(const pybind11::list&);
-#endif
-
-        // Maintain a set of methods for boost::python. 
-        // Note that these return the value instead of setting pointed value.
-
-#ifdef BUILD_BOOST_PYTHON_BINDINGS 
-
-        Parameters(const boost::python::list&);
-//        int getIntParam(char* param_name);
-        long getLongParam(char* param_name);
-//        vacuumms_float getFloatParam(char* param_name);
-        double getDoubleParam(char* param_name);
-//        const char* getStringParam(char* param_name);
-        boost::python::list getVectorParam(char* param_name);
-        boost::python::list getVectorStringParam(char* param_name);
-
-#endif
-
-
-#ifdef BUILD_PYBIND_BINDINGS 
 
         pybind11::str __str__();
         pybind11::str __repr__();

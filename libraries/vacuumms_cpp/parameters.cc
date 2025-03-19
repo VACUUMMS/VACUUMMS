@@ -6,10 +6,6 @@
 #include <iostream>
 #include <vector>
 
-#ifdef BUILD_BOOST_PYTHON_BINDINGS
-#include <boost/python.hpp>
-#endif
-
 #include <vacuumms/parameters.hh>
 #include <vacuumms/types.h>
 
@@ -26,134 +22,11 @@ Parameters::Parameters()
     parameter_argc = 0;
 }
 
+
 Parameters::Parameters(std::vector<std::string> p) : parameter_argv{p}
 {
     parameter_argc = parameter_argc = parameter_argv.size();
 }
-
-#ifdef BUILD_BOOST_PYTHON_BINDINGS
-
-Parameters::Parameters(const boost::python::list& _argv)
-{
-    parameter_argc = boost::python::len(_argv);
-
-    for (int i=0; i<parameter_argc; i++)
-    {
-        char *arg = boost::python::extract<char*>(_argv[i]);
-        parameter_argv.push_back(arg);
-    }
-}
-
-
-const char* Parameters::getStringParam(char *param_name)
-{
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name) 
-    {
-	if (i+1>=parameter_argc) 
-	{
-	    printf("reached EOL with no value specified for %s\n", param_name);
-	    exit(1);
-	}
-	return parameter_argv[++i].c_str();
-    }
-    return NULL;
-}
-
-long Parameters::getLongParam(char* param_name)
-{
-    int retval = 0;
- 
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name) 
-    {
-	if (i+1>=parameter_argc) 
-	{
-	    printf("no value specified for %s\n", param_name);
-	    exit(1);
-	}
-
-	retval = (strtol(parameter_argv[++i].c_str(), NULL, 10));
-    }
-    return retval;
-}
-
-vacuumms_float Parameters::getFloatParam(char *param_name)
-{
-    vacuumms_float retval = -0.0f;
- 
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name)
-    {
-	if (i+1>=parameter_argc) 
-	{
-	    printf("no value specified for %s\n", param_name);
-	    exit(1);
-	}
-
-	retval = (vacuumms_float)strtod(parameter_argv[++i].c_str(), NULL);
-    }
-    return retval;
-}
-
-double Parameters::getDoubleParam(char *param_name)
-{
-    for(int i=0; i<parameter_argc; i++)
-        if (parameter_argv[i] == param_name)
-        {
-            if (i+1>=parameter_argc) 
-            {
-	        printf("no value specified for %s\n", param_name);
-                exit(1);
-            }
-            return strtod(parameter_argv[++i].c_str(), NULL);
-        }
-    return -0.0f;
-}
-
-boost::python::list Parameters::getVectorParam(char *param_name)
-{
-    //std::vector<double> retval;
-    boost::python::list retval;
-
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name) 
-    {
-	if (i+3>=parameter_argc) 
-	{
-	    printf("not enough values specified for %s\n", param_name);
-	    exit(1);
-	}
-
-        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
-        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
-        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
-    }
-    return retval;
-}
-
-boost::python::list Parameters::getVectorStringParam(char *param_name)
-{
-    //std::vector<std::string> retval;
-    boost::python::list retval;
-
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name) 
-    {
-	if (i+3>=parameter_argc) 
-	{
-	    printf("not enough values specified for %s\n", param_name);
-	    exit(1);
-	}
-
-        retval.append(parameter_argv[++i].c_str());
-        retval.append(parameter_argv[++i].c_str());
-        retval.append(parameter_argv[++i].c_str());
-    }
-    return retval;
-}
-
-#endif
 
 
 int Parameters::getIntParam(const char *param_name)
@@ -190,28 +63,6 @@ int Parameters::getIntParam(std::string param_name)
     }
     return parameter;
 }
-
-/*
-int Parameters::getIntParam(char *param_name)
-{
-    int parameter, *p_parameter;
-    p_parameter = &parameter;
-    *p_parameter = -1;
-
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name)
-    {
-        if (i+1>=parameter_argc) 
-        {
-            printf("no value specified for %s\n", param_name);
-            break;
-        }
-
-        *p_parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
-    }
-    return parameter;
-}
-*/
 
 vacuumms_float Parameters::getFloatParam(char *param_name)
 {
