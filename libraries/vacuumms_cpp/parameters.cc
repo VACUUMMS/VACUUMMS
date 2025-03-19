@@ -60,30 +60,6 @@ const char* Parameters::getStringParam(char *param_name)
     return NULL;
 }
 
-
-int Parameters::getIntParam(char *param_name)
-{
-    int retval = 0;
-
-    int parameter, *p_parameter;
-    p_parameter = &parameter;
-    *p_parameter = 0;
-
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name)
-    {
-	if (i+1>=parameter_argc) 
-	{
-	    printf("no value specified for %s\n", param_name);
-	    exit(1);
-	}
-
-	*p_parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
-	retval = 1;
-    }
-    return parameter;
-}
-
 long Parameters::getLongParam(char* param_name)
 {
     int retval = 0;
@@ -179,6 +155,43 @@ boost::python::list Parameters::getVectorStringParam(char *param_name)
 
 #endif
 
+
+int Parameters::getIntParam(const char *param_name)
+{
+    return Parameters::getIntParam(std::string(param_name));
+}
+
+
+int Parameters::getIntParam(char *param_name)
+{
+    return Parameters::getIntParam(std::string(param_name));
+}
+
+    
+int Parameters::getIntParam(std::string param_name)
+{
+    int retval = 0;
+
+    int parameter, *p_parameter;
+    p_parameter = &parameter;
+    *p_parameter = 0;
+
+    for (int i=0; i<parameter_argc; i++)
+    if (parameter_argv[i] == param_name)
+    {
+	if (i+1>=parameter_argc) 
+	{
+	    printf("no value specified for %s\n", param_name);
+	    exit(1);
+	}
+
+	*p_parameter = (strtol(parameter_argv[++i].c_str(), NULL, 10));
+	retval = 1;
+    }
+    return parameter;
+}
+
+/*
 int Parameters::getIntParam(char *param_name)
 {
     int parameter, *p_parameter;
@@ -198,6 +211,7 @@ int Parameters::getIntParam(char *param_name)
     }
     return parameter;
 }
+*/
 
 vacuumms_float Parameters::getFloatParam(char *param_name)
 {

@@ -19,16 +19,19 @@ FVIX : public Operation
     public:
         
         FVIX();
+        FVIX(Configuration);
         FVIX(Configuration, Parameters);
-        void printUsage();
         void setParameters(Parameters);
         Parameters getParameters();
         void setConfiguration(Configuration);
         Configuration getConfiguration();
         void setDimensions(std::vector<size_t>);
+        std::vector<size_t> getDimensions();
         void execute();
         void* getResult();
         void printResult();
+
+        void printUsage();
 
         template<size_t resolution> FVIArray<resolution>* calculateFVI(Configuration);
 

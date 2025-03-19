@@ -60,30 +60,32 @@ class Parameters
 #endif
 
 
-    // pulling these out of pybind/boost world because it can live without
-   
-    int getIntParam(char* param_name);
-    vacuumms_float getFloatParam(char* param_name);
-    const char* getStringParam(char* param_name);
-    std::vector<vacuumms_float> getVectorParam(std::string);
-    std::vector<vacuumms_float> getVectorParam(const char*);
-    std::vector<vacuumms_float> getVectorParam(char*);
+        // pulling these out of pybind/boost world because it can live without
+       
+        int getIntParam(const char* param_name);
+        int getIntParam(char* param_name);
+        int getIntParam(std::string param_name);
+        vacuumms_float getFloatParam(char* param_name);
+        const char* getStringParam(char* param_name);
+        std::vector<vacuumms_float> getVectorParam(std::string);
+        std::vector<vacuumms_float> getVectorParam(const char*);
+        std::vector<vacuumms_float> getVectorParam(char*);
 
-	/* if a parameter is received, return a true value, otherwise return NULL) */
-	int getIntParam(char *param_name, int *parameter);
-	int getLongParam(char *param_name, long *parameter);
-	int getFloatParam(char *param_name, vacuumms_float *parameter);
-	int getDoubleParam(char *param_name, double *parameter);
-	int getStringParam(char *param_name, const char **parameter);
-	int getVectorParam(char *param_name, 
+        /* if a parameter is received, return a true value, otherwise return NULL) */
+        int getIntParam(char *param_name, int *parameter);
+        int getLongParam(char *param_name, long *parameter);
+        int getFloatParam(char *param_name, vacuumms_float *parameter);
+        int getDoubleParam(char *param_name, double *parameter);
+        int getStringParam(char *param_name, const char **parameter);
+        int getVectorParam(char *param_name, 
                                  double *parameter1,  
                                  double *parameter2, 
                                  double *parameter3);
-	int getVectorParam(char *param_name, 
+        int getVectorParam(char *param_name, 
                                  vacuumms_float *parameter1,  
                                  vacuumms_float *parameter2, 
                                  vacuumms_float *parameter3);
-	int getVectorStringParam(char *param_name, 
+        int getVectorStringParam(char *param_name, 
                                  const char **parameter1, 
                                  const char **parameter2, 
                                  const char **parameter3);

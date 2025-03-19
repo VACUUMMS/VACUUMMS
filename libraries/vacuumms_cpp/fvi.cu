@@ -127,7 +127,7 @@ FVIArray<resolution>* calculateFVI(Configuration gfg)
 void FVIX::runKernel()
 {
 //FTW size_t here?
-    int     n_records=c.getSize(); 
+    size_t     n_records=c.getSize(); 
     size_t array_size = dimensions[0] * dimensions[1] * dimensions[2];
 
     // Push atoms into the container to be passed. Can add replication here later. or is replication handled before ?
@@ -138,28 +138,39 @@ void FVIX::runKernel()
 //    std::vector<vacuumms_float> d_repulsion;
 //    d_repulsion.resize(dimensions[0] * dimensions[1] * dimensions[2]);
 
+
+    /* allocate for return values on device */
+
     vacuumms_float* d_repulsion;
-    cudaError_t err;
-    /* allocate for energy array and configuration on device */
-    for(err = cudaErrorUnknown; 
+    for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_repulsion, array_size * sizeof(vacuumms_float)));
 
+    vacuumms_float* d_attraction;
+    for(cudaError_t err = cudaErrorUnknown; 
+        err != cudaSuccess; 
+        err = cudaMalloc( &d_attraction, array_size * sizeof(vacuumms_float)));
+
+    vacuumms_float* d_energy;
+    for(cudaError_t err = cudaErrorUnknown; 
+        err != cudaSuccess; 
+        err = cudaMalloc( &d_energy, array_size * sizeof(vacuumms_float)));
+
+
+    /* malloc, copy, and sync config records */
+
     ConfigurationRecord *d_records;
 
-
-//malloc, copy, and sync config records
-    for(err = cudaErrorUnknown; 
+    for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_records, sizeof(ConfigurationRecord) * n_records));
-printf("successfully allocated d_records\n");
 
-    for(err = cudaErrorUnknown; 
+    for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMemcpy( d_records, h_records.data(), h_records.size() * sizeof(ConfigurationRecord), cudaMemcpyHostToDevice ));
 
     cudaDeviceSynchronize(); // block until the device has completed
-    err = cudaGetLastError();
+    cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
 
