@@ -22,7 +22,7 @@ FVIX : public Operation
         FVIX(Configuration);
         FVIX(Configuration, Parameters);
         void setParameters(Parameters);
-        Parameters getParameters();
+//        Parameters getParameters();
         void setConfiguration(Configuration);
         Configuration getConfiguration();
         void setDimensions(std::vector<size_t>);
@@ -42,7 +42,9 @@ FVIX : public Operation
         ~FVIX();
 
 #ifdef BUILD_PYBIND_BINDINGS
+        pybind11::array_t<vacuumms_float>getAttraction();
         pybind11::array_t<vacuumms_float>getRepulsion();
+        pybind11::array_t<vacuumms_float>getEnergy();
         pybind11::str __repr__();
 #endif
 

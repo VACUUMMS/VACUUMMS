@@ -1,6 +1,5 @@
 // lmp2gfg.cc
 
-//#include <vacuumms/param.hh>
 #include <vacuumms/parameters.hh>
 #include <vacuumms/types.h>
 
@@ -37,7 +36,6 @@ class PairCoefficient
 
 int main(int argc, char *argv[]) 
 {
-    //setCommandLineParameters(argc, argv);
     Parameters p(argc, argv);
 
     if (p.getFlagParam((char*)"-usage"))
@@ -108,12 +106,14 @@ int main(int argc, char *argv[])
                          &dummy1, &dummy2, &type, &f_dummy, 
                          &x, &y, &z, &dummy4, &dummy5, &dummy6) > 0)
             {
+
                 Atom a;
                 a.type = type;
                 a.x = x;
                 a.y = y;
                 a.z = z;
                 atoms.push_back(a);
+  
             }
         }
 

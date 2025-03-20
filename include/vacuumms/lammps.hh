@@ -1,4 +1,5 @@
-// lammps.hh 
+/* vacuumms/lammps.hh */
+
 #pragma once
 
 #include <vector>

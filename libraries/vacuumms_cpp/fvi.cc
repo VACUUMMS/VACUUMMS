@@ -4,6 +4,7 @@
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 #include <vacuumms/fvi.hh>
+#include <vacuumms/exports.hh>
 
 #include <vacuumms/limits.h>
 #include <vacuumms/rng.h>
@@ -45,10 +46,12 @@ void FVIX::setParameters(Parameters _p)
     p.getVectorParam((char*)"-box", &c.box_x, &c.box_y, &c.box_z);
 }
 
+/*
 Parameters FVIX::getParameters()
 {
     return p;
 }
+*/
 
 void FVIX::setConfiguration(Configuration _c)
 {
@@ -71,10 +74,22 @@ std::vector<size_t> FVIX::getDimensions()
 }
 
 #ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::array_t<vacuumms_float>FVIX::getAttraction()
+{
+    return pybind11::array_t<vacuumms_float>(dimensions, attraction.data());
+}
+
 pybind11::array_t<vacuumms_float>FVIX::getRepulsion()
 {
     return pybind11::array_t<vacuumms_float>(dimensions, repulsion.data());
 }
+
+pybind11::array_t<vacuumms_float>FVIX::getEnergy()
+{
+    return pybind11::array_t<vacuumms_float>(dimensions, energy.data());
+}
+
 #endif
 
 

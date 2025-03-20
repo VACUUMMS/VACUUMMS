@@ -13,3 +13,14 @@
     # example compare output test
     add_test(test_compare_output, "${PROJECT_SOURCE_DIR}/test/test_compare_output.sh" 1)
 
+
+    # Ensure the module is in PYTHONPATH
+    add_test(
+        NAME test_pybind_import
+        COMMAND python3 ${PROJECT_SOURCE_DIR}/test/test_import.py 
+    )
+
+    set_tests_properties(test_pybind_import 
+        PROPERTIES
+        ENVIRONMENT "PYTHONPATH=/home1/fwillmor/opt/vacuumms/lib:$ENV{PYTHONPATH}"
+    )

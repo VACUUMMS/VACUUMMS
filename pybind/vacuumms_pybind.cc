@@ -55,15 +55,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getSize", &Configuration::getSize)
         ;
 
-    py::class_<LAMMPSConfiguration>(m, "LAMMPSConfiguration")
+    py::class_<LAMMPSConfiguration, Configuration>(m, "LAMMPSConfiguration")
         .def(py::init<std::string>())
-        .def("setBoxDimensions", &LAMMPSConfiguration::setBoxDimensions)
-        .def("getBoxDimensions", &LAMMPSConfiguration::getBoxDimensions)
-        .def("cram", &LAMMPSConfiguration::cram)
-        .def("isCrammed", &LAMMPSConfiguration::isCrammed)
-        .def("replicate", &LAMMPSConfiguration::replicate)
-        .def("getSize", &LAMMPSConfiguration::getSize)
-        .def("__repr__", &LAMMPSConfiguration::__repr__)
         ;
 
 
@@ -76,14 +69,20 @@ PYBIND11_MODULE(vacuumms, m)
 
 
     // Operations classes
+    py::class_<Operation>(m, "Operation")
+        .def("execute", &Operation::execute)
+        .def("setParameters", &Operation::setParameters)
+        .def("getParameters", &Operation::getParameters)
+        ;
 
     // Interface to DDX (Operation subclass)
 
-    py::class_<DDX>(m, "DDX")
+    py::class_<DDX, Operation>(m, "DDX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &DDX::printUsage)
-        .def("setParameters", &DDX::setParameters)
+//        .def("setParameters", &DDX::setParameters)
+//        .def("getParameters", &DDX::getParameters)
         .def("setConfiguration", &DDX::setConfiguration)
         .def("getConfiguration", &DDX::getConfiguration)
         .def("execute", &DDX::execute)
@@ -93,13 +92,14 @@ PYBIND11_MODULE(vacuumms, m)
 
     // Interface to PDDX (Operation subclass)
     
-    py::class_<PDDX>(m, "PDDX")
+    py::class_<PDDX, Operation>(m, "PDDX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &PDDX::printUsage)
-        .def("setParameters", &PDDX::setParameters)
-        .def("setConfiguration", &PDDX::setConfiguration)
+//        .def("setParameters", &PDDX::setParameters)
+//        .def("getParameters", &PDDX::getParameters)
         .def("getConfiguration", &PDDX::getConfiguration)
+        .def("setConfiguration", &PDDX::setConfiguration)
         .def("execute", &PDDX::execute)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
@@ -143,28 +143,24 @@ PYBIND11_MODULE(vacuumms, m)
 
 #ifdef BUILD_CUDA_COMPONENTS
 
-//    py::class_<FVIArray<resolution>>(m, "FVIArray")
-//        .def("get_data", &FVIArray<resolution>::getData);
-
     py::class_<FVIX>(m, "FVIX")
         .def(py::init<>())
+        .def(py::init<Configuration>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &FVIX::printUsage)
-        .def("setParameters", &FVIX::setParameters)
         .def("getParameters", &FVIX::getParameters)
-        .def("setDimensions", &FVIX::setDimensions)
+        .def("setParameters", &FVIX::setParameters)
         .def("getDimensions", &FVIX::getDimensions)
-        .def("setConfiguration", &FVIX::setConfiguration)
+        .def("setDimensions", &FVIX::setDimensions)
         .def("getConfiguration", &FVIX::getConfiguration)
+        .def("setConfiguration", &FVIX::setConfiguration)
         .def("execute", &FVIX::execute)
         .def("getRepulsion", &FVIX::getRepulsion)
+        .def("getAttraction", &FVIX::getAttraction)
+        .def("getEnergy", &FVIX::getEnergy)
         .def("printResult", &FVIX::printResult)
-//        .def("calculateFVI", &FVIX::calculateFVI<size_t resolution>)
         .def("__repr__", &FVIX::__repr__)
     ;
-
-// template<size_t resolution>
-// FVIArray<resolution>* calculateRepulsions(Configuration gfg);
 
 #endif
 
