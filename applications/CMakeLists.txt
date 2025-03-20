@@ -181,30 +181,33 @@ install(TARGETS
 
 # testing
 
+# Set BinaryPath and TestDataPath
+#set_tests_properties(TestExistingScript PROPERTIES
+#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test_data;PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}"
+#)
+
 add_test(
     NAME test_ddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ddx_fcc.sh"
 )
-set_property(
-    TEST test_ddx_fcc
-    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+set_tests_properties(test_ddx_fcc PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}"
 )
 
 add_test(
     NAME test_pddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_pddx_fcc.sh"
 )
-set_property(
-    TEST test_pddx_fcc
-    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+set_tests_properties(test_pddx_fcc PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}"
 )
 
 add_test(
     NAME test_ljx
     COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ljx.sh"
 )
-set_property(
-    TEST test_ljx
-    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
+set_tests_properties(test_ljx PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}"
 )
+
 

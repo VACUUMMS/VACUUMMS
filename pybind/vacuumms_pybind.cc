@@ -67,12 +67,16 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
+    /* Subclass notes: Declare any operation that will be called on 
+       all operations in base class. It will use the method from derived
+       class, even though it is not listed explicitly for derived class. */
 
     // Operations classes
     py::class_<Operation>(m, "Operation")
         .def("execute", &Operation::execute)
-        .def("setParameters", &Operation::setParameters)
         .def("getParameters", &Operation::getParameters)
+        .def("setParameters", &Operation::setParameters)
+        .def("execute", &Operation::execute)
         ;
 
     // Interface to DDX (Operation subclass)
@@ -81,11 +85,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &DDX::printUsage)
-//        .def("setParameters", &DDX::setParameters)
-//        .def("getParameters", &DDX::getParameters)
-        .def("setConfiguration", &DDX::setConfiguration)
         .def("getConfiguration", &DDX::getConfiguration)
-        .def("execute", &DDX::execute)
+        .def("setConfiguration", &DDX::setConfiguration)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
     ;
@@ -96,8 +97,6 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &PDDX::printUsage)
-//        .def("setParameters", &PDDX::setParameters)
-//        .def("getParameters", &PDDX::getParameters)
         .def("getConfiguration", &PDDX::getConfiguration)
         .def("setConfiguration", &PDDX::setConfiguration)
         .def("execute", &PDDX::execute)

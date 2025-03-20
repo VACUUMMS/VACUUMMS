@@ -296,5 +296,15 @@ endif()
 
 # testing
 
-add_test(test_uniq, "${PROJECT_SOURCE_DIR}/utils/test/test_uniq.sh" 1)
+
+add_test(
+    NAME test_uniq
+    COMMAND "${PROJECT_SOURCE_DIR}/utils/test/test_uniq.sh" 
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+)
+
+# Set BinaryPath and TestDataPath
+set_tests_properties(test_uniq PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}"
+)
 

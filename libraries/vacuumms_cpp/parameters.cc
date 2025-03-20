@@ -115,6 +115,7 @@ pybind11::str Parameters::__repr__()
     return retval;
 }
 
+
 pybind11::str Parameters::__str__()
 {
     pybind11::str retval("");
@@ -123,6 +124,7 @@ pybind11::str Parameters::__str__()
         retval = retval + pybind11::str(parameter_argv[i]) + pybind11::str("\n");
     return retval;
 }
+
 
 Parameters::Parameters(const pybind11::list& _argv)
 {   
@@ -134,27 +136,6 @@ Parameters::Parameters(const pybind11::list& _argv)
     } 
 }
 
-/* FTW can i replace with std::vector type? yes
-pybind11::list Parameters::getVectorParam(char *param_name)
-{
-    pybind11::list retval;
-
-    for (int i=0; i<parameter_argc; i++)
-    if (parameter_argv[i] == param_name) 
-    {
-        if (i+3>=parameter_argc) 
-        {
-            printf("not enough values specified for %s\n", param_name);
-            break;
-        }
-
-        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
-        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
-        retval.append(strtod(parameter_argv[++i].c_str(), NULL));
-    }
-    return retval;
-}
-*/
 
 pybind11::list Parameters::getVectorStringParam(char* param_name)
 {
@@ -175,7 +156,6 @@ pybind11::list Parameters::getVectorStringParam(char* param_name)
     }
     return retval;
 }
-
 
 #endif // BUILD_PYBIND_BINDINGS
 

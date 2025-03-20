@@ -22,7 +22,10 @@ DDX::DDX()
 
 void DDX::setParameters(Parameters _p)
 {
+printf("DDX::setParameters\n");
+// do other stuff with params
     p = _p;
+    Operation::setParameters(_p);
 }
 
 void DDX::setConfiguration(Configuration _c)
