@@ -60,7 +60,7 @@ message("X11_LIBRARIES set to ${X11_LIBRARIES}")
 if (ENABLE_TESTING)
     message("adding tests subdirectory")
     include(CTest)
-    enable_testing()
+#    enable_testing()
     add_subdirectory(test)
 endif()
 
