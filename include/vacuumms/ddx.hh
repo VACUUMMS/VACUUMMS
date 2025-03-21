@@ -21,6 +21,7 @@ DDX : public Operation
     public:
 
         DDX(Configuration c, Parameters p);
+        DDX(Configuration c);
         DDX();
 //        CavityConfiguration getOutput();
         void execute();

@@ -83,6 +83,7 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<DDX, Operation>(m, "DDX")
         .def(py::init<>())
+        .def(py::init<Configuration>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &DDX::printUsage)
         .def("getConfiguration", &DDX::getConfiguration)

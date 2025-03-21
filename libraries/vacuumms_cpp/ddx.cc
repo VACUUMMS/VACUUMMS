@@ -15,6 +15,11 @@ DDX::DDX(Configuration c, Parameters p) :
 {
 }
 
+DDX::DDX(Configuration c) : 
+    c{c} 
+{
+}
+
 DDX::DDX()
 {
 }

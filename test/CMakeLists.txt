@@ -41,10 +41,18 @@ add_test(
     NAME test_pybind_import
     COMMAND python3 ${PROJECT_SOURCE_DIR}/test/python/test_import.py 
 )
-
 set_tests_properties(test_pybind_import 
     PROPERTIES
-    ENVIRONMENT "PYTHONPATH=/home1/fwillmor/opt/vacuumms/lib:$ENV{PYTHONPATH}"
+    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};"
+)
+
+add_test(
+    NAME test_lammps_import
+    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_lammps_import.sh 
+)
+set_tests_properties(test_lammps_import 
+    PROPERTIES
+    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR}"
 )
 
 
