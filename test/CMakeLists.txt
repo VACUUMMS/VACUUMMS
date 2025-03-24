@@ -49,10 +49,31 @@ set_tests_properties(test_pybind_import
 add_test(
     NAME test_lammps_import
     COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_lammps_import.sh 
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
 set_tests_properties(test_lammps_import 
     PROPERTIES
-    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR}"
+    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
+)
+
+add_test(
+    NAME test_ddx_fcc_py
+    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_ddx_fcc_py.sh
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+)
+set_tests_properties(test_ddx_fcc_py
+    PROPERTIES
+    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
+)
+
+add_test(
+    NAME test_pddx_fcc_py
+    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_pddx_fcc_py.sh
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+)
+set_tests_properties(test_pddx_fcc_py
+    PROPERTIES
+    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
 )
 
 
@@ -84,6 +105,7 @@ set_tests_properties(test_ddx_fcc PROPERTIES
 add_test(
     NAME test_pddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_pddx_fcc.sh"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
 set_tests_properties(test_pddx_fcc PROPERTIES
     ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
