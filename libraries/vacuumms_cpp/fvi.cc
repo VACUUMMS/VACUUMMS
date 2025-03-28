@@ -90,6 +90,11 @@ pybind11::array_t<vacuumms_float>FVIX::getEnergy()
     return pybind11::array_t<vacuumms_float>(dimensions, energy.data());
 }
 
+pybind11::array_t<vacuumms_float>FVIX::getFVI()
+{
+    return pybind11::array_t<vacuumms_float>(dimensions, FVI.data());
+}
+
 #endif
 
 
@@ -122,7 +127,8 @@ void FVIX::printResult()
                i*c.box_x / resolution, 
                j*c.box_y / resolution, 
                k*c.box_z / resolution, 
-               preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
+               0); // FTW this is from the hard coded 16 version, 
+//               preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
 }
 
 //CavityConfiguration DDX::getResult()
@@ -162,5 +168,5 @@ pybind11::str FVIX::__repr__()
 
 FVIX::~FVIX()
 {
-    free(ea);
+//    free(ea);
 }

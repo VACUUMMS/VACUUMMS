@@ -16,11 +16,20 @@
 
 #ifdef BUILD_CUDA_COMPONENTS
 #include <vacuumms/fvi.hh>
+#include <cuda_runtime.h>
 #endif
 
 #include <vacuumms/types.h>
 
 #include <iostream>
+
+#ifdef BUILD_CUDA_COMPONENTS
+void finalize_cuda()
+{
+    cudaDeviceReset();
+}
+#endif
+
 
 
 namespace py = pybind11;
@@ -158,8 +167,12 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getRepulsion", &FVIX::getRepulsion)
         .def("getAttraction", &FVIX::getAttraction)
         .def("getEnergy", &FVIX::getEnergy)
+        .def("getFVI", &FVIX::getFVI)
         .def("printResult", &FVIX::printResult)
         .def("__repr__", &FVIX::__repr__)
+    ;
+
+    m.def("finalize_cuda", &finalize_cuda)
     ;
 
 #endif

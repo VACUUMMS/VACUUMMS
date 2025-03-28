@@ -6,6 +6,7 @@
 #include <vacuumms/cuda.h>
 #include <vacuumms/fvi.hh>
 
+/*
 // This is the kernel, called by the GFGToRepulsionX() functions, 
 // which are, in turn, exposed as the API.
 __global__ void EnergyKernel16_612(
@@ -57,6 +58,7 @@ __global__ void EnergyKernel16_612(
     if (d_repulsion) d_repulsion->energy[idx][idy][idz] = 4 * repulsion;
     if (d_total) d_total->energy[idx][idy][idz] = 4 * repulsion - 4 * attraction;
 }
+*/
 
 
 // Generalized kernel
@@ -71,7 +73,8 @@ __global__ void Kernel(
     size_t           dim_z,
     vacuumms_float *d_attraction,
     vacuumms_float *d_repulsion,
-    vacuumms_float *d_total)
+    vacuumms_float *d_energy,
+    vacuumms_float *d_FVI)
 {
     // blockIdx values are provided by CUDA
     unsigned int idx = blockIdx.x;
@@ -90,6 +93,7 @@ __global__ void Kernel(
     vacuumms_float cuda_y = idy * f_resolution_y;
     vacuumms_float cuda_z = idz * f_resolution_z;
 
+printf("Kernel with %ld x %ld x %ld\n", dim_x, dim_y, dim_z);
     // evaluate energy at (cuda_x, cuda_y, cuda_z);
     for (int i=0; i< n_records; i++) 
     {
@@ -107,26 +111,17 @@ __global__ void Kernel(
         attraction += d_configuration[i].epsilon * sigma_over_r_6;
     } 
 
+printf("repulsion at (%f, %f, %f) = %f\n", cuda_x, cuda_y, cuda_z, repulsion);
     size_t which = idx * dim_x * dim_y + idy * dim_y + idz;
     if (d_attraction != nullptr) d_attraction[which] = 4 * attraction;
     if (d_repulsion != nullptr) d_repulsion[which] = 4 * repulsion;
-    if (d_total != nullptr) d_total[which] = 4 * repulsion - 4 * attraction;
+    if (d_energy != nullptr) d_energy[which] = 4 * repulsion - 4 * attraction;
+    if (d_FVI != nullptr) d_FVI[which] = exp(-4 * repulsion);
 }
-
-
-/*
-template <size_t resolution>
-FVIArray<resolution>* calculateFVI(Configuration gfg)
-{
-    fprintf(stderr, "calculateFVI not implemented and resolution = %d.\n", resolution);
-    return nullptr;
-}
-*/
 
 
 void FVIX::runKernel()
 {
-//FTW size_t here?
     size_t     n_records=c.getSize(); 
     size_t array_size = dimensions[0] * dimensions[1] * dimensions[2];
 
@@ -135,30 +130,38 @@ void FVIX::runKernel()
 //FTW is this a copy of a copy?
     for (int i=0; i<n_records; i++) h_records.push_back(ConfigurationRecord(c.recordAt(i)));
 
-//    std::vector<vacuumms_float> d_repulsion;
-//    d_repulsion.resize(dimensions[0] * dimensions[1] * dimensions[2]);
-
-
     /* allocate for return values on device */
 
+printf("allocating\n");
     vacuumms_float* d_repulsion;
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_repulsion, array_size * sizeof(vacuumms_float)));
 
+printf("allocating\n");
     vacuumms_float* d_attraction;
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_attraction, array_size * sizeof(vacuumms_float)));
 
+printf("Got d_attraction = %ld\n", d_attraction);
+
+printf("allocating\n");
     vacuumms_float* d_energy;
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_energy, array_size * sizeof(vacuumms_float)));
 
+printf("allocating\n");
+    vacuumms_float* d_FVI;
+    for(cudaError_t err = cudaErrorUnknown; 
+        err != cudaSuccess; 
+        err = cudaMalloc( &d_FVI, array_size * sizeof(vacuumms_float)));
+
 
     /* malloc, copy, and sync config records */
 
+printf("sending records\n");
     ConfigurationRecord *d_records;
 
     for(cudaError_t err = cudaErrorUnknown; 
@@ -170,33 +173,114 @@ void FVIX::runKernel()
         err = cudaMemcpy( d_records, h_records.data(), h_records.size() * sizeof(ConfigurationRecord), cudaMemcpyHostToDevice ));
 
     cudaDeviceSynchronize(); // block until the device has completed
-    cudaError_t err = cudaGetLastError();
-    if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
+    cudaError_t last = cudaGetLastError();
+    if (last != cudaSuccess) printf("%s\n", cudaGetErrorString(last)); 
 
 
-    dim3 dimGrid(16, 16);
-    dim3 dimBlock(16, 1, 1);
+// FTW originals
+//    dim3 dimGrid(16, 16);
+//    dim3 dimBlock(16, 1, 1);
+    int dim_x = dimensions[0];
+    while (dim_x > 16) dim_x >>=1;
+    int dim_y = dimensions[1];
+    while (dim_y > 16) dim_y >>=1;
+    int dim_z = dimensions[2];
+    while (dim_z > 16) dim_z >>=1;
+printf("using grid and block dims %d %d %d\n", dim_x, dim_y, dim_z);
 
-    Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], NULL, d_repulsion, NULL);
+    dim3 dimGrid(dim_x, dim_y);
+    dim3 dimBlock(dim_z, 1, 1);
+//    dim3 dimGrid(dimensions[0], dimensions[1]);
+//    dim3 dimBlock(dimensions[2], 1, 1);
+printf("dimensions: %d x %d x %d\n", dimensions[0], dimensions[1], dimensions[2] );
+    // Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], NULL, d_repulsion, NULL);
+    Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], d_attraction, d_repulsion, d_energy, d_FVI);
 
+printf("synchronizing\n");
+    cudaDeviceSynchronize(); // block until the device has completed
+    last = cudaGetLastError();
+    if (last != cudaSuccess) printf("%s\n", cudaGetErrorString(last)); 
+
+    // retrieve result
+    attraction.resize(array_size);
+printf("attraction size = %d\n", attraction.size());
+printf("array size = %d\n", array_size);
+    repulsion.resize(array_size);
+    energy.resize(array_size);
+    FVI.resize(array_size);
+
+    cudaError_t err;
+    // this works, maybe name collision above?
+    err = cudaMemcpy(attraction.data(), d_attraction, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
+    if (err != cudaSuccess) std::cerr <<  "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
+printf("synchronizing Device\n");
     cudaDeviceSynchronize(); // block until the device has completed
     err = cudaGetLastError();
     if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
+      
+    err = cudaMemcpy(repulsion.data(), d_repulsion, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
+    if (err != cudaSuccess) std::cerr <<  "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
+printf("synchronizing Device\n");
+    cudaDeviceSynchronize(); // block until the device has completed
+    err = cudaGetLastError();
+    if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
-    // retrieve result
-//    vacuumms_EnergyArray16 *h_repulsion = (vacuumms_EnergyArray16 *)malloc(sizeof(vacuumms_EnergyArray16));
-    repulsion.resize(array_size);
+      
+    err = cudaMemcpy(energy.data(), d_energy, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
+    if (err != cudaSuccess) std::cerr <<  "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
+printf("synchronizing Device\n");
+    cudaDeviceSynchronize(); // block until the device has completed
+    err = cudaGetLastError();
+    if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
-    for(err = cudaErrorUnknown; 
+      
+    err = cudaMemcpy(FVI.data(), d_FVI, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
+    if (err != cudaSuccess) std::cerr <<  "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
+printf("synchronizing Device\n");
+    cudaDeviceSynchronize(); // block until the device has completed
+    err = cudaGetLastError();
+    if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
+
+/*
+printf("copying attraction\n");
+    for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
-        err = cudaMemcpy(repulsion.data(), d_repulsion, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost ));
+        cudaMemcpy(attraction.data(), d_attraction, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost ));
 
+printf("copying repulsion\n");
+    for(cudaError_t err = cudaErrorUnknown; 
+        err != cudaSuccess; 
+        cudaMemcpy(repulsion.data(), d_repulsion, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost ));
+
+printf("copying energy\n");
+    for(cudaError_t err = cudaErrorUnknown; 
+        err != cudaSuccess; 
+        cudaMemcpy(energy.data(), d_energy, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost ));
+
+printf("copying FVI\n");
+    for(cudaError_t err = cudaErrorUnknown; 
+        err != cudaSuccess; 
+        cudaMemcpy(FVI.data(), d_FVI, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost ));
+*/
+
+
+printf("freeing mem\n");
     cudaFree(d_records);
+    cudaFree(d_attraction);
     cudaFree(d_repulsion);
+    cudaFree(d_energy);
+    cudaFree(d_FVI);
+
+printf("synchronizing Device\n");
+    cudaDeviceSynchronize(); // block until the device has completed
+    err = cudaGetLastError();
+    if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
+
 }
 
 
+/*
 vacuumms_EnergyArray16* FVIX::calculateRepulsions(Configuration gfg)
 {
     vacuumms_EnergyArray16 	*d_repulsion;
@@ -211,7 +295,7 @@ vacuumms_EnergyArray16* FVIX::calculateRepulsions(Configuration gfg)
     }
 
     cudaError_t err;
-    /* allocate for energy array and configuration on device */
+    // allocate for energy array and configuration on device 
     for(err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_repulsion, sizeof(vacuumms_EnergyArray16)));
@@ -252,4 +336,5 @@ printf("successfully allocated d_records\n");
 
     return h_repulsion;
 }
+*/
 

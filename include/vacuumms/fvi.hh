@@ -36,7 +36,7 @@ FVIX : public Operation
         template<size_t resolution> FVIArray<resolution>* calculateFVI(Configuration);
 
         // wrapper to CUDA kernel
-        vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg);
+//        vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg);
         void runKernel();
 
         ~FVIX();
@@ -45,6 +45,7 @@ FVIX : public Operation
         pybind11::array_t<vacuumms_float>getAttraction();
         pybind11::array_t<vacuumms_float>getRepulsion();
         pybind11::array_t<vacuumms_float>getEnergy();
+        pybind11::array_t<vacuumms_float>getFVI();
         pybind11::str __repr__();
 #endif
 
@@ -52,12 +53,13 @@ FVIX : public Operation
         
         Parameters p;
         Configuration c;
-        vacuumms_EnergyArray16* ea;
+//        vacuumms_EnergyArray16* ea;
         
         std::vector<size_t> dimensions = {2,2,2};
         std::vector<vacuumms_float> attraction;
         std::vector<vacuumms_float> repulsion;
         std::vector<vacuumms_float> energy;
+        std::vector<vacuumms_float> FVI;
 
         int resolution = 16;
         vacuumms_float attenuator = 1.0;
