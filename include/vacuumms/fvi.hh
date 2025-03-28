@@ -22,22 +22,17 @@ FVIX : public Operation
         FVIX(Configuration);
         FVIX(Configuration, Parameters);
         void setParameters(Parameters);
-//        Parameters getParameters();
+        Parameters getParameters();
         void setConfiguration(Configuration);
         Configuration getConfiguration();
         void setDimensions(std::vector<size_t>);
         std::vector<size_t> getDimensions();
         void execute();
         void* getResult();
-        void printResult();
 
         void printUsage();
 
         template<size_t resolution> FVIArray<resolution>* calculateFVI(Configuration);
-
-        // wrapper to CUDA kernel
-//        vacuumms_EnergyArray16* calculateRepulsions(Configuration gfg);
-        void runKernel();
 
         ~FVIX();
 
@@ -53,7 +48,6 @@ FVIX : public Operation
         
         Parameters p;
         Configuration c;
-//        vacuumms_EnergyArray16* ea;
         
         std::vector<size_t> dimensions = {2,2,2};
         std::vector<vacuumms_float> attraction;

@@ -76,6 +76,16 @@ set_tests_properties(test_pddx_fcc_py
     ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
 )
 
+add_test(
+    NAME test_fvi_fcc_py
+    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_fvi_fcc_py.sh
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+)
+set_tests_properties(test_fvi_fcc_py
+    PROPERTIES
+    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
+)
+
 
 
 

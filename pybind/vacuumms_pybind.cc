@@ -168,7 +168,6 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getAttraction", &FVIX::getAttraction)
         .def("getEnergy", &FVIX::getEnergy)
         .def("getFVI", &FVIX::getFVI)
-        .def("printResult", &FVIX::printResult)
         .def("__repr__", &FVIX::__repr__)
     ;
 

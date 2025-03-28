@@ -46,12 +46,11 @@ void FVIX::setParameters(Parameters _p)
     p.getVectorParam((char*)"-box", &c.box_x, &c.box_y, &c.box_z);
 }
 
-/*
+
 Parameters FVIX::getParameters()
 {
     return p;
 }
-*/
 
 void FVIX::setConfiguration(Configuration _c)
 {
@@ -98,26 +97,7 @@ pybind11::array_t<vacuumms_float>FVIX::getFVI()
 #endif
 
 
-void FVIX::execute()
-{
 /*
-    p.getIntParam((char*)"-resolution", &resolution);
-    p.getFloatParam((char*)"-attenuator", &attenuator);
-    p.getFloatParam((char*)"-preexponential", &preexponential);
-    p.getFloatParam((char*)"-sigma", &sigma);
-    p.getFloatParam((char*)"-epsilon", &epsilon);
-    p.getFloatParam((char*)"-temperature", &temperature);
-
-    if (p.getFlagParam((char*)"-usage")) printUsage();
-
-    p.getVectorParam((char*)"-box", &c.box_x, &c.box_y, &c.box_z);
-*/
-//    ea = calculateRepulsions(c);
-
-    runKernel();
-
-} // end FVI::execute()
-
 void FVIX::printResult()
 {
     for (int i=0; i<resolution; i++) 
@@ -130,10 +110,7 @@ void FVIX::printResult()
                0); // FTW this is from the hard coded 16 version, 
 //               preexponential * exp(ea->energy[i][j][k]/(-temperature * attenuator))); 
 }
-
-//CavityConfiguration DDX::getResult()
-// Need to think about how to return the huge result...
-// maybe getTIFF()?
+*/
 
 void* FVIX::getResult()
 {
@@ -161,12 +138,10 @@ pybind11::str FVIX::__repr__()
     pybind11::str retval;
     retval += c.__repr__();
     retval += p.__repr__();
-//    retval += result.__repr__();
     return retval;
 }
 #endif
 
 FVIX::~FVIX()
 {
-//    free(ea);
 }
