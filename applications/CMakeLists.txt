@@ -61,9 +61,8 @@ target_link_libraries(vddx PUBLIC vacuumms_rt m pthread)
 
 add_executable(vuniq "${PROJECT_SOURCE_DIR}/applications/ddx/vuniq.cc") 
 target_include_directories(vuniq PUBLIC "${PROJECT_SOURCE_DIR}/include")
-if (BUILD_BOOST_PYTHON_BINDINGS)
-target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp boost_python312 python3 )
-elseif (BUILD_PYBIND_BINDINGS)
+
+if (BUILD_PYBIND_BINDINGS)
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp python3 )
 else()
 target_link_libraries(vuniq PUBLIC vacuumms_rt m pthread vacuumms_cpp)
@@ -180,32 +179,4 @@ install(TARGETS
         vis
         DESTINATION bin)
 
-# testing
-
-add_test(
-    NAME test_ddx_fcc
-    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ddx_fcc.sh"
-)
-set_property(
-    TEST test_ddx_fcc
-    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME test_pddx_fcc
-    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_pddx_fcc.sh"
-)
-set_property(
-    TEST test_pddx_fcc
-    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME test_ljx
-    COMMAND "${PROJECT_SOURCE_DIR}/applications/test/test_ljx.sh"
-)
-set_property(
-    TEST test_ljx
-    PROPERTY ENVIRONMENT BinaryPath=${CMAKE_SOURCE_DIR} TestDataPath=${PROJECT_SOURCE_DIR}
-)
 

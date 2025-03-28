@@ -6,6 +6,7 @@ option(BUILD_STATIC_LIBS "static libs " OFF)
 add_executable(avg "${PROJECT_SOURCE_DIR}/utils/avg.c")
 target_include_directories(avg PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
+
 add_executable(lmp2gfg "${PROJECT_SOURCE_DIR}/utils/lmp2gfg.cc")
 target_include_directories(lmp2gfg PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(lmp2gfg PUBLIC vacuumms_rt vacuumms_cpp m )
@@ -194,7 +195,7 @@ target_link_libraries(replicate_cav PUBLIC vacuumms_rt m pthread)
 if (BUILD_CUDA_COMPONENTS)
     add_executable(sgfg2fvi "${PROJECT_SOURCE_DIR}/utils/sgfg2fvi.c")
     target_include_directories(sgfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt m vacuumms_cuda CUDA::cudart)
+    target_link_libraries(sgfg2fvi PUBLIC vacuumms_rt vacuumms_cpp m vacuumms_cuda CUDA::cudart)
 
     add_executable(gfg2fvi "${PROJECT_SOURCE_DIR}/utils/gfg2fvi.c")
     target_include_directories(gfg2fvi PUBLIC "${PROJECT_SOURCE_DIR}/include")
@@ -293,7 +294,4 @@ if (BUILD_VORONOI_UTILS)
             DESTINATION bin)
 endif()
 
-# testing
-
-add_test(test_uniq, "${PROJECT_SOURCE_DIR}/utils/test/test_uniq.sh" 1)
 

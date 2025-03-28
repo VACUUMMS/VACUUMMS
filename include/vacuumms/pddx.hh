@@ -33,6 +33,7 @@ PDDX : public Operation
         void execute();
         void setParameters(Parameters p);
         void setConfiguration(Configuration c);
+        Configuration getConfiguration();
         static void printUsage();
         CavityConfiguration getResult();
 

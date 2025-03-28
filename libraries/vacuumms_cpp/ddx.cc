@@ -15,6 +15,11 @@ DDX::DDX(Configuration c, Parameters p) :
 {
 }
 
+DDX::DDX(Configuration c) : 
+    c{c} 
+{
+}
+
 DDX::DDX()
 {
 }
@@ -22,11 +27,20 @@ DDX::DDX()
 
 void DDX::setParameters(Parameters _p)
 {
+printf("DDX::setParameters\n");
+// do other stuff with params
     p = _p;
+    Operation::setParameters(_p);
 }
+
 void DDX::setConfiguration(Configuration _c)
 {
     c = _c;
+}
+
+Configuration DDX::getConfiguration()
+{
+    return c;
 }
 
 #ifdef BUILD_PYBIND_BINDINGS

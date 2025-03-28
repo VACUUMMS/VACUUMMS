@@ -112,6 +112,13 @@ struct GFG65536
 
 typedef struct GFG65536 vacuumms_GFG65536;
 
+struct EnergyArray16
+{
+  float energy[16][16][16];
+};
+
+typedef struct EnergyArray16 vacuumms_EnergyArray16;
+
 struct EnergyArray256
 {
   float energy[256][256][256];

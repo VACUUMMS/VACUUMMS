@@ -42,7 +42,9 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/types.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cc
 )
+
 
 # conditionally add voronoi.cc
 if(BUILD_VORONOI_UTILS)
@@ -55,6 +57,11 @@ endif()
 
 target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m pthread)
 
+if(BUILD_CUDA_COMPONENTS)
+    target_link_libraries(vacuumms_cpp PUBLIC)
+    target_sources(vacuumms_cpp PRIVATE ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cu)
+endif()
+
 if (BUILD_PYBIND_BINDINGS)
 #    target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
     target_link_libraries(vacuumms_cpp PUBLIC Python3::Python)
@@ -64,19 +71,6 @@ if (BUILD_PYBIND_BINDINGS)
     # are local and only visible within libvacuumms_cpp.so library.
     target_compile_definitions(vacuumms_cpp PRIVATE PYBIND11_EXPORTS)
 endif()
-
-if (BUILD_BOOST_PYTHON_BINDINGS)
-    target_link_libraries(vacuumms_cpp PUBLIC boost_python312 Python3:Python)
-endif()
-
-#if (BUILD_BOOST_PYTHON_BINDINGS)
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt boost_python312 python3 m)
-#elseif (BUILD_PYBIND_BINDINGS)
-##target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt python3 m Python3::Python)
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m PRIVATE Python3::Python)
-#else()
-#target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m)
-#endif()
 
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
@@ -109,21 +103,18 @@ endif() # BUILD_TIFF_UTILS
 
 
 if (BUILD_CUDA_COMPONENTS)
+
     add_library(vacuumms_cuda SHARED
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_cuda_utils.cu
         ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cuda/vacuumms_gfg2fvi.cu
-    )
+        )
     target_include_directories(vacuumms_cuda PUBLIC
        "${PROJECT_SOURCE_DIR}/include"
-    )
+        )
 
-    target_link_libraries(vacuumms_cuda PUBLIC cuda CUDA::cudart m)
+    target_link_libraries(vacuumms_cuda PUBLIC cuda CUDA::cudart m vacuumms_cpp)
 
     set_property(TARGET vacuumms_cuda PROPERTY CUDA_ARCHITECTURES OFF)
-
-target_include_directories(vacuumms_cpp PUBLIC
-    "${PROJECT_SOURCE_DIR}/include"
-)
 
 endif()
 

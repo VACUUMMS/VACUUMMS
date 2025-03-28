@@ -26,9 +26,15 @@ void PDDX::setParameters(Parameters _p)
 {
     p = _p;
 }
+
 void PDDX::setConfiguration(Configuration _c)
 {
     c = _c;
+}
+
+Configuration PDDX::getConfiguration()
+{
+    return c;
 }
 
 #ifdef BUILD_PYBIND_BINDINGS

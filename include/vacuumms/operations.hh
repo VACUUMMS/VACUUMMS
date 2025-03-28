@@ -21,8 +21,21 @@ Operation
     public:
 
         virtual void execute() = 0;
-//        virtual void printUsage() = 0;
         static void printUsage();
+
+        virtual void setParameters(Parameters _p)
+        {
+            p = _p;
+        }
+
+        virtual Parameters getParameters() 
+        { 
+            return p;
+        }
+
+    private:
+
+        Parameters p;
 };
 
 

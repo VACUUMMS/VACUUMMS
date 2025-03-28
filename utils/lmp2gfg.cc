@@ -1,6 +1,6 @@
 // lmp2gfg.cc
 
-#include <vacuumms/param.hh>
+#include <vacuumms/parameters.hh>
 #include <vacuumms/types.h>
 
 #include <stdio.h>
@@ -36,31 +36,15 @@ class PairCoefficient
 
 int main(int argc, char *argv[]) 
 {
-//    double box_x=10, box_y=10, box_z=10;
-//    char* pair_filename = (char*)"pair.dat";
-//    char* lmps_filename = (char*)"in.lmps";
+    Parameters p(argc, argv);
 
-    setCommandLineParameters(argc, argv);
-
-    if (getFlagParam((char*)"-usage"))
+    if (p.getFlagParam((char*)"-usage"))
     {
         printf("\n");
-        printf("usage:     lmp2gfg        \n");
-//        printf("                          +cram                 \n");
+        printf("usage:     lmp2gfg (reads from stdin)\n");
         printf("\n");
         exit(0);
     }
-
-    int cram = getFlagParam((char*)"+cram");
-//    getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
-//    getStringParam((char*)"-pair_file", &pair_filename);
-//    getStringParam((char*)"-lmps_file", &lmps_filename);
-
-//    FILE* pair_file = fopen(pair_filename, "r");
-//    assert(pair_file);
-
-//    FILE* lmps_file = fopen(lmps_filename, "r");
-//    assert(lmps_file);
 
     FILE* lmps_file = stdin;
 
@@ -122,12 +106,14 @@ int main(int argc, char *argv[])
                          &dummy1, &dummy2, &type, &f_dummy, 
                          &x, &y, &z, &dummy4, &dummy5, &dummy6) > 0)
             {
+
                 Atom a;
                 a.type = type;
                 a.x = x;
                 a.y = y;
                 a.z = z;
                 atoms.push_back(a);
+  
             }
         }
 
@@ -153,11 +139,6 @@ int main(int argc, char *argv[])
     vacuumms_float box_z = zhi - zlo;
 
     fprintf(stderr, "-box %f %f %f\n", box_x, box_y, box_z);
-
-    // cram the box?
-    if (cram)
-    {
-    }
 
     // use the pair data to finalize the atoms
     for (int i=0; i<atoms.size(); i++)

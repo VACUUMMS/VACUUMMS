@@ -22,5 +22,6 @@
 #ifdef BUILD_PYBIND_BINDINGS 
     #include <pybind11/pybind11.h>
     #include <pybind11/stl.h>
+    #include <pybind11/numpy.h>
     #define PYBIND11_EXPORT __attribute__((visibility("default")))
 #endif

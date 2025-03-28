@@ -86,13 +86,32 @@ vacuumms_float Configuration::insertionEnergy(vacuumms_float x, vacuumms_float y
 }
 
 
+void Configuration::setBoxDimensions(std::vector<vacuumms_float> dims)
+{
+    box_x = dims[0];
+    box_y = dims[1];
+    box_z = dims[2];
+
+    box_dimensions = dims;
+}
+
+/*
 void Configuration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
 {
     box_x = _box_x;
     box_y = _box_y;
     box_z = _box_z;
 }
+*/
 
+std::vector<vacuumms_float> Configuration::getBoxDimensions()
+{
+    std::vector<float> arr(3);
+    arr[0] = box_x;
+    arr[1] = box_y;
+    arr[2] = box_z;
+    return arr;
+}
 
 void Configuration::setMirrorDepth(int _mirror_depth)
 {
@@ -141,6 +160,30 @@ int Configuration::isCrammed()
 }
 
 
+void Configuration::replicate(int depth)
+{
+    // Use size of original vector
+    size_t size = records.size();
+
+    for (int r = 0; r < size; r++)
+    {
+        for (int i=-depth; i<=depth; i++)
+        for (int j=-depth; j<=depth; j++)
+        for (int k=-depth; k<=depth; k++)
+        {
+            // skip the center box
+            if (!((i == 0) && (j == 0) && (k == 0)))
+                pushBack(ConfigurationRecord((box_x * i) + records[r].x, 
+                                             (box_y * j) + records[r].y, 
+                                             (box_z * k) + records[r].z, 
+                                             records[r].sigma, 
+                                             records[r].epsilon)); 
+        }
+    }
+    replication_depth += depth;
+}
+
+
 #ifdef BUILD_PYBIND_BINDINGS
 
 pybind11::str Configuration::__repr__()
@@ -148,21 +191,32 @@ pybind11::str Configuration::__repr__()
     pybind11::str retval("");
 
     for (int i=0; i<records.size(); i++)
-        // retval = retval + pybind11::str(command_line_argv[i]) + pybind11::str("\n");
         retval = retval + 
-                 pybind11::str(std::to_string(records[i].x)) +
-                 pybind11::str("\t") +
-                 pybind11::str(std::to_string(records[i].y)) +
-                 pybind11::str("\t") +
-                 pybind11::str(std::to_string(records[i].z)) +
-                 pybind11::str("\t") +
-                 pybind11::str(std::to_string(records[i].sigma)) +
-                 pybind11::str("\t") +
-                 pybind11::str(std::to_string(records[i].epsilon)) +
-                 pybind11::str("\n");
+             pybind11::str(std::to_string(records[i].x)) +
+             pybind11::str("\t") +
+             pybind11::str(std::to_string(records[i].y)) +
+             pybind11::str("\t") +
+             pybind11::str(std::to_string(records[i].z)) +
+             pybind11::str("\t") +
+             pybind11::str(std::to_string(records[i].sigma)) +
+             pybind11::str("\t") +
+             pybind11::str(std::to_string(records[i].epsilon)) +
+             pybind11::str("\n");
+
+    retval = retval + pybind11::str("box dims: ")
+             + pybind11::str(std::to_string(box_x))
+             + pybind11::str("\n");
+    retval = retval + pybind11::str("          ")
+             + pybind11::str(std::to_string(box_y))
+             + pybind11::str("\n");
+    retval = retval + pybind11::str("          ")
+             + pybind11::str(std::to_string(box_z))
+             + pybind11::str("\n");
 
     return retval;
 }
 
 #endif
+
+
 

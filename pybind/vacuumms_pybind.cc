@@ -1,3 +1,5 @@
+/* pybind/vacuumms_pybind.cc */
+
 #include <vacuumms/exports.hh>
 
 #include <vacuumms/parameters.hh>
@@ -12,11 +14,22 @@
 #include <vacuumms/voronoi.hh>
 #endif
 
+#ifdef BUILD_CUDA_COMPONENTS
+#include <vacuumms/fvi.hh>
+#include <cuda_runtime.h>
+#endif
+
 #include <vacuumms/types.h>
 
-//#include <pybind11/pybind11.h>
-//#include <pybind11/stl.h>
 #include <iostream>
+
+#ifdef BUILD_CUDA_COMPONENTS
+void finalize_cuda()
+{
+    cudaDeviceReset();
+}
+#endif
+
 
 
 namespace py = pybind11;
@@ -32,7 +45,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getIntParam", [](Parameters& self, char* arg) -> int {return self.getIntParam(arg);} )
         .def("getFloatParam", [](Parameters& self, char* arg) -> vacuumms_float {return self.getFloatParam(arg);})
         .def("getStringParam", [](Parameters& self, char* arg) -> py::str {return self.getStringParam(arg);})
-        .def("getVectorParam", [](Parameters& self, char* arg)-> py::list {return self.getVectorParam(arg); })
+        .def("getVectorParam", [](Parameters& self, char* arg)-> std::vector<vacuumms_float> {return self.getVectorParam(arg); })
         .def("getVectorStringParam", [](Parameters& self, char* arg)-> py::list {return self.getVectorStringParam(arg); })
         .def("__repr__", &Parameters::__repr__)
         .def("__str__", &Parameters::__str__)
@@ -44,14 +57,15 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<char*>())
         .def("__repr__", &Configuration::__repr__)
         .def("setBoxDimensions", &Configuration::setBoxDimensions)
+        .def("getBoxDimensions", &Configuration::getBoxDimensions)
         .def("cram", &Configuration::cram)
         .def("isCrammed", &Configuration::isCrammed)
+        .def("replicate", &Configuration::replicate)
+        .def("getSize", &Configuration::getSize)
         ;
 
-    py::class_<LAMMPSConfiguration>(m, "LAMMPSConfiguration")
+    py::class_<LAMMPSConfiguration, Configuration>(m, "LAMMPSConfiguration")
         .def(py::init<std::string>())
-        .def("getSize", &LAMMPSConfiguration::getSize)
-        .def("__repr__", &LAMMPSConfiguration::__repr__)
         ;
 
 
@@ -62,29 +76,38 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
+    /* Subclass notes: Declare any operation that will be called on 
+       all operations in base class. It will use the method from derived
+       class, even though it is not listed explicitly for derived class. */
 
     // Operations classes
+    py::class_<Operation>(m, "Operation")
+        .def("execute", &Operation::execute)
+        .def("getParameters", &Operation::getParameters)
+        .def("setParameters", &Operation::setParameters)
+        .def("execute", &Operation::execute)
+        ;
 
     // Interface to DDX (Operation subclass)
 
-    py::class_<DDX>(m, "DDX")
+    py::class_<DDX, Operation>(m, "DDX")
         .def(py::init<>())
+        .def(py::init<Configuration>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &DDX::printUsage)
-        .def("setParameters", &DDX::setParameters)
+        .def("getConfiguration", &DDX::getConfiguration)
         .def("setConfiguration", &DDX::setConfiguration)
-        .def("execute", &DDX::execute)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
     ;
 
     // Interface to PDDX (Operation subclass)
     
-    py::class_<PDDX>(m, "PDDX")
+    py::class_<PDDX, Operation>(m, "PDDX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
         .def("printUsage", &PDDX::printUsage)
-        .def("setParameters", &PDDX::setParameters)
+        .def("getConfiguration", &PDDX::getConfiguration)
         .def("setConfiguration", &PDDX::setConfiguration)
         .def("execute", &PDDX::execute)
         .def("getResult", &PDDX::getResult)
@@ -126,6 +149,33 @@ PYBIND11_MODULE(vacuumms, m)
     ;
 
 #endif
+
+#ifdef BUILD_CUDA_COMPONENTS
+
+    py::class_<FVIX>(m, "FVIX")
+        .def(py::init<>())
+        .def(py::init<Configuration>())
+        .def(py::init<Configuration, Parameters>())
+        .def("printUsage", &FVIX::printUsage)
+        .def("getParameters", &FVIX::getParameters)
+        .def("setParameters", &FVIX::setParameters)
+        .def("getDimensions", &FVIX::getDimensions)
+        .def("setDimensions", &FVIX::setDimensions)
+        .def("getConfiguration", &FVIX::getConfiguration)
+        .def("setConfiguration", &FVIX::setConfiguration)
+        .def("execute", &FVIX::execute)
+        .def("getRepulsion", &FVIX::getRepulsion)
+        .def("getAttraction", &FVIX::getAttraction)
+        .def("getEnergy", &FVIX::getEnergy)
+        .def("getFVI", &FVIX::getFVI)
+        .def("__repr__", &FVIX::__repr__)
+    ;
+
+    m.def("finalize_cuda", &finalize_cuda)
+    ;
+
+#endif
+
 
     // Other classes
     
