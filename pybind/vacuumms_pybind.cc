@@ -166,6 +166,9 @@ PYBIND11_MODULE(vacuumms, m)
         .def("execute", &FVIX::execute)
         .def("getRepulsion", &FVIX::getRepulsion)
         .def("getAttraction", &FVIX::getAttraction)
+#ifdef BUILD_TIFF_UTILS
+        .def("generateTIFF", &FVIX::generateTIFF)
+#endif
         .def("getEnergy", &FVIX::getEnergy)
         .def("getFVI", &FVIX::getFVI)
         .def("__repr__", &FVIX::__repr__)

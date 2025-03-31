@@ -9,6 +9,10 @@
 #include <vacuumms/limits.h>
 #include <vacuumms/rng.h>
 
+#ifdef BUILD_TIFF_UTILS
+#include <tiffio.h>
+#endif
+
 #include <math.h>
 
 
@@ -145,3 +149,93 @@ pybind11::str FVIX::__repr__()
 FVIX::~FVIX()
 {
 }
+
+#ifdef BUILD_TIFF_UTILS
+
+/********************************************************************************/
+/*                                                                              */
+/*  Reads an fvi format (%f\t%f\t%f\t%f\n") and generates a tif file            */
+/*  note: height is z, width is y, depth is x                                   */
+/*                                                                              */
+/********************************************************************************/
+void FVIX::generateTIFF(char* filename)
+{ 
+    //double _dim_x=256, _dim_y=256, _dim_z=256; // to capture command line args as double, to then convert to int 
+    // to capture command line args as double, to then convert to int 
+    int depth=dimensions[0], width=dimensions[1], height=dimensions[2]; 
+
+    int alpha = 255;
+    int green = 1, red = 0, blue = 0;
+    int sampleperpixel = 4;
+    char *image;
+
+
+    // This was a fun bug. For dims of 1024, this works out to 2^32, and therefore zero as an int.
+    // So malloc(0) returns a valid pointer, but can't write to the memory. 
+    // Added the cast to long to fix 32-bit arithmetic issue.
+    long blocksize = (long)depth * (long)width * (long)height * (long)sampleperpixel;
+    image = (char*)malloc(blocksize);
+
+    if (image==NULL) { fprintf(stderr, "Couldn't allocate memory."); exit(137); }
+  
+    for (int i=0; i<depth; i++)
+    for (int j=0; j<width; j++)
+    for (int k=0; k<height; k++)
+    {
+        //size_t which = idx * dim_x * dim_y + idy * dim_y + idz;
+        size_t which = i * depth * width + j * height + k;
+        vacuumms_float fvi = FVI[which];
+
+        long voxel = (long)sampleperpixel * ((long)(i*width*height) + (long)(j*height) + (long)k);
+        unsigned int fvid = floor(fvi*256);
+        if (red) image[0 + voxel] = fvid;
+        else image[0 + voxel] = 0;
+        if (green) image[1 + voxel] = fvid;
+        else image[1 + voxel] = 0;
+        if (blue) image[2 + voxel] = fvid;
+        else image[2 + voxel] = 0;
+
+        image[3 + voxel] = alpha;
+    }
+
+    TIFF *out = TIFFOpen(filename, "w");
+
+    tsize_t linebytes = sampleperpixel * width;     // length in memory of one row of pixel in the image.
+    unsigned char *buf = NULL;        // buffer used to store the row of pixel information for writing to file
+
+    // We set the strip size of the file to be size of one row of pixels
+    TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(out, linebytes));
+
+        int page;
+        for (page = 0; page < depth; page++)
+        {
+            TIFFSetField(out, TIFFTAG_IMAGEWIDTH, width);
+            TIFFSetField(out, TIFFTAG_IMAGELENGTH, height);
+            TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);
+            TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, sampleperpixel);
+            TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+            TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+            TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+
+            /* We are writing single page of the multipage file */
+            TIFFSetField(out, TIFFTAG_SUBFILETYPE, FILETYPE_PAGE);
+            /* Set the page number */
+            TIFFSetField(out, TIFFTAG_PAGENUMBER, page, depth);
+
+            char *pbuffer;
+
+            int row;
+            for (row = 0; row < height; row++) 
+            {
+              pbuffer = image + linebytes * (page*height+ row);
+              TIFFWriteScanline(out, pbuffer, row, 0);
+            }
+
+            TIFFWriteDirectory(out);
+
+        } // next page
+
+    TIFFClose(out);
+}
+
+#endif

@@ -36,6 +36,10 @@ FVIX : public Operation
 
         ~FVIX();
 
+#ifdef BUILD_TIFF_UTILS
+        void generateTIFF(char*);
+#endif
+
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::array_t<vacuumms_float>getAttraction();
         pybind11::array_t<vacuumms_float>getRepulsion();
