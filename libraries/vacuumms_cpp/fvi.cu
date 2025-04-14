@@ -23,9 +23,14 @@ __global__ void Kernel(
     vacuumms_float *d_FVI)
 {
     // blockIdx values are provided by CUDA
+/*
     unsigned int idx = blockIdx.x;
     unsigned int idy = blockIdx.y;
     unsigned int idz = threadIdx.x;
+*/
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
+    unsigned int idz = blockIdx.z * blockDim.z + threadIdx.z;
 
     vacuumms_float repulsion=0;
     vacuumms_float attraction=0;
@@ -39,25 +44,41 @@ __global__ void Kernel(
     vacuumms_float cuda_y = idy * f_resolution_y;
     vacuumms_float cuda_z = idz * f_resolution_z;
 
-//printf("Kernel with %ld x %ld x %ld\n", dim_x, dim_y, dim_z);
+    vacuumms_float sigma_probe = 0.0f;
+    vacuumms_float epsilon_probe = 1.0f;
+
     // evaluate energy at (cuda_x, cuda_y, cuda_z);
     for (int i=0; i< n_records; i++) 
     {
-        // central atom
-        dx = d_configuration[i].x - cuda_x;
-        dy = d_configuration[i].y - cuda_y;
-        dz = d_configuration[i].z - cuda_z;
-        dd = dx*dx + dy*dy + dz*dz; 
-        sigma_over_r_sq = d_configuration[i].sigma 
-                        * d_configuration[i].sigma 
-                        / dd; 
-        vacuumms_float sigma_over_r_6 = sigma_over_r_sq * sigma_over_r_sq * sigma_over_r_sq;
-        vacuumms_float sigma_over_r_12 = sigma_over_r_6 * sigma_over_r_6;
-        repulsion += d_configuration[i].epsilon * sigma_over_r_12;
-        attraction += d_configuration[i].epsilon * sigma_over_r_6;
+        // Lorentz-Berthelot combining rules
+        vacuumms_float sigma_ij = 0.5 * (d_configuration[i].sigma + sigma_probe);
+        vacuumms_float sigma_ij_sq = sigma_ij * sigma_ij;
+        vacuumms_float epsilon_ij = sqrt(d_configuration[i].sigma * epsilon_probe);
+
+        // loop over mirror boxes
+        for (int l=-1; l<=1; l++) 
+        for (int m=-1; m<=1; m++) 
+        for (int n=-1; n<=1; n++) 
+        {
+            // central atom
+            dx = l * box_x + d_configuration[i].x - cuda_x;
+            dy = m * box_y + d_configuration[i].y - cuda_y;
+            dz = n * box_z + d_configuration[i].z - cuda_z;
+            dd = dx*dx + dy*dy + dz*dz; 
+   
+/*            sigma_over_r_sq = d_configuration[i].sigma 
+                            * d_configuration[i].sigma 
+                            / dd; 
+*/
+            sigma_over_r_sq = sigma_ij_sq / dd; 
+            vacuumms_float sigma_over_r_6 = sigma_over_r_sq * sigma_over_r_sq * sigma_over_r_sq;
+            vacuumms_float sigma_over_r_12 = sigma_over_r_6 * sigma_over_r_6;
+            repulsion += d_configuration[i].epsilon * sigma_over_r_12;
+            attraction += d_configuration[i].epsilon * sigma_over_r_6;
+        }
     } 
 
-//printf("repulsion at (%f, %f, %f) = %f\n", cuda_x, cuda_y, cuda_z, repulsion);
+//printf("FVI at (%f, %f, %f) = %f\n", cuda_x, cuda_y, cuda_z, exp(-4 * repulsion));
     size_t which = idx * dim_x * dim_y + idy * dim_y + idz;
     if (d_attraction != nullptr) d_attraction[which] = 4 * attraction;
     if (d_repulsion != nullptr) d_repulsion[which] = 4 * repulsion;
@@ -123,22 +144,21 @@ void FVIX::execute()
     if (last != cudaSuccess) printf("%s\n", cudaGetErrorString(last)); 
 
 
-// FTW originals
-//    dim3 dimGrid(16, 16);
-//    dim3 dimBlock(16, 1, 1);
-// And first iteration, but need to handle smaller grids/blocks
-//    dim3 dimGrid(dimensions[0], dimensions[1]);
-//    dim3 dimBlock(dimensions[2], 1, 1);
-    int dim_x = dimensions[0];
-    while (dim_x > 16) dim_x >>=1;
-    int dim_y = dimensions[1];
-    while (dim_y > 16) dim_y >>=1;
-    int dim_z = dimensions[2];
-    while (dim_z > 16) dim_z >>=1;
-//printf("using grid and block dims %d %d %d\n", dim_x, dim_y, dim_z);
+    dim3 dimBlock(8, 8, 8);
+    dim3 dimGrid(
+        (dimensions[0] + dimBlock.x -1) / dimBlock.x,
+        (dimensions[1] + dimBlock.y -1) / dimBlock.y,
+        (dimensions[2] + dimBlock.z -1) / dimBlock.z
+    );
 
-    dim3 dimGrid(dim_x, dim_y);
-    dim3 dimBlock(dim_z, 1, 1);
+    if ( (dimensions[0] < 8) || (dimensions[1] < 8) || (dimensions[2] < 8) )
+    {
+        printf("FVIX::Kernel: need all dimensions to be >= 8\n");
+        return;
+    }
+
+//    dim3 dimGrid(dim_x, dim_y);
+//    dim3 dimBlock(dim_z, 1, 1);
 //printf("dimensions: %d x %d x %d\n", dimensions[0], dimensions[1], dimensions[2] );
     // Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], NULL, d_repulsion, NULL);
     Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], d_attraction, d_repulsion, d_energy, d_FVI);

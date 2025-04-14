@@ -165,7 +165,7 @@ void FVIX::generateTIFF(char* filename)
     int depth=dimensions[0], width=dimensions[1], height=dimensions[2]; 
 
     int alpha = 255;
-    int green = 1, red = 0, blue = 0;
+    int green = 1, red = 1, blue = 1;
     int sampleperpixel = 4;
     char *image;
 
@@ -187,7 +187,11 @@ void FVIX::generateTIFF(char* filename)
         vacuumms_float fvi = FVI[which];
 
         long voxel = (long)sampleperpixel * ((long)(i*width*height) + (long)(j*height) + (long)k);
+//printf("voxel #%ld: %f\n", fvi);
         unsigned int fvid = floor(fvi*256);
+//printf("voxel #%ld: %d\n", voxel, fvid);
+//printf("writing (%d, %d, %d) = %f\n", i,j,k, fvi);
+
         if (red) image[0 + voxel] = fvid;
         else image[0 + voxel] = 0;
         if (green) image[1 + voxel] = fvid;
@@ -236,6 +240,8 @@ void FVIX::generateTIFF(char* filename)
         } // next page
 
     TIFFClose(out);
+
+    free(image);
 }
 
 #endif
