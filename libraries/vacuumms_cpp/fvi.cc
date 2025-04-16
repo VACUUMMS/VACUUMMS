@@ -163,7 +163,15 @@ void FVIX::generateTIFF(char* filename)
     //double _dim_x=256, _dim_y=256, _dim_z=256; // to capture command line args as double, to then convert to int 
     // to capture command line args as double, to then convert to int 
     int depth=dimensions[0], width=dimensions[1], height=dimensions[2]; 
-
+    size_t pixel_volume = depth * width * height;
+    if (pixel_volume > 4294967296) // (1024*1024*1024) 
+    {
+        fprintf(stderr, "provided diemsions of %d x %d x %d ");
+        fprintf(stderr, "are larger than %ld\n", depth, width, height, 4294967296);
+        fprintf(stderr, "and not supported by standard TIFF library.\n");
+        fprintf(stderr, "Declining to generate.\n");
+        return;
+    }
     int alpha = 255;
     int green = 1, red = 1, blue = 1;
     int sampleperpixel = 4;

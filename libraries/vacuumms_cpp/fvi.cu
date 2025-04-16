@@ -99,46 +99,51 @@ void FVIX::execute()
 
     /* allocate for return values on device */
 
-//printf("allocating\n");
+printf("allocating repulsion\n");
     vacuumms_float* d_repulsion;
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_repulsion, array_size * sizeof(vacuumms_float)));
 
-//printf("allocating\n");
+printf("allocating attraction\n");
     vacuumms_float* d_attraction;
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_attraction, array_size * sizeof(vacuumms_float)));
 
-//printf("Got d_attraction = %ld\n", d_attraction);
+printf("Got d_attraction = %ld\n", d_attraction);
 
-//printf("allocating\n");
-    vacuumms_float* d_energy;
+
+    vacuumms_float* d_energy = NULL;
+/*
+printf("allocating energy\n");
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_energy, array_size * sizeof(vacuumms_float)));
+*/
 
-//printf("allocating\n");
+printf("allocating FVI\n");
     vacuumms_float* d_FVI;
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_FVI, array_size * sizeof(vacuumms_float)));
 
-
     /* malloc, copy, and sync config records */
 
-//printf("sending records\n");
+printf("allocating records\n");
     ConfigurationRecord *d_records;
 
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMalloc( &d_records, sizeof(ConfigurationRecord) * n_records));
 
+printf("copying records\n");
+
     for(cudaError_t err = cudaErrorUnknown; 
         err != cudaSuccess; 
         err = cudaMemcpy( d_records, h_records.data(), h_records.size() * sizeof(ConfigurationRecord), cudaMemcpyHostToDevice ));
 
+printf("synchronizing\n");
     cudaDeviceSynchronize(); // block until the device has completed
     cudaError_t last = cudaGetLastError();
     if (last != cudaSuccess) printf("%s\n", cudaGetErrorString(last)); 
@@ -161,12 +166,16 @@ void FVIX::execute()
 //    dim3 dimBlock(dim_z, 1, 1);
 //printf("dimensions: %d x %d x %d\n", dimensions[0], dimensions[1], dimensions[2] );
     // Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], NULL, d_repulsion, NULL);
+
+printf("launching Kernel\n");
+
     Kernel<<< dimGrid, dimBlock >>>(d_records, n_records, c.box_x, c.box_y, c.box_z, dimensions[0], dimensions[1], dimensions[2], d_attraction, d_repulsion, d_energy, d_FVI);
 
-//printf("synchronizing\n");
+printf("synchronizing\n");
     cudaDeviceSynchronize(); // block until the device has completed
     last = cudaGetLastError();
     if (last != cudaSuccess) printf("%s\n", cudaGetErrorString(last)); 
+printf("synchronized\n");
 
     // retrieve result
     attraction.resize(array_size);
@@ -175,12 +184,14 @@ void FVIX::execute()
     repulsion.resize(array_size);
     energy.resize(array_size);
     FVI.resize(array_size);
+printf("resized\n");
+
 
     cudaError_t err;
     // this works, maybe name collision above?
     err = cudaMemcpy(attraction.data(), d_attraction, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
     if (err != cudaSuccess) std::cerr <<  "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
-//printf("synchronizing Device\n");
+printf("synchronizing Device\n");
     cudaDeviceSynchronize(); // block until the device has completed
     err = cudaGetLastError();
     if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
@@ -194,12 +205,15 @@ void FVIX::execute()
     if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
 
       
+if (d_energy != NULL)
+{
     err = cudaMemcpy(energy.data(), d_energy, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
     if (err != cudaSuccess) std::cerr <<  "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
 //printf("synchronizing Device\n");
     cudaDeviceSynchronize(); // block until the device has completed
     err = cudaGetLastError();
     if (err != cudaSuccess) printf("%s\n", cudaGetErrorString(err)); 
+}
 
       
     err = cudaMemcpy(FVI.data(), d_FVI, array_size * sizeof(vacuumms_float), cudaMemcpyDeviceToHost );
