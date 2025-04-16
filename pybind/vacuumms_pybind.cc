@@ -164,13 +164,17 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getConfiguration", &FVIX::getConfiguration)
         .def("setConfiguration", &FVIX::setConfiguration)
         .def("execute", &FVIX::execute)
+        .def("calculateAttraction", &FVIX::calculateAttraction)
+        .def("calculateRepulsion", &FVIX::calculateRepulsion)
+        .def("calculateEnergy", &FVIX::calculateEnergy)
+        .def("calculateFVI", &FVIX::calculateFVI)
         .def("getRepulsion", &FVIX::getRepulsion)
         .def("getAttraction", &FVIX::getAttraction)
+        .def("getEnergy", &FVIX::getEnergy)
+        .def("getFVI", &FVIX::getFVI)
 #ifdef BUILD_TIFF_UTILS
         .def("generateTIFF", &FVIX::generateTIFF)
 #endif
-        .def("getEnergy", &FVIX::getEnergy)
-        .def("getFVI", &FVIX::getFVI)
         .def("__repr__", &FVIX::__repr__)
     ;
 
