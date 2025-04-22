@@ -9,6 +9,11 @@
 
 #include <vacuumms/exports.hh>
 
+#define FVIX_ATTRACTION 1
+#define FVIX_REPULSION 2
+#define FVIX_ENERGY 4
+#define FVIX_FVI 8
+
 
 class
 #ifdef PYBIND11_EXPORTS 
@@ -27,14 +32,25 @@ FVIX : public Operation
         Configuration getConfiguration();
         void setDimensions(std::vector<size_t>);
         std::vector<size_t> getDimensions();
-        void execute();
         void* getResult();
+
+        void execute();
+        void executeMask(int mask);
 
         void printUsage();
 
-        template<size_t resolution> FVIArray<resolution>* calculateFVI(Configuration);
+        void calculateAll();
+        std::vector<vacuumms_float> calculateAttraction();
+        std::vector<vacuumms_float> calculateRepulsion();
+        std::vector<vacuumms_float> calculateEnergy();
+        std::vector<vacuumms_float> calculateFVI();
+//        template<size_t resolution> FVIArray<resolution>* calculateFVI(Configuration);
 
         ~FVIX();
+
+#ifdef BUILD_TIFF_UTILS
+        void generateTIFF(char*);
+#endif
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::array_t<vacuumms_float>getAttraction();

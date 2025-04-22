@@ -72,6 +72,7 @@ if (BUILD_PYBIND_BINDINGS)
     target_compile_definitions(vacuumms_cpp PRIVATE PYBIND11_EXPORTS)
 endif()
 
+
 set_target_properties(vacuumms_cpp PROPERTIES
     POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}
     )
@@ -89,6 +90,7 @@ if (BUILD_TIFF_UTILS)
     list(APPEND EXTRA_LIBS vacuumms_tiff)
 
     target_link_libraries(vacuumms_tiff PUBLIC TIFF::tiff)
+    target_link_libraries(vacuumms_cpp PUBLIC TIFF::tiff)
 
     set_target_properties(vacuumms_tiff PROPERTIES
         POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}

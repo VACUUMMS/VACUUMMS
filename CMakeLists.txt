@@ -89,6 +89,7 @@ endif()
 
 # Import the tiff library. This will make it available for linking. 
 if (BUILD_TIFF_UTILS)
+    add_definitions(-DBUILD_TIFF_UTILS)
     find_package(TIFF)
     add_library(tiff SHARED IMPORTED)
     set_target_properties(tiff PROPERTIES IMPORTED_LOCATION "${TIFF_LIBRARIES}")
