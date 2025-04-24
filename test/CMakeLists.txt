@@ -130,3 +130,13 @@ set_tests_properties(test_ljx PROPERTIES
 )
 
 
+# Variational module tests
+
+add_test(
+    NAME test_variational_lj
+    COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_lj.sh"
+)
+set_tests_properties(test_variational_lj PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
+)
+
