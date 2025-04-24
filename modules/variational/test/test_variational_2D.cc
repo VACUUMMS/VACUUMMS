@@ -3,8 +3,10 @@
 #include <math.h>
 
 #include <vacuumms/types.h>
+
 #include <vacuumms/variational/variational.hh>
-#include <vacuumms/param.hh>
+#include <vacuumms/parameters.hh>
+
 
 //int n_points = 2;
 int n_iter = 1;
@@ -21,12 +23,9 @@ vacuumms_float epsilon = 1.0;
 
 int main(int argc, char** argv)
 {
-    setCommandLineParameters(argc, argv);
-    getIntParam((char*)"-n_iter", &n_iter);
-//    getIntParam((char*)"-update", &update);
-    getIntParam((char*)"-n_var_points", &n_var_points);
+    Parameters p(argc, argv);
 
-    char filename[] = "x.gfg";
+    const char *filename = p.getStringParam((char*)"-filename");
     Configuration c = Configuration(filename);
 
     printf("dumping configuration:\n");
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
     printf("done. \n\n");
 
     Variational2D v = Variational2D(start_x, start_y, end_x, end_y, sigma, epsilon, n_var_points, &c);
-    printf("dumping Variational2D object: %p\n", &v);
+    // printf("dumping Variational2D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
 
@@ -44,15 +43,14 @@ int main(int argc, char** argv)
         v.iterate();
     }
 
-    printf("dumping Variational2D object: %p\n", &v);
+    // printf("dumping Variational2D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
 
     printf("rebalancing:\n\n");
     v.rebalancePoints2D();
-    printf("dumping Variational2D object: %p\n", &v);
+    // printf("dumping Variational2D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
-
 }
 

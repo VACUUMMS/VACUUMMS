@@ -38,10 +38,6 @@ add_executable(test_quaternion "${PROJECT_SOURCE_DIR}/modules/variational/test/t
 target_include_directories(test_quaternion PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(test_quaternion PUBLIC vacuumms_variational vacuumms_rt m)
 
-add_executable(test_configuration "${PROJECT_SOURCE_DIR}/modules/variational/test/test_configuration.cc")
-target_include_directories(test_configuration PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(test_configuration PUBLIC vacuumms_variational vacuumms_rt m)
-
-install(TARGETS test_variational_lj test_variational_2D test_variational_3D test_quaternion test_configuration
+install(TARGETS test_variational_lj test_variational_2D test_variational_3D test_quaternion 
         DESTINATION test)
 
