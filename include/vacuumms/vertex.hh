@@ -1,10 +1,12 @@
 /* vacuumms/vertex.hh */
 
-#include <vacuumms/types.h>
-#include <vacuumms/limits.h>
+#pragma once
 
 #include <vector>
 #include <iostream>
+
+#include <vacuumms/types.h>
+#include <vacuumms/limits.h>
 
 
 class Vertex

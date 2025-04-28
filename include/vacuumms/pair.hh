@@ -1,4 +1,5 @@
 /* vacuumms/pair.hh */
+
 #pragma once
 
 #include <vacuumms/types.h>

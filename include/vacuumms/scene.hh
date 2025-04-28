@@ -1,7 +1,9 @@
-// configuration.hh 
+/* vacuumms/configuration.hh */
+
 #pragma once
 
 #include <vector>
+
 #include <vacuumms/types.h>
 
 #include <vacuumms/exports.hh>

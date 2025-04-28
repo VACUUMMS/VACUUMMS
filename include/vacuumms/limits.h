@@ -1,6 +1,8 @@
 /* vacuumms/limits.h */
 
 #define VACUUMMS_MAX_NUMBER_OF_MOLECULES 131072
+#define VACUUMMS_MAX_CLOSE 131072
+
 #define VACUUMMS
 
 #define VACUUMMS_INT_MAX 2147483647

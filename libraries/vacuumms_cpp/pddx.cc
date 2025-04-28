@@ -282,7 +282,7 @@ void PDDX::makeVerletList(Trajectory* p_traj)
         p_traj->close_epsilon[p_traj->close_molecules] = epsilon[i];
 
         p_traj->close_molecules++;
-        assert(p_traj->close_molecules < MAX_CLOSE);
+        assert(p_traj->close_molecules < VACUUMMS_MAX_CLOSE);
       }
     }
   }

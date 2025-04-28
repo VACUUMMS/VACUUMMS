@@ -1,4 +1,4 @@
-/* energy.h */
+/* vacuumms/energy.h */
 
 double calculateSystemEnergy();
 void updatePairList();

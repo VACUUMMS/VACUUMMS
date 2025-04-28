@@ -2,15 +2,14 @@
 
 #pragma once
 
+#include <vacuumms/limits.h>
+
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 #include <vacuumms/parameters.hh>
 #include <vacuumms/operations.hh>
-
-#include <vacuumms/limits.h>
-#define MAX_CLOSE (VACUUMMS_MAX_NUMBER_OF_MOLECULES)
-
 #include <vacuumms/exports.hh>
+
 
 class 
 #ifdef PYBIND11_EXPORTS 
@@ -56,11 +55,11 @@ DDX : public Operation
         double sigma[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
         double epsilon[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
 
-        double close_x[MAX_CLOSE], close_y[MAX_CLOSE], close_z[MAX_CLOSE];
-        double close_sigma[MAX_CLOSE];
-        double close_sigma6[MAX_CLOSE];
-        double close_sigma12[MAX_CLOSE];
-        double close_epsilon[MAX_CLOSE];
+        double close_x[VACUUMMS_MAX_CLOSE], close_y[VACUUMMS_MAX_CLOSE], close_z[VACUUMMS_MAX_CLOSE];
+        double close_sigma[VACUUMMS_MAX_CLOSE];
+        double close_sigma6[VACUUMMS_MAX_CLOSE];
+        double close_sigma12[VACUUMMS_MAX_CLOSE];
+        double close_epsilon[VACUUMMS_MAX_CLOSE];
 
         double box_x=6, box_y=6, box_z=6;
         double verlet_cutoff=100.0;

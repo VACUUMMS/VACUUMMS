@@ -1,12 +1,12 @@
 /* vacuumms/edge.hh */
 
-#include <vacuumms/types.h>
-#include <vacuumms/limits.h>
-
-//#include <vacuumms/vertex.hh>
+#pragma once
 
 #include <vector>
 #include <iostream>
+
+#include <vacuumms/types.h>
+#include <vacuumms/limits.h>
 
 
 class Edge

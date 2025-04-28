@@ -1,12 +1,14 @@
 /* vacuumms/parameters.hh */
-#pragma once
 
-#include <vacuumms/exports.hh>
+#pragma once
 
 #include <string>
 #include <vector>
 
 #include <vacuumms/types.h>
+
+#include <vacuumms/exports.hh>
+
 
 #ifdef PYBIND11_EXPORTS 
 class PYBIND11_EXPORT Parameters

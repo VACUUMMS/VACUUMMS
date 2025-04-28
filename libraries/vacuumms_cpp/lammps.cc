@@ -1,6 +1,6 @@
 /* libraries/vacuumms_cpp/lammps.cc */
 
-#include <vacuumms/param.hh>
+#include <vacuumms/param.h>
 #include <vacuumms/types.h>
 
 #include <stdio.h>

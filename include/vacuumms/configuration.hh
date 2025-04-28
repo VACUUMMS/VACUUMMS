@@ -1,8 +1,10 @@
 // configuration.hh 
+
 #pragma once
 
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
+
 #include <vacuumms/types.h>
 
 #include <vacuumms/exports.hh>

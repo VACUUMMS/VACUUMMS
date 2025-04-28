@@ -1,4 +1,8 @@
-/* vacuums/param.hh */
+/* vacuumms/param.hh */
+
+/* This replicates the old C parameters interface */
+
+#pragma once
 
 void setCommandLineParameters(int argc, char **argv);
 

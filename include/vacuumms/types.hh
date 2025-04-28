@@ -6,10 +6,10 @@
 
 #pragma once
 
+#include <vector>
+
 #include <vacuumms/limits.h>
 #include <vacuumms/types.h>
-
-#include <vector>
 
 #include <vacuumms/exports.hh>
 
@@ -46,29 +46,10 @@ Histogram
 
         int number_of_bins = 100;
         vacuumms_float width_of_bins = 1.0;
-//        std::vector<int> bins;
         std::vector<vacuumms_float> bins;
         int misses = 0;
         int scaler = 1;
         vacuumms_float weight = 1.0f;
 
 };
-
-
-template<size_t resolution>
-class FVIArray
-{
-    float energy[resolution][resolution][resolution];
-    
-};
-
-/*
-
-class FVI
-{
-//  float intensity[256][256][256];
-};
-
-*/
-
 

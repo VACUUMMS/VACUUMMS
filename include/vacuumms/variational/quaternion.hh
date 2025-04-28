@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <math.h>
+#include <vacuumms/types.h>
+#include <cmath>
 
 void rotate_vector(vacuumms_float v_x, vacuumms_float v_y, vacuumms_float v_z, vacuumms_float theta, 
             vacuumms_float u_x, vacuumms_float u_y, vacuumms_float u_z, 

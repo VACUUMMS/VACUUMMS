@@ -1,15 +1,14 @@
 // operations.hh
+
 #pragma once
+
+#include <vacuumms/limits.h>
 
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 #include <vacuumms/parameters.hh>
 
-#include <vacuumms/limits.h>
-#define MAX_CLOSE (VACUUMMS_MAX_NUMBER_OF_MOLECULES)
-
 #include <vacuumms/exports.hh>
-
 
 
 class 
