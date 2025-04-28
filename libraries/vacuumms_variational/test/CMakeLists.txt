@@ -22,19 +22,19 @@
 #    "${PROJECT_SOURCE_DIR}/include"
 #    )
 
-add_executable(test_variational_lj "${PROJECT_SOURCE_DIR}/modules/variational/test/test_variational_lj.cc")
+add_executable(test_variational_lj "${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/test/test_variational_lj.cc")
 target_include_directories(test_variational_lj PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(test_variational_lj PUBLIC vacuumms_variational vacuumms_rt m)
 
-add_executable(test_variational_2D "${PROJECT_SOURCE_DIR}/modules/variational/test/test_variational_2D.cc")
+add_executable(test_variational_2D "${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/test/test_variational_2D.cc")
 target_include_directories(test_variational_2D PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(test_variational_2D PUBLIC vacuumms_variational vacuumms_rt m)
 
-add_executable(test_variational_3D "${PROJECT_SOURCE_DIR}/modules/variational/test/test_variational_3D.cc")
+add_executable(test_variational_3D "${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/test/test_variational_3D.cc")
 target_include_directories(test_variational_3D PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(test_variational_3D PUBLIC vacuumms_variational vacuumms_rt m)
 
-add_executable(test_quaternion "${PROJECT_SOURCE_DIR}/modules/variational/test/test_quaternion.cc")
+add_executable(test_quaternion "${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/test/test_quaternion.cc")
 target_include_directories(test_quaternion PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(test_quaternion PUBLIC vacuumms_variational vacuumms_rt m)
 

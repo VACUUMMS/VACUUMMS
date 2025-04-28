@@ -42,9 +42,10 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/types.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
-    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cc
+#    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cc
 )
 
+add_subdirectory(vacuumms_variational)
 
 # conditionally add voronoi.cc
 if(BUILD_VORONOI_UTILS)
@@ -59,6 +60,7 @@ target_link_libraries(vacuumms_cpp PUBLIC vacuumms_rt m pthread)
 
 if(BUILD_CUDA_COMPONENTS)
     target_link_libraries(vacuumms_cpp PUBLIC)
+    target_sources(vacuumms_cpp PRIVATE ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cc)
     target_sources(vacuumms_cpp PRIVATE ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cu)
 endif()
 

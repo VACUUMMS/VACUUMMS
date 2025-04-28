@@ -5,7 +5,7 @@ option(BUILD_STATIC_LIBS "static libs " OFF)
 option(BUILD_CUDA_COMPONENTS "FVI and PMDGPU require cuda" OFF)
 option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
 option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
-option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
+#option(BUILD_VARIATIONAL_MODULE "variational calculation of energy paths" OFF)
 option(BUILD_PYBIND_BINDINGS "Build the pybind binding library (vacuumms.so)" ON)
 
 option(ENABLE_TESTING "run the unit tests when building" ON)
@@ -130,11 +130,11 @@ file(COPY conda DESTINATION conda)
 
 # optional modules
 
-if (BUILD_VARIATIONAL_MODULE)
-    message("adding variational module")
-    list(APPEND EXTRA_lIBS vacuumms_variational)
-    add_subdirectory(modules/variational)
-endif()
+#if (BUILD_VARIATIONAL_MODULE)
+#    message("adding variational module")
+#    list(APPEND EXTRA_lIBS vacuumms_variational)
+#    add_subdirectory(modules/variational)
+#endif()
 
 # install headers
 

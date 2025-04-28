@@ -4,9 +4,9 @@ option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
 
 add_library(vacuumms_variational SHARED
-      ${PROJECT_SOURCE_DIR}/modules/variational/quaternion.cc
-      ${PROJECT_SOURCE_DIR}/modules/variational/variational_2D.cc
-      ${PROJECT_SOURCE_DIR}/modules/variational/variational_3D.cc
+      ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/quaternion.cc
+      ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/variational_2D.cc
+      ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/variational_3D.cc
 )
 
 target_link_libraries(vacuumms_variational 
