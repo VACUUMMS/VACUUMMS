@@ -31,7 +31,6 @@ void finalize_cuda()
 #endif
 
 
-
 namespace py = pybind11;
 
 PYBIND11_MODULE(vacuumms, m)
@@ -113,6 +112,18 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
     ;
+
+    // Scene interface, for generating and rendering POVRay SDL
+    
+/*
+    py::class_<Scene>(m, "Scene")
+        .def(py::init<>())
+    ;
+    
+    py::class_<SceneComponent>(m, "SceneComponent")
+        .def(py::init<>():
+    ;
+*/
 
 #ifdef BUILD_VORONOI_UTILS
 

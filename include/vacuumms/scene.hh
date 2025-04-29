@@ -1,10 +1,17 @@
-/* vacuumms/configuration.hh */
+/* vacuumms/scene.hh */
 
 #pragma once
 
 #include <vector>
 
 #include <vacuumms/types.h>
+
+#include <vacuumms/configuration.hh>
+#include <vacuumms/cavity.hh>
+
+#ifdef BUILD_CUDA_COMPONENTS
+    #include <vacuumms/fvi.hh>
+#endif
 
 #include <vacuumms/exports.hh>
 
@@ -17,12 +24,55 @@ SceneComponent
 {
     public:
 
-        int type;
-
-        SceneComponent();
-
-        std::string generateSDL();
+        std::string getComponentSDL();
 };
+
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+ConfigurationComponent : public SceneComponent
+{
+    public:
+
+        ConfigurationComponent(Configuration);
+        std::string getComponentSDL();
+    
+    private:
+    
+        vacuumms_float transmit;
+        vacuumms_float phong;
+        std::string color;
+        std::vector<vacuumms_float> box_dims;
+        int clip; // intersect with box
+};
+
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+CavityComponent : public SceneComponent
+{
+    public:
+
+        CavityComponent(CavityConfiguration);
+};
+
+#ifdef BUILD_CUDA_COMPONENTS
+
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+FVIComponent : public SceneComponent
+{
+    public:
+
+        FVIComponent(FVIX fvix);
+};
+
+#endif
+
 
 class 
 #ifdef PYBIND11_EXPORTS 
@@ -31,37 +81,42 @@ PYBIND11_EXPORT
 Scene
 {
     public:
-   
-        vacuumms_float box_x;
-        vacuumms_float box_y;
-        vacuumms_float box_z;
-    
-        vacuumms_float camera_x;
-        vacuumms_float camera_y;
-        vacuumms_float camera_z;
-
-        std::vector<vacuumms_float> box_dimensions;
-
-        std::vector<SceneComponent> records;
-        int mirror_depth = 1;
-        int replication_depth = 0;
-
-        Scene(const char *filename);
-        Scene(FILE *pipe); // allows stdin to be used to create pipeline
-        Scene();
-        void dumpContents();
-        void setBoxDimensions(std::vector<vacuumms_float> dims);
-        std::vector<vacuumms_float> getBoxDimensions();
-        void setMirrorDepth(int _mirror_depth);
 
         // I/O
-        createSceneFile(const char* filename);  // POV file
-        renderScene(const char* filename);      // PNG file
+        int createSceneFile(const char* filename);  // POV file
+        int renderScene(const char* filename);      // PNG file
+        std::string generateContainerSDL();
 
-        SceneComponent recordAt(int i);
-        void deleteComponentAt(int i);
-        int getSize();
-        int pushBack(SceneComponent);
+        SceneComponent componentAt(int i);
+        size_t deleteComponentAt(int i);
+        size_t getSize();
+        size_t pushBack(SceneComponent);
+
+        void setBoxDimensions(std::vector<vacuumms_float>);
+        std::vector<vacuumms_float> getBoxDimensions();
+
+        void setBackgroundColor(std::string);
+        void setCameraLocation(std::vector<vacuumms_float>);
+        size_t addLightSource(std::vector<vacuumms_float>, std::string color);
+        size_t applyStandardLight();
+        void applyAmbientLight();
+        void setShowBox(int);
+        void setBoxColor(std::string);
+
+    private:
+
+        int ambient_light = 0;
+        int show_box = 0;
+
+        std::vector<std::vector<vacuumms_float>> light_sources;
+        std::vector<SceneComponent> components;
+        
+        std::vector<vacuumms_float> camera_location = {40, 40, 40};
+        std::vector<vacuumms_float> box_dimensions = {10, 10, 10};
+
+        std::string light_color = "White";
+        std::string box_color = "Yellow";
+        std::string background_color = "Black";
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
