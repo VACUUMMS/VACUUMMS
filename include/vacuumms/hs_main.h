@@ -1,4 +1,4 @@
-/* lj_main.h */
+/* vacuumms/lj_main.h */
 
 int main();
 double calculateSystemEnergy();

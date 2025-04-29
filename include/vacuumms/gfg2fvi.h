@@ -1,4 +1,4 @@
-/* gfg2fvi.h */
+/* vacuumms/gfg2fvi.h */
 
 #include <vacuumms/types.h>
 

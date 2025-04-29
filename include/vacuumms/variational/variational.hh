@@ -1,6 +1,8 @@
 // variational.hh
-#include <vacuumms/configuration.hh>
+
 #include <vacuumms/types.h>
+
+#include <vacuumms/configuration.hh>
 
 extern const vacuumms_float machine_epsilon;
 extern const vacuumms_float sqrt_machine_epsilon;

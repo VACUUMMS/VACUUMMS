@@ -1,6 +1,6 @@
 /* vuniq.cc */
 
-#include <vacuumms/param.hh>
+#include <vacuumms/param.h>
 
 #include <vacuumms/types.h>
 #include <vacuumms/cavity.hh>

@@ -5,8 +5,7 @@
  * more widely later.
  */
 
-#ifndef VACUUMMS_TYPES
-#define VACUUMMS_TYPES
+#pragma once
 
 /* May later add code to declare this as double precision */
 
@@ -161,5 +160,4 @@ struct FVI
 
 typedef struct FVI vacuumms_FVI;
 
-#endif
 

@@ -1,14 +1,6 @@
 /* vacuumms/param.h */
 
-#ifndef FTW_PARAM_H
-#define FTW_PARAM_H
-
-#include <stdlib.h>
-
-/* FTW: symbols below moved to the source file */
-/* int command_line_argc;
-/* char **command_line_argv;
- */
+#pragma once
 
 void setCommandLineParameters(int argc, char **argv);
 
@@ -24,7 +16,3 @@ int getVectorStringParam(char *param_name, char **parameter1,  char **parameter2
 int getFlagParam(char *param_name);
 
 
-// usage: 	char *test;
-// 		getStringParam("-test", &test);
-
-#endif

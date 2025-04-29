@@ -1,9 +1,9 @@
 #include <iostream>
-#include <stdio.h>
-#include <math.h>
+//#include <stdio.h>
+//#include <math.h>
 
 #include <vacuumms/variational/variational.hh>
-#include <vacuumms/param.hh>
+#include <vacuumms/parameters.hh>
 
 int n_iter = 1;
 int n_var_points = 25; 
@@ -20,11 +20,12 @@ vacuumms_float epsilon = 1.0;
 
 int main(int argc, char** argv)
 {
-    setCommandLineParameters(argc, argv);
-    getIntParam((char*)"-n_iter", &n_iter);
-    getIntParam((char*)"-n_var_points", &n_var_points);
+    Parameters p(argc, argv);
 
-    char filename[] = "x.gfg";
+    p.getIntParam((char*)"-n_iter", &n_iter);
+    p.getIntParam((char*)"-n_var_points", &n_var_points);
+
+    const char *filename = p.getStringParam((char*)"-filename");
     Configuration c = Configuration(filename);
 
     printf("dumping configuration:\n");
@@ -33,7 +34,7 @@ int main(int argc, char** argv)
 
     Variational3D v = Variational3D(start_x, start_y, start_z, end_x, end_y, end_z, sigma, epsilon, n_var_points, &c);
 
-    printf("dumping Variational3D object: %p\n", &v);
+    // printf("dumping Variational3D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
 
@@ -43,15 +44,13 @@ int main(int argc, char** argv)
         v.iterate();
     }
 
-    printf("dumping Variational3D object: %p\n", &v);
+    // printf("dumping Variational3D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
 
     printf("skipping rebalancing:\n\n");
 //    v.rebalancePoints3D();
-    printf("dumping Variational3D object: %p\n", &v);
+    // printf("dumping Variational3D object: %p\n", &v);
     v.printValues();
     printf("done. \n\n");
-
 }
-

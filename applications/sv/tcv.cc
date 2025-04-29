@@ -11,7 +11,7 @@
 //#include <vacuumms/rng2.h>
 
 #include <vacuumms/cavity.hh>
-#include <vacuumms/param.hh>
+#include <vacuumms/param.h>
 
 // Use functions from the vacuumms C library
 extern "C"

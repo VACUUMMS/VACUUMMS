@@ -9,7 +9,7 @@
 #include <vacuumms/edge.hh>
 #include <vacuumms/pair.hh>
 
-#include <vacuumms/param.hh>
+#include <vacuumms/param.h>
 #include <vacuumms/types.h>
 
 double box_x=0.0, box_y=0.0, box_z=0.0;

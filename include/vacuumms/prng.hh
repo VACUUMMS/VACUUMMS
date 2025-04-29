@@ -16,15 +16,15 @@
 /*                                                                          */
 /****************************************************************************/
 
-#define MERSENNE_NN 312
-#define MERSENNE_MM 156
-#define MERSENNE_MATRIX_A 0xB5026F5AA96619E9ULL
-#define MERSENNE_UM 0xFFFFFFFF80000000ULL /* Most significant 33 bits */
-#define MERSENNE_LM 0x7FFFFFFFULL /* Least significant 31 bits */
+#define VACUUMMS_MERSENNE_NN 312
+#define VACUUMMS_MERSENNE_MM 156
+#define VACUUMMS_MERSENNE_MATRIX_A 0xB5026F5AA96619E9ULL
+#define VACUUMMS_MERSENNE_UM 0xFFFFFFFF80000000ULL /* Most significant 33 bits */
+#define VACUUMMS_MERSENNE_LM 0x7FFFFFFFULL /* Least significant 31 bits */
 
 struct MersenneTwister
 {
-  unsigned long long mt[MERSENNE_NN];
+  unsigned long long mt[VACUUMMS_MERSENNE_NN];
   int mti;
 };
 

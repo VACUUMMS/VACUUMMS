@@ -1,5 +1,8 @@
 #include <vacuumms/types.h>
+
 #include <vacuumms/variational/quaternion.hh>
+
+#include <cstdio>
 
 int main()
 {

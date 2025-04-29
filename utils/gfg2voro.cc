@@ -4,14 +4,15 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <vacuumms/param.hh>
+#include <voro++.hh>
+
+#include <vacuumms/param.h>
 
 extern "C"
 {
 #include <vacuumms/pov.h>
 }
 
-#include "voro++.hh"
 
 int main(int argc, char *argv[])
 {

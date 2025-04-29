@@ -1,4 +1,4 @@
-/* cuda.h */
+/* vacuumms/cuda.h */
 
 #include <errno.h>
 #include <stdlib.h>

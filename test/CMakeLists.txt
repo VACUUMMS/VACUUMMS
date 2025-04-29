@@ -130,3 +130,37 @@ set_tests_properties(test_ljx PROPERTIES
 )
 
 
+# Variational module tests
+
+add_test(
+    NAME test_variational_lj
+    COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_lj.sh"
+)
+set_tests_properties(test_variational_lj PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
+)
+
+add_test(
+    NAME test_variational_2D
+    COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_2D.sh"
+)
+set_tests_properties(test_variational_2D PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
+)
+
+add_test(
+    NAME test_variational_3D
+    COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_3D.sh"
+)
+set_tests_properties(test_variational_3D PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
+)
+
+add_test(
+    NAME test_quaternion
+    COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_quaternion.sh"
+)
+set_tests_properties(test_quaternion PROPERTIES
+    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
+)
+

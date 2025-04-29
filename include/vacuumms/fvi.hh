@@ -9,6 +9,7 @@
 
 #include <vacuumms/exports.hh>
 
+/* Mask bits for internal API */
 #define FVIX_ATTRACTION 1
 #define FVIX_REPULSION 2
 #define FVIX_ENERGY 4
