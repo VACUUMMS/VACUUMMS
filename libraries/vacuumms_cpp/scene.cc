@@ -1,7 +1,11 @@
 /* libraries/vacuumms_cpp/scene.cc */
 
+#include <cstdlib>
+#include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <filesystem>
 
 #include <vacuumms/scene.hh>
 #include <vacuumms/configuration.hh>
@@ -12,15 +16,27 @@ std::string Scene::generateContainerSDL()
 	std::stringstream out;
 
 	// headers
+	
     out << "#include \"colors.inc\"\n";
-    out << "{color " << background_color << "}\n";
-    out << "{location<" << camera_location[0] << "," << camera_location[1] << "," << camera_location[2] << "> look_at <0,0,0>}\n";
+
+    out << "background {color " << background_color << "}\n";
+
+    out << "camera {location <" << camera_location[0] 
+        << "," << camera_location[1] 
+        << "," << camera_location[2] 
+        << "> look_at <" << camera_look_at[0]
+        << "," << camera_look_at[1] 
+        << "," << camera_look_at[2] 
+        << "> right 1.0 angle 45}\n";
+
+    // ambient light
 
 	if (ambient_light) out << "global_settings { ambient_light rgb <" << ambient_light << "," << ambient_light << "," << ambient_light << "> }\n"; 
 
-    // apply light sources
+    // apply other light sources
+    
     std::string light_color = "White";
-//    for (auto source = light_sources.begin(); source != light_sources.end(); ++source)
+
     for (size_t i = 0; i < light_sources.size(); i++)
     {
         std::vector<vacuumms_float> source = light_sources[i];
@@ -30,24 +46,8 @@ std::string Scene::generateContainerSDL()
 			<< "> color " << light_color << "}\n";
     }
     
-/*
-    if (standard_light)
-    {
-		out << "light_source{<100,0,0> color " << light_color << "}\n";
-		out << "light_source{<0,100,0> color " << light_color << "}\n";
-		out << "light_source{<0,0,100> color " << light_color << "}\n";
-		out << "light_source{<-100,0,0> color " << light_color << "}\n";
-		out << "light_source{<0,-100,0> color " << light_color << "}\n";
-		out << "light_source{<0,0,-100> color " << light_color << "}\n";
-    }
-
-    if (light_source) 
-		out << "light_source{<" << light_source_x 
-			<< "," << light_source_y 
-			<< "," << light_source_z 
-			<< "> color " << light_color << "}\n";
-*/
-
+    // box
+    
     if (show_box)
     {
 		out << "cylinder { <0,0,0>, <" << box_dimensions[0] 
@@ -108,13 +108,30 @@ std::string Scene::generateContainerSDL()
 			<< ", 0>, .1 texture{ pigment {color %s}}}\n";
 		out << "sphere{<" << box_dimensions[0] << ", " << box_dimensions[1] << ", " 
 			<< box_dimensions[2] << ">, .1 texture{ pigment {color %s}}}\n";
+
+        // end of SDL comment
+        
+        out << "# end of sceneSDL\n\n";
 	}
 
 	return out.str();
 }
 
-ConfigurationComponent::ConfigurationComponent(Configuration configuration)
+/* implicitly defined
+SceneComponent::SceneComponent()
 {
+}
+*/
+
+std::string SceneComponent::getComponentSDL()
+{
+    // Return an unit orange bubble centered at origin as default. 
+    return std::string("sphere{<0.0, 0.0, 0.0>, 1.0 texture{ pigment {color Orange  transmit 0.700000  }  finish {phong 0.700000}  } }\n");
+}
+
+ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
+{
+    configuration = _configuration;
 }
 
 std::string ConfigurationComponent::getComponentSDL()
@@ -127,11 +144,11 @@ CavityComponent::CavityComponent(CavityConfiguration configuration)
 {
 }
 
+#ifdef BUILD_CUDA_COMPONENTS
 FVIComponent::FVIComponent(FVIX fvix)
 {
 }
-
-
+#endif
 
 void Scene::setBoxDimensions(std::vector<vacuumms_float> dims)
 {
@@ -154,12 +171,12 @@ size_t Scene::deleteComponentAt(int i)
     return components.size();
 }
 
-size_t Scene::getSize()
+size_t Scene::getNumberOfComponents()
 {
 	return components.size();
 }
 
-size_t Scene::pushBack(SceneComponent comp)
+size_t Scene::addSceneComponent(SceneComponent comp)
 {
 	components.push_back(comp);
 	return components.size();
@@ -210,12 +227,66 @@ void Scene::setBoxColor(std::string color)
 // I/O
 int Scene::createSceneFile(const char* filename)  // POV file
 {
-    return 0;
+    std::ofstream scene_file(filename);
+    if (scene_file.is_open()) // write it
+    {
+        // Container
+
+        scene_file << generateContainerSDL();
+        
+        // Components
+        
+        for (int i=0; i < components.size(); i++)
+        {
+            scene_file << "// writing component " << i << std::endl;
+            scene_file << components[i].getComponentSDL();
+            scene_file << std::endl;
+        }
+
+        scene_file.close();
+
+        return 0;
+    }
+    else
+    {
+        std::cout << "Could not write file " << filename << std::endl;
+        return 1;
+    }
 }
 
 int Scene::renderScene(const char* filename)      // PNG file
 {
-    return 0;
+    std::string basename = std::filesystem::path(filename).stem().string();
+    std::string pov_filename = basename + ".pov";
+
+    createSceneFile(pov_filename.c_str());
+
+    std::string command = "povray -W1920 -H1080 " + pov_filename;
+    std::string rm_command = "rm -f " + pov_filename;
+
+    // Render
+    int result = std::system(command.c_str());
+    if (result == 0) 
+	{
+        std::cout << "POV-Ray render completed successfully.\n";
+    } 
+	else 
+	{
+        std::cerr << "POV-Ray render failed with exit code: " << result << "\n";
+    }
+
+    // Clean up
+    int rm_result = std::system(rm_command.c_str());
+    if (rm_result == 0) 
+	{
+        std::cout << "POV-Ray temporary file deleted successfully.\n";
+    } 
+	else 
+	{
+        std::cerr << "POV-Ray temporary file could not be deleted, failed with exit code: " << rm_result << "\n";
+    }
+
+    return result;
 }
 
 /*

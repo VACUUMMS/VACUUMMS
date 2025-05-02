@@ -45,6 +45,7 @@ ConfigurationComponent : public SceneComponent
         std::string color;
         std::vector<vacuumms_float> box_dims;
         int clip; // intersect with box
+        Configuration configuration;
 };
 
 class 
@@ -89,14 +90,15 @@ Scene
 
         SceneComponent componentAt(int i);
         size_t deleteComponentAt(int i);
-        size_t getSize();
-        size_t pushBack(SceneComponent);
+        size_t getNumberOfComponents();
+        size_t addSceneComponent(SceneComponent);
 
         void setBoxDimensions(std::vector<vacuumms_float>);
         std::vector<vacuumms_float> getBoxDimensions();
 
         void setBackgroundColor(std::string);
         void setCameraLocation(std::vector<vacuumms_float>);
+        void setCameraLookAt(std::vector<vacuumms_float>);
         size_t addLightSource(std::vector<vacuumms_float>, std::string color);
         size_t applyStandardLight();
         void applyAmbientLight();
@@ -112,6 +114,7 @@ Scene
         std::vector<SceneComponent> components;
         
         std::vector<vacuumms_float> camera_location = {40, 40, 40};
+        std::vector<vacuumms_float> camera_look_at = {0, 0, 0};
         std::vector<vacuumms_float> box_dimensions = {10, 10, 10};
 
         std::string light_color = "White";
