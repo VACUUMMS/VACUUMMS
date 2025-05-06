@@ -1,0 +1,28 @@
+package:
+  name: vacuumms
+  version: 0.1.0
+
+source:
+  path: ../
+
+build:
+  script:
+    - mkdir -p $PREFIX/lib
+    - mkdir -p $PREFIX/lib/python3.13/site-packages/my_package
+    - cp pybind/vacuumms.cpython-313-x86_64-linux-gnu.so $PREFIX/lib/python3.13/site-packages/my_package/
+    - cp libraries/libvacuumms_rt.so $PREFIX/lib/
+    - cp libraries/libvacuumms_cpp.so $PREFIX/lib/
+    - cp libraries/vacuumms_variational/libvacuumms_variational.so $PREFIX/lib/
+    - cp my_package/*.py $PREFIX/lib/python3.13/site-packages/my_package/
+
+requirements:
+  run:
+    - python >=3.13
+    - libgcc-ng >=13
+    - libstdc++-ng >=13
+
+about:
+  home: https://github.com/yourusername/vacuumms
+  license: MIT
+  license_file: LICENSE
+  summary: Binary-only package for vacuumms

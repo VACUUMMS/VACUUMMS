@@ -7,6 +7,10 @@ option(BUILD_TIFF_UTILS "some utils require libtiff" OFF)
 option(BUILD_VORONOI_UTILS "some utils require voropp" OFF)
 option(BUILD_PYBIND_BINDINGS "Build the pybind binding library (vacuumms.so)" ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) # Optional: Disable compiler-specific extensions
+
 option(ENABLE_TESTING "run the unit tests when building" ON)
 
 # set the project name
@@ -18,7 +22,6 @@ endif()
 
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
 message("got value for BUILD_TIFF_UTILS=${BUILD_TIFF_UTILS}")
-message("got value for BUILD_VARIATIONAL_MODULE=${BUILD_VARIATIONAL_MODULE}")
 message("got value for BUILD_VORONOI_UTILS=${BUILD_VORONOI_UTILS}")
 message("got value for ENABLE_TESTING=${ENABLE_TESTING}")
 message("got value for BUILD_PYBIND_BINDINGS=${BUILD_PYBIND_BINDINGS}")
@@ -69,17 +72,24 @@ if (BUILD_CUDA_COMPONENTS)
 endif()
 
 # Import the tiff library. This will make it available for linking. 
+# Note that cmake uses FindTIFF.cmake, which defines TIFF::TIFF not TIFF::tiff
 if (BUILD_TIFF_UTILS)
     add_definitions(-DBUILD_TIFF_UTILS)
     find_package(TIFF REQUIRED)
-    add_library(tiff SHARED IMPORTED)
-    set_target_properties(tiff PROPERTIES IMPORTED_LOCATION "${TIFF_LIBRARIES}")
+#    add_library(tiff SHARED IMPORTED)
+#    set_target_properties(tiff PROPERTIES IMPORTED_LOCATION "${TIFF_LIBRARIES}")
 endif()
+
+#  the cmake_policy command to set the policy and suppress this warning, or
+#  preferably upgrade to using FindPython, either by calling it explicitly
+#  before pybind11, or by setting PYBIND11_FINDPYTHON ON before pybind11.
 
 if (BUILD_PYBIND_BINDINGS)
     add_definitions(-DBUILD_PYBIND_BINDINGS)
-    find_package(pybind11 REQUIRED)
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+    message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+    message(STATUS "Python3_LIBRARIES: ${Python3_LIBRARIES}")
+    find_package(pybind11 REQUIRED)
     include_directories(${pybind11_INCLUDE_DIRS})
     add_subdirectory(pybind)
 endif()
