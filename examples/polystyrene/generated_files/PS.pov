@@ -1,6 +1,6 @@
 #include "colors.inc"
 background {color SkyBlue}
-camera{location<100.0,120.0,140.0> look_at <0.0,0.0,0.0> right 1.0}
+camera{location<100.0,120.0,140.0> look_at <0.0,0.0,0.0> right 1.0 angle 90}
 light_source{<125.000000,125.000000,125.000000> color White shadowless}
 // begin gfg2pov records
 intersection {sphere{<36.121309, 38.629309, 34.794309>, 1.186705} box {<0,0,0>< 87.578845, 87.578845, 87.578845>} texture{ pigment {color White  }  finish {phong 0.700000}  }}

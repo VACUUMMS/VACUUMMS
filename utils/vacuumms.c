@@ -3,12 +3,6 @@
 #include <stdlib.h>
 #include <vacuumms/version.h>
 
-/*
-#define VACUUMMS_MAJOR_VERSION 1
-#define VACUUMMS_MINOR_VERSION 2
-#define VACUUMMS_PATCH_VERSION 0
-*/
-
 int main(int argc, char **argv)
 {
     // put these in a version file to be read

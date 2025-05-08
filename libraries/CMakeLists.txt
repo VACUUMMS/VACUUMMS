@@ -42,7 +42,7 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/types.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
-#    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/fvi.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/scene.cc
 )
 
 add_subdirectory(vacuumms_variational)
@@ -91,8 +91,10 @@ if (BUILD_TIFF_UTILS)
     )
     list(APPEND EXTRA_LIBS vacuumms_tiff)
 
-    target_link_libraries(vacuumms_tiff PUBLIC TIFF::tiff)
-    target_link_libraries(vacuumms_cpp PUBLIC TIFF::tiff)
+#    target_link_libraries(vacuumms_tiff PUBLIC tiff)
+#    target_link_libraries(vacuumms_cpp PUBLIC tiff)
+    target_link_libraries(vacuumms_tiff PRIVATE TIFF::TIFF)
+    target_link_libraries(vacuumms_cpp PRIVATE TIFF::TIFF)
 
     set_target_properties(vacuumms_tiff PROPERTIES
         POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS}

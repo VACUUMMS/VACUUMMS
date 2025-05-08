@@ -1,5 +1,8 @@
 /* pybind/vacuumms_pybind.cc */
 
+//#include <iostream>
+
+#include <vacuumms/types.h>
 #include <vacuumms/exports.hh>
 
 #include <vacuumms/parameters.hh>
@@ -9,19 +12,16 @@
 #include <vacuumms/ddx.hh>
 #include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
+#include <vacuumms/scene.hh>
 
 #ifdef BUILD_VORONOI_UTILS
 #include <vacuumms/voronoi.hh>
 #endif
 
 #ifdef BUILD_CUDA_COMPONENTS
-#include <vacuumms/fvi.hh>
 #include <cuda_runtime.h>
+#include <vacuumms/fvi.hh>
 #endif
-
-#include <vacuumms/types.h>
-
-#include <iostream>
 
 #ifdef BUILD_CUDA_COMPONENTS
 void finalize_cuda()
@@ -29,7 +29,6 @@ void finalize_cuda()
     cudaDeviceReset();
 }
 #endif
-
 
 
 namespace py = pybind11;
@@ -112,6 +111,25 @@ PYBIND11_MODULE(vacuumms, m)
         .def("execute", &PDDX::execute)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
+    ;
+
+    // Scene interface, for generating and rendering POVRay SDL
+    
+    py::class_<Scene>(m, "Scene")
+        .def(py::init<>())
+        .def("createSceneFile", &Scene::createSceneFile)  // POV file
+        .def("renderScene", &Scene::renderScene)      // PNG file
+        .def("applyStandardLight", &Scene::applyStandardLight)
+        .def("applyAmbientLight", &Scene::applyAmbientLight)
+        .def("addSceneComponent", &Scene::addSceneComponent)
+//        std::string generateContainerSDL();
+//        SceneComponent componentAt(int i);
+//        size_t deleteComponentAt(int i);
+//        size_t getNumberOfComponents();
+    ;
+    
+    py::class_<SceneComponent>(m, "SceneComponent")
+        .def(py::init<>())
     ;
 
 #ifdef BUILD_VORONOI_UTILS
