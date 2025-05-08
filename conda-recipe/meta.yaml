@@ -34,6 +34,15 @@
 #   
 # If the build environment or install environment are corrupted, it's best to remove them and start fresh.
 # On CARC systems, building script runs best on a compute node. YMMV. 
+#
+# Installation of the package can also be accomplished standalone from the github site:
+# 
+#   mamba install https://raw.githubusercontent.com/frankwillmore/VACUUMMS/scene/channel/linux-64/vacuumms-1.2.1-py313h2bc3f7f_0.conda 
+#
+#  To install Jupyter kernel:
+#
+#    python -m ipykernel install --user --name install-env --display-name "VACUUMMS Jupyter kernel"
+#
 
 package:
   name: vacuumms
@@ -66,18 +75,21 @@ requirements:
     - xorg-libx11=1.8.7
     - libtiff
     - pybind11
+    - numpy
   host:
     - python >=3.12
     - cuda
     - xorg-libx11=1.8.7
     - libtiff
     - pybind11
+    - numpy
   run:
     - python >=3.12
     - cuda
     - xorg-libx11=1.8.7
     - libtiff
     - pybind11
+    - numpy
 
   test:
     commands:
