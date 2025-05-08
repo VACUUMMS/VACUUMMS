@@ -46,7 +46,7 @@ build:
   number: 0
   script:
     - cmake . -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_CUDA_COMPONENTS=Y -DBUILD_TIFF_UTILS=Y -DBUILD_PYTHON_BINDINGS=Y
-    - make -j8
+    - make -j8 install
     - cp pybind/vacuumms.cpython-313-x86_64-linux-gnu.so $SP_DIR
     - cp libraries/libvacuumms_rt.so $PREFIX/lib/
     - cp libraries/libvacuumms_cpp.so $PREFIX/lib/
