@@ -1,4 +1,6 @@
 
+message("FTW: PROJECT_SOURCE_DIR >>>${PROJECT_SOURCE_DIR}<<<")
+
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)
 

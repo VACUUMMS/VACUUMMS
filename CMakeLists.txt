@@ -31,6 +31,8 @@ message("got value for BUILD_PYBIND_BINDINGS=${BUILD_PYBIND_BINDINGS}")
 #       LIBRARY_PATH=/path/to/spack/build/of/X11/lib cmake ..
 #   or by spack load-ing the necessary libs.
 
+set(CMAKE_PREFIX_PATH $ENV{CONDA_PREFIX} ${CMAKE_PREFIX_PATH})
+
 find_package(X11 REQUIRED)
 message("X11_INCLUDE_DIR set to ${X11_INCLUDE_DIR}")
 message("X11_FOUND set to ${X11_FOUND}")
@@ -40,6 +42,8 @@ message("X11_SM_LIB set to ${X11_SM_LIB}")
 message("X11_Xext_LIB set to ${X11_Xext_LIB}")
 message("X11_ICE_LIB set to ${X11_ICE_LIB}")
 message("X11_LIBRARIES set to ${X11_LIBRARIES}")
+
+message("CMAKE_INCLUDE_PATH set to ${CMAKE_INCLUDE_PATH}")
 
 if (ENABLE_TESTING)
     message("adding tests subdirectory")
@@ -97,7 +101,7 @@ endif()
 # The standard VACUUMMS stuff
 
 add_subdirectory(include/vacuumms)
-add_subdirectory(conda)
+#add_subdirectory(conda)
 add_subdirectory(libraries)
 add_subdirectory(utils)
 add_subdirectory(applications)
@@ -105,7 +109,7 @@ add_subdirectory(applications)
 add_subdirectory(examples/cpp_interface)
 
 # This may be erroneous, maybe needs removed
-file(COPY conda DESTINATION conda)
+#file(COPY conda DESTINATION conda)
 
 # install headers
 
