@@ -6,10 +6,32 @@
 # from a suitable conda environment, which means using the compiler, etc. 
 # in that environment. The latter is used here.
 #
-# Build the conda package:
+# Building VACUUMMS:
 #
-#   mamba create -n build-env
-#   mamba activate build-env
+#   From modules:
+#     module load gcc cuda libtiff python/3.13 ...
+#
+#   From conda environment:
+#     mamba create -n vacuumms gcc=12 python=3.13 cuda=12 pybind11 xorg-libx11 xorg-xproto cmake numpy libtiff ipykernel
+#     mamba activate vacuumms
+#
+#  Then:
+#     mkdir VACUUMMS/build
+#     cd VACUUMMS/build
+#     export PREFIX=/usr/local/vacuumms # or wherever you want it installed.
+#
+#     cmake .. -DPython3_EXECUTABLE=$(which python3) \
+#              -DCMAKE_INSTALL_PREFIX=${PREFIX}      \
+#              -DBUILD_CUDA_COMPONENTS=Y             \
+#              -DBUILD_TIFF_UTILS=Y                  \
+#              -DBUILD_PYTHON_BINDINGS=Y
+#     make -j4 install
+#
+#
+# Building the conda package:
+#
+##   mamba create -n build-env
+##   mamba activate build-env
 #   mamba install -c conda-forge conda-build
 #   cd conda-recipe
 #   conda build .
@@ -33,15 +55,20 @@
 #   conda clean --all
 #   
 # If the build environment or install environment are corrupted, it's best to remove them and start fresh.
-# On CARC systems, building script runs best on a compute node. YMMV. 
+# On some HPC systems, building script runs best on a compute node. YMMV. 
 #
 # Installation of the package can also be accomplished standalone from the github site:
 # 
 #   mamba install https://raw.githubusercontent.com/frankwillmore/VACUUMMS/scene/channel/linux-64/vacuumms-1.2.1-py313h2bc3f7f_0.conda 
 #
-#  To install Jupyter kernel:
+# To run VACUUMMS from a Jupyter kernel:
 #
-#    python -m ipykernel install --user --name install-env --display-name "VACUUMMS Jupyter kernel"
+#    conda activate vacuumms
+#    python -m ipykernel install --user --name vacuumms --display-name "VACUUMMS Jupyter kernel"
+# 
+# Then start a Jupyter notebook using this kernel. Note that it may be a necessary workaround to put 
+# the directory with shared object vacuumms.cpython-313-aarch64-linux-gnu.so in the PYTHONPATH for vacuumms 
+# to be visible/importable. 
 #
 
 package:
@@ -53,11 +80,17 @@ source:
 
 build:
   number: 0
-  target_platform: linux-64
+# Select an appropriate platform, based on the processor (x86 or ARM)
+#  target_platform: linux-64
+  target_platform: linux-aarch64
   script:
-    - cmake . -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_CUDA_COMPONENTS=Y -DBUILD_TIFF_UTILS=Y -DBUILD_PYTHON_BINDINGS=Y
-    - make -j4 install
-    - cp pybind/vacuumms.cpython-313-x86_64-linux-gnu.so $SP_DIR
+# Include or exclude cuda, based on whether driver and GPU are available
+#    - cmake . -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_CUDA_COMPONENTS=Y -DBUILD_TIFF_UTILS=Y -DBUILD_PYTHON_BINDINGS=Y
+    - cmake . -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_CUDA_COMPONENTS=N -DBUILD_TIFF_UTILS=Y -DBUILD_PYTHON_BINDINGS=Y
+    - make -j8 install
+# Depending on architecture, soname will be different here.
+#    - cp pybind/vacuumms.cpython-313-x86_64-linux-gnu.so $SP_DIR
+    - cp pybind/vacuumms.cpython-313-aarch64-linux-gnu.so $SP_DIR
     - cp libraries/libvacuumms_rt.so $PREFIX/lib/
     - cp libraries/libvacuumms_cpp.so $PREFIX/lib/
     - cp libraries/vacuumms_variational/libvacuumms_variational.so $PREFIX/lib/
@@ -72,21 +105,23 @@ requirements:
     - {{ compiler('cxx') }}
     - python >=3.12
     - cuda
-    - xorg-libx11=1.8.7
+#    - xorg-libx11=1.8.7 <-- pinning this version solved missing includes but broke build flexibility. <X11/X.h> may be provided by xorg-xproto
+    - xorg-libx11
+    - xorg-xproto
     - libtiff
     - pybind11
     - numpy
   host:
     - python >=3.12
     - cuda
-    - xorg-libx11=1.8.7
+    - xorg-libx11
     - libtiff
     - pybind11
     - numpy
   run:
     - python >=3.12
     - cuda
-    - xorg-libx11=1.8.7
+    - xorg-libx11
     - libtiff
     - pybind11
     - numpy
