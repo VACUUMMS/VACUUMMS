@@ -66,9 +66,20 @@
 #    conda activate vacuumms
 #    python -m ipykernel install --user --name vacuumms --display-name "VACUUMMS Jupyter kernel"
 # 
-# Then start a Jupyter notebook using this kernel. Note that it may be a necessary workaround to put 
+# Then start a Jupyter server and notebook using this kernel. Note that it may be a necessary workaround to put 
 # the directory with shared object vacuumms.cpython-313-aarch64-linux-gnu.so in the PYTHONPATH for vacuumms 
-# to be visible/importable. 
+# to be visible/importable. The vacuumms classes need to be visible to the server.
+#
+#   export PYTHONPATH=/home/frankwillmore/vacuumms/lib
+#   jupyter server
+#
+# Make sure the jupyter server is configured: 
+# cat ~/.jupyter/jupyter_notebook_config.py 
+# c.ServerApp.ip = '0.0.0.0'  # Allow connections from outside the VM
+# c.ServerApp.allow_remote_access = True
+# c.ServerApp.token = ''
+#
+# Connect to the server by pointing browser to http://192.168.254.124:8888/tree (IP will differ)
 #
 
 package:

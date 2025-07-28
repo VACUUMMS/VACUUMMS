@@ -101,15 +101,11 @@ endif()
 # The standard VACUUMMS stuff
 
 add_subdirectory(include/vacuumms)
-#add_subdirectory(conda)
 add_subdirectory(libraries)
 add_subdirectory(utils)
 add_subdirectory(applications)
 
 add_subdirectory(examples/cpp_interface)
-
-# This may be erroneous, maybe needs removed
-#file(COPY conda DESTINATION conda)
 
 # install headers
 
