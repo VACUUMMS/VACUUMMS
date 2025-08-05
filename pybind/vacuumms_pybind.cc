@@ -39,8 +39,10 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<Parameters>(m, "Parameters")
         .def(py::init<>())
         .def(py::init<py::list>())
+        .def(py::init<const char*>())
         .def("addParameter", &Parameters::addParameter)
         .def("getFlagParam", &Parameters::getFlagParam)
+        .def("toFile", &Parameters::toFile)
         .def("getIntParam", [](Parameters& self, char* arg) -> int {return self.getIntParam(arg);} )
         .def("getFloatParam", [](Parameters& self, char* arg) -> vacuumms_float {return self.getFloatParam(arg);})
         .def("getStringParam", [](Parameters& self, char* arg) -> py::str {return self.getStringParam(arg);})
@@ -49,6 +51,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &Parameters::__repr__)
         .def("__str__", &Parameters::__str__)
         ;
+
 
     // Configuration type
 
