@@ -4,6 +4,7 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 #include <vacuumms/parameters.hh>
@@ -26,6 +27,78 @@ Parameters::Parameters()
 Parameters::Parameters(std::vector<std::string> p) : parameter_argv{p}
 {
     parameter_argc = parameter_argc = parameter_argv.size();
+}
+
+
+Parameters::Parameters(const char* filename)
+{
+    // open the file
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file" << filename << "\n";
+    }
+
+    // Read the file line by line
+    std::string line;
+    while (std::getline(file, line)) {
+        std::vector<std::string> values;
+        std::stringstream ss(line);
+        std::string value;
+        if (!line.empty() && line[0] == '#') 
+        {
+            // std::cout << "ignoring comment line: " << line << "\n";
+            continue;
+        }
+
+        // Split the line by whitespace
+        while (ss >> value) 
+	{
+            parameter_argv.push_back(value);
+        }
+
+        // Process the values in the line
+        for (const auto& val : values) {
+            std::cout << val << " ";
+        }
+    }
+
+    parameter_argc = parameter_argv.size();
+    std::cout << "Read " << parameter_argc << " parameters." << "\n";
+
+    // Close the file
+    file.close();
+}
+
+
+int Parameters::toFile(const char* filename)
+{
+//    std::string filename(_filename);
+
+    // Open the output file
+    std::ofstream file(filename);
+
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file" << filename << "\n";
+        return 1;
+    }
+
+    // Write strings to the file
+    for (size_t i = 0; i < parameter_argv.size(); ++i) {
+        // Start a new line for strings starting with '-' (except for the first string)
+        if (i > 0 && parameter_argv[i][0] == '-') {
+            file << "\n";
+        }
+        // Write the string; add a space after it unless it's the last string
+        file << parameter_argv[i];
+        if (i < parameter_argv.size() - 1 && (parameter_argv[i + 1][0] != '-' || i == parameter_argv.size() - 1)) {
+            file << " ";
+        }
+    }
+    file << "\n";
+
+    // Close the file
+    file.close();
+    return 0;
 }
 
 
