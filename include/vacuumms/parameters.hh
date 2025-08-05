@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+//#include <fstream>
 
 #include <vacuumms/types.h>
 
@@ -26,6 +27,7 @@ class Parameters
         Parameters();
         Parameters(int argc, char **argv);
         Parameters(std::vector<std::string>);
+        Parameters(const char* filename);
 
 #ifdef BUILD_PYBIND_BINDINGS 
 
@@ -71,6 +73,7 @@ class Parameters
 
         int addParameter(const char* parameter);
         int getFlagParam(char *param_name);
+        int toFile(const char* filename);
 
 };
 
