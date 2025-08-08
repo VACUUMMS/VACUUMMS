@@ -12,8 +12,15 @@ From modules:
 
 From conda environment:
 
-     mamba create -n vacuumms gcc=12 python=3.13 cuda=12 pybind11 xorg-libx11 xorg-xproto cmake numpy libtiff ipykernel
+     mamba create -n vacuumms gcc=12 python=3.13 cuda=12 pybind11 xorg-libx11 xorg-xproto cmake numpy libtiff 
+
+Activate the environment:
+
      mamba activate vacuumms
+
+Enable plots and jupyter kernel (optional):
+
+     mamba install matplotlib ipykernel
 
 Then:
 
