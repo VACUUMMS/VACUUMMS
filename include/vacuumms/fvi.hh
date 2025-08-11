@@ -79,11 +79,6 @@ FVIX : public Operation
         vacuumms_float epsilon=1.0;
         vacuumms_float temperature = 1.0;
 
+        void calculateEverything(std::vector<ConfigurationRecord>, int, vacuumms_float, vacuumms_float, vacuumms_float, size_t, size_t, size_t);
 };
  
-
-
-
-
-
-
