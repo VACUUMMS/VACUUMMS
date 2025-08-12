@@ -169,7 +169,6 @@ std::vector<vacuumms_float> FVIX::calculateFVI()
 
 void FVIX::execute()
 {
-printf("FTW: entering execute()\n");
     FVIX::calculateAll();
 }
 
@@ -289,12 +288,10 @@ void FVIX::calculateEverything(
     vacuumms_float f_resolution_y = box_y / dim_y;
     vacuumms_float f_resolution_z = box_z / dim_z;
 
-printf("FTW: here 1");
     for (size_t idx = 0; idx < dim_x; idx++)
     for (size_t idy = 0; idy < dim_y; idy++)
     for (size_t idz = 0; idz < dim_z; idz++)
     {
-printf("FTW: here 2");
         vacuumms_float _repulsion=0;
         vacuumms_float _attraction=0;
         vacuumms_float sigma_over_r_sq;
@@ -310,7 +307,6 @@ printf("FTW: here 2");
         // evaluate energy at (cuda_x, cuda_y, cuda_z);
         for (int i=0; i< n_records; i++) 
         {
-printf("FTW: here 3\n");
             // Lorentz-Berthelot combining rules
             vacuumms_float sigma_ij = 0.5 * (configuration[i].sigma + sigma_probe);
             vacuumms_float sigma_ij_sq = sigma_ij * sigma_ij;
@@ -321,18 +317,15 @@ printf("FTW: here 3\n");
             for (int m=-1; m<=1; m++) 
             for (int n=-1; n<=1; n++) 
             {
-//printf("FTW: here 4");
                 // central atom
                 dx = l * box_x + configuration[i].x - cuda_x;
                 dy = m * box_y + configuration[i].y - cuda_y;
                 dz = n * box_z + configuration[i].z - cuda_z;
                 dd = dx*dx + dy*dy + dz*dz; 
-//printf("FTW: here 5");
    
                 sigma_over_r_sq = sigma_ij_sq / dd; 
                 vacuumms_float sigma_over_r_6 = sigma_over_r_sq * sigma_over_r_sq * sigma_over_r_sq;
                 vacuumms_float sigma_over_r_12 = sigma_over_r_6 * sigma_over_r_6;
-//printf("FTW: here 6");
                 _repulsion += configuration[i].epsilon * sigma_over_r_12;
                 _attraction += configuration[i].epsilon * sigma_over_r_6;
             }
@@ -341,17 +334,12 @@ printf("FTW: here 3\n");
         size_t which = idx * dim_x * dim_y + idy * dim_y + idz;
         // if (d_attraction != nullptr)
             attraction[which] = 4 * _attraction;
-printf("FTW: here 7\n");
         // if (d_repulsion != nullptr) 
             repulsion[which] = 4 * _repulsion;
-printf("FTW: here 8\n");
         // if (d_energy != nullptr) 
             energy[which] = 4 * _repulsion - 4 * _attraction;
-printf("FTW: here 9\n");
         // if (d_FVI != nullptr)
             FVI[which] = exp(-4 * _repulsion);
-
-printf("calculated value at %ld: %f\t%f\t%f = %f\n", which, cuda_x, cuda_y, cuda_z, FVI[which]);
     }
 
 } // end of Kernel
@@ -360,44 +348,18 @@ printf("calculated value at %ld: %f\t%f\t%f = %f\n", which, cuda_x, cuda_y, cuda
 // This is the routine which is exposed in the API
 void FVIX::executeMask(int mask)
 {
-printf("FTW: entering executeMask with mask = %d\n", mask);
     size_t n_records = c.getSize(); 
     size_t array_size = dimensions[0] * dimensions[1] * dimensions[2];
 
     std::vector<ConfigurationRecord> records;
     for (int i=0; i<n_records; i++) records.push_back(ConfigurationRecord(c.recordAt(i)));
 
-printf("FTW: resizing to %ld\n", array_size);
-    if (mask & FVIX_REPULSION) repulsion.resize(array_size);
     if (mask & FVIX_ATTRACTION) attraction.resize(array_size);
+    if (mask & FVIX_REPULSION) repulsion.resize(array_size);
     if (mask & FVIX_ENERGY) energy.resize(array_size);
     if (mask & FVIX_FVI) FVI.resize(array_size);
 
-printf("FTW: calling calculateEverything with dimensions %ld x %ld x %ld\n", dimensions[0], dimensions[1], dimensions[2]);
     calculateEverything(records, n_records, 
         c.box_x, c.box_y, c.box_z, 
         dimensions[0], dimensions[1], dimensions[2]);
-
-/*
-    if (mask & FVIX_ATTRACTION)
-    {
-        attraction.resize(array_size);
-    }
-      
-    if (mask & FVIX_REPULSION)
-    {
-        repulsion.resize(array_size);
-    }
-      
-    if (mask & FVIX_ENERGY)
-    {
-        energy.resize(array_size);
-    }
-      
-    if (mask & FVIX_FVI)
-    {
-        FVI.resize(array_size);
-    }
-*/
-
 }

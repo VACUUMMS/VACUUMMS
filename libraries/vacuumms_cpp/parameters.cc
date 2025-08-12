@@ -253,8 +253,6 @@ int Parameters::getStringParam(char *param_name, const char **parameter)
 	    printf("reached EOL with no value specified for %s\n", param_name);
 	    exit(1);
 	}
-	// parameter = &parameter_argv[++i];
-	//FTW*parameter = parameter_argv[++i];
 	*parameter = parameter_argv[++i].c_str();
 	retval = 1;
     }
