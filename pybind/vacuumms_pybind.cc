@@ -54,13 +54,15 @@ PYBIND11_MODULE(vacuumms, m)
         ;
 
 
-    // Configuration type
+    // Configuration type(s)
 
     py::class_<Configuration>(m, "Configuration")
         .def(py::init<char*>())
         .def("__repr__", &Configuration::__repr__)
         .def("setBoxDimensions", &Configuration::setBoxDimensions)
         .def("getBoxDimensions", &Configuration::getBoxDimensions)
+        .def("setTemperature", &Configuration::setTemperature)
+        .def("getTemperature", &Configuration::getTemperature)
         .def("cram", &Configuration::cram)
         .def("isCrammed", &Configuration::isCrammed)
         .def("replicate", &Configuration::replicate)
@@ -84,8 +86,8 @@ PYBIND11_MODULE(vacuumms, m)
        class, even though it is not listed explicitly for derived class. */
 
     // Operations classes
+    
     py::class_<Operation>(m, "Operation")
-        .def("execute", &Operation::execute)
         .def("getParameters", &Operation::getParameters)
         .def("setParameters", &Operation::setParameters)
         .def("execute", &Operation::execute)
@@ -203,7 +205,6 @@ PYBIND11_MODULE(vacuumms, m)
     m.def("finalize_cuda", &finalize_cuda)
 #endif
     ;
-
 
 
     // Other classes
