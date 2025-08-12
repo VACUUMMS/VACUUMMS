@@ -137,7 +137,7 @@ FVIX::~FVIX()
 
 void FVIX::calculateAll()
 {
-    executeMask(FVIX_ATTRACTION || FVIX_REPULSION || FVIX_ENERGY || FVIX_FVI);
+    executeMask(FVIX_ATTRACTION | FVIX_REPULSION | FVIX_ENERGY | FVIX_FVI);
 }
 
 std::vector<vacuumms_float> FVIX::calculateAttraction()
