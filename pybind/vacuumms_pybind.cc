@@ -20,8 +20,9 @@
 
 #ifdef BUILD_CUDA_COMPONENTS
 #include <cuda_runtime.h>
-#include <vacuumms/fvi.hh>
 #endif
+
+#include <vacuumms/fvi.hh>
 
 #ifdef BUILD_CUDA_COMPONENTS
 void finalize_cuda()
@@ -171,7 +172,6 @@ PYBIND11_MODULE(vacuumms, m)
 
 #endif
 
-#ifdef BUILD_CUDA_COMPONENTS
 
     py::class_<FVIX>(m, "FVIX")
         .def(py::init<>())
@@ -199,10 +199,11 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &FVIX::__repr__)
     ;
 
+#ifdef BUILD_CUDA_COMPONENTS
     m.def("finalize_cuda", &finalize_cuda)
+#endif
     ;
 
-#endif
 
 
     // Other classes
