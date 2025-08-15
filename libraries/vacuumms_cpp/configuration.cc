@@ -220,6 +220,10 @@ pybind11::str Configuration::__repr__()
              + pybind11::str(std::to_string(box_dimensions[2]))
              + pybind11::str("\n");
 
+    retval = retval + pybind11::str("temperature: ")
+             + pybind11::str(std::to_string(temperature))
+             + pybind11::str("\n");
+
     return retval;
 }
 

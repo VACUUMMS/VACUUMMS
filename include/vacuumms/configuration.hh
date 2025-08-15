@@ -42,13 +42,14 @@ Configuration
     protected:
 
         int crammed = 0;
-        vacuumms_float temperature = 1.0f;
-
-        std::vector<ConfigurationRecord> records;
         int mirror_depth = 1;
         int replication_depth = 0;
 
     public:
+   
+        std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
+        std::vector<ConfigurationRecord> records;
+        vacuumms_float temperature = 1.0f;
 
         Configuration(const char *filename);
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
@@ -61,7 +62,6 @@ Configuration
         vacuumms_float getTemperature();
 
         void setBoxDimensions(std::vector<vacuumms_float> dims);
-        std::vector<vacuumms_float> box_dimensions;
         std::vector<vacuumms_float> getBoxDimensions();
 
         ConfigurationRecord recordAt(int i);
