@@ -48,6 +48,18 @@ Configuration::Configuration(FILE *pipe)
 }
 
 
+void Configuration::setTemperature(vacuumms_float _temperature)
+{
+    temperature = _temperature;
+}
+
+
+vacuumms_float Configuration::getTemperature()
+{
+    return temperature;
+}
+
+
 void Configuration::dumpContents()
 {
     for (int i = 0; i < records.size(); i++)

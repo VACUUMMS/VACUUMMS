@@ -71,6 +71,7 @@ class Parameters
                                  const char **parameter3);
 
         int addParameter(const char* parameter);
+        int removeParameter(const char* parameter);
         int getFlagParam(char *param_name);
         int toFile(const char* filename);
 
