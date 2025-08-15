@@ -48,7 +48,7 @@ void FVIX::setParameters(Parameters _p)
 
     if (p.getFlagParam((char*)"-usage")) printUsage();
 
-    p.getVectorParam((char*)"-box", &c.box_x, &c.box_y, &c.box_z);
+    p.getVectorParam((char*)"-box", &c.box_dimensions[0], &c.box_dimensions[1], &c.box_dimensions[2]);
 }
 
 
@@ -360,6 +360,7 @@ void FVIX::executeMask(int mask)
     if (mask & FVIX_FVI) FVI.resize(array_size);
 
     calculateEverything(records, n_records, 
-        c.box_x, c.box_y, c.box_z, 
+        c.box_dimensions[0], c.box_dimensions[1], c.box_dimensions[2], 
         dimensions[0], dimensions[1], dimensions[2]);
 }
+

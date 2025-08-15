@@ -92,9 +92,9 @@ LAMMPSConfiguration::LAMMPSConfiguration(std::string filename)
         }
     } // loop back to beginning of while
 
-    box_x = xhi - xlo;
-    box_y = yhi - ylo;
-    box_z = zhi - zlo;
+    box_dimensions[0] = xhi - xlo;
+    box_dimensions[1] = yhi - ylo;
+    box_dimensions[2] = zhi - zlo;
 
 /* This isn't necessary because Pair section is read first, and records 
  * are initialized with pair cofficients when Atom section is read.
@@ -116,13 +116,13 @@ pybind11::str LAMMPSConfiguration::__repr__()
 // just dump superclass output
     pybind11::str retval = Configuration::__repr__();
     retval += pybind11::str("box_x: ");
-    retval += pybind11::str(std::to_string(box_x));
+    retval += pybind11::str(std::to_string(box_dimensions[0]));
     retval += pybind11::str("\n");
     retval += pybind11::str("box_y: ");
-    retval += pybind11::str(std::to_string(box_y));
+    retval += pybind11::str(std::to_string(box_dimensions[1]));
     retval += pybind11::str("\n");
     retval += pybind11::str("box_z: ");
-    retval += pybind11::str(std::to_string(box_z));
+    retval += pybind11::str(std::to_string(box_dimensions[2]));
     retval += pybind11::str("\n");
     return retval;
 }

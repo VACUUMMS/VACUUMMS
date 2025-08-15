@@ -241,6 +241,24 @@ int Parameters::addParameter(const char* parameter)
 }
 
 
+int Parameters::removeParameter(const char* parameter)
+{
+    for (size_t i = 0; i < parameter_argv.size(); ++i) 
+    {
+        if (parameter_argv[i] == parameter) 
+        {
+            // Erase the name
+            parameter_argv.erase(parameter_argv.begin() + i); 
+            // Erase any values
+            while((parameter_argv.size() > i) && (parameter_argv[i][0] != '-')) parameter_argv.erase(parameter_argv.begin() + i);
+        }
+    }
+
+    parameter_argc = parameter_argv.size();
+    return parameter_argc;
+}
+
+
 int Parameters::getStringParam(char *param_name, const char **parameter)
 {
     int retval = 0;

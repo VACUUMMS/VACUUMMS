@@ -48,6 +48,18 @@ Configuration::Configuration(FILE *pipe)
 }
 
 
+void Configuration::setTemperature(vacuumms_float _temperature)
+{
+    temperature = _temperature;
+}
+
+
+vacuumms_float Configuration::getTemperature()
+{
+    return temperature;
+}
+
+
 void Configuration::dumpContents()
 {
     for (int i = 0; i < records.size(); i++)
@@ -63,9 +75,9 @@ vacuumms_float Configuration::insertionEnergy(vacuumms_float x, vacuumms_float y
             for (int box_k=-mirror_depth; box_k<=mirror_depth; box_k++)
                 for (int i=0; i<records.size(); i++)
                 {
-                    vacuumms_float test_x = box_i * box_x + records[i].x;
-                    vacuumms_float test_y = box_j * box_y + records[i].y;
-                    vacuumms_float test_z = box_k * box_z + records[i].z;
+                    vacuumms_float test_x = box_i * box_dimensions[0] + records[i].x;
+                    vacuumms_float test_y = box_j * box_dimensions[1] + records[i].y;
+                    vacuumms_float test_z = box_k * box_dimensions[2] + records[i].z;
                     vacuumms_float r_sq = (test_x - x) * (test_x - x)
                                + (test_y - y) * (test_y - y)
                                + (test_z - z) * (test_z - z);
@@ -88,29 +100,24 @@ vacuumms_float Configuration::insertionEnergy(vacuumms_float x, vacuumms_float y
 
 void Configuration::setBoxDimensions(std::vector<vacuumms_float> dims)
 {
-    box_x = dims[0];
-    box_y = dims[1];
-    box_z = dims[2];
+//    box_x = dims[0];
+//    box_y = dims[1];
+//    box_z = dims[2];
 
     box_dimensions = dims;
 }
 
-/*
-void Configuration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
-{
-    box_x = _box_x;
-    box_y = _box_y;
-    box_z = _box_z;
-}
-*/
 
 std::vector<vacuumms_float> Configuration::getBoxDimensions()
 {
+/*
     std::vector<float> arr(3);
     arr[0] = box_x;
     arr[1] = box_y;
     arr[2] = box_z;
     return arr;
+*/
+    return box_dimensions;
 }
 
 void Configuration::setMirrorDepth(int _mirror_depth)
@@ -146,9 +153,9 @@ void Configuration::cram()
 {
     for (int i=0; i<records.size(); i++)
     {
-        while (records[i].x > box_x) records[i].x -= box_x;
-        while (records[i].y > box_y) records[i].y -= box_y;
-        while (records[i].z > box_z) records[i].z -= box_z;
+        while (records[i].x > box_dimensions[0]) records[i].x -= box_dimensions[0];
+        while (records[i].y > box_dimensions[1]) records[i].y -= box_dimensions[1];
+        while (records[i].z > box_dimensions[2]) records[i].z -= box_dimensions[2];
     }
     crammed = 1;
 }
@@ -173,9 +180,9 @@ void Configuration::replicate(int depth)
         {
             // skip the center box
             if (!((i == 0) && (j == 0) && (k == 0)))
-                pushBack(ConfigurationRecord((box_x * i) + records[r].x, 
-                                             (box_y * j) + records[r].y, 
-                                             (box_z * k) + records[r].z, 
+                pushBack(ConfigurationRecord((box_dimensions[0] * i) + records[r].x, 
+                                             (box_dimensions[1] * j) + records[r].y, 
+                                             (box_dimensions[2] * k) + records[r].z, 
                                              records[r].sigma, 
                                              records[r].epsilon)); 
         }
@@ -204,19 +211,21 @@ pybind11::str Configuration::__repr__()
              pybind11::str("\n");
 
     retval = retval + pybind11::str("box dims: ")
-             + pybind11::str(std::to_string(box_x))
+             + pybind11::str(std::to_string(box_dimensions[0]))
              + pybind11::str("\n");
     retval = retval + pybind11::str("          ")
-             + pybind11::str(std::to_string(box_y))
+             + pybind11::str(std::to_string(box_dimensions[1]))
              + pybind11::str("\n");
     retval = retval + pybind11::str("          ")
-             + pybind11::str(std::to_string(box_z))
+             + pybind11::str(std::to_string(box_dimensions[2]))
+             + pybind11::str("\n");
+
+    retval = retval + pybind11::str("temperature: ")
+             + pybind11::str(std::to_string(temperature))
              + pybind11::str("\n");
 
     return retval;
 }
 
 #endif
-
-
 
