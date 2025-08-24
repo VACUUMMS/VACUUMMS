@@ -123,26 +123,138 @@ SceneComponent::SceneComponent()
 }
 */
 
+
+void SceneComponent::setClipComponent(int _clip)
+{
+    clip = _clip;
+}
+
+
+void SceneComponent::setTransmit(vacuumms_float _transmit)
+{
+    transmit = _transmit;
+}
+
+
+void SceneComponent::setPhong(vacuumms_float _phong)
+{
+    phong = _phong;
+}
+
+
+void SceneComponent::setColor(std::string _color)
+{
+    color = _color;
+}
+
+
 std::string SceneComponent::getComponentSDL()
 {
     // Return an unit orange bubble centered at origin as default. 
-    return std::string("sphere{<0.0, 0.0, 0.0>, 1.0 texture{ pigment {color Orange  transmit 0.700000  }  finish {phong 0.700000}  } }\n");
+    // return std::string("sphere{<0.0, 0.0, 0.0>, 1.0 texture{ pigment {color Orange  transmit 0.700000  }  finish {phong 0.700000}  } }\n");
+    return std::string("// SceneComponent::getComponentSDL called on base type.\n\n");
 }
+
+
+ConfigurationComponent::ConfigurationComponent(){}
+
 
 ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 {
     configuration = _configuration;
 }
 
+
 std::string ConfigurationComponent::getComponentSDL()
 {
-    return "foo";
+    std::stringstream out;
+    out << "// Configuration Component\n\n";
+
+/*
+  if (getFlagParam("-transmit")) // sets up transmit string
+  {
+    getDoubleParam("-transmit", &transmit);
+    sprintf(transmit_str, " transmit %lf ", transmit);
+  }
+  if (getFlagParam("-phong")) // sets up phong string
+  {
+    getDoubleParam("-phong", &phong);
+    sprintf(phong_str, " finish {phong %lf} ", phong);
+  }
+  getStringParam("-color", &color);
+
+  printf("// begin gfg2pov records\n");
+
+    // we use diameter, pov uses radius...
+    d *= .5;
+
+    if (getFlagParam("-clip")) printf("intersection {sphere{<%lf, %lf, %lf>, %lf} box {<0,0,0>< %lf, %lf, %lf>} texture{ pigment {color %s %s } %s }}\n",
+                                      x, y, z, d, box_x, box_y, box_z, color, transmit_str, phong_str);
+    else printf("sphere{<%lf, %lf, %lf>, %lf texture{ pigment {color %s %s } %s } }\n", x, y, z, d, color, transmit_str, phong_str);
+  }
+*/
+
+    std::string transmit_str = " transmit " + std::to_string(transmit);
+    std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
+
+    setColor("Red");
+
+    // iterate over configuration and get the goods
+    for (int i = 0; i < configuration.getSize(); i++)
+    {
+        ConfigurationRecord record = configuration.recordAt(i);
+printf("dumping configuration record %d: %f\t%f\t%f\t%f\t%f\n", i, record.x, record.y, record.z, record.sigma, record.epsilon);
+
+        if (clip) 
+        {
+            out << "intersection {sphere{<" 
+                << record.x
+                << ", " << record.y 
+                << ", " << record.z
+                << ">, " << (record.sigma * 0.5)
+                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
+                << ", " << configuration.box_dimensions[1]
+                << ", " << configuration.box_dimensions[2]
+                << ">} texture { pigment { color "
+                << color << " " << transmit_str 
+                << " } " << phong_str << " }}\n"
+                ;
+        }
+        else 
+        {
+            out << "sphere{<" 
+                << record.x
+                << ", " << record.y
+                << ", " << record.z
+                << ">, " << (record.sigma *0.5) 
+                << "texture{ pigment {color " 
+                << color << " " << transmit_str 
+                << " } " << phong_str << " } }\n"
+                ;
+        }
+    }
+
+    // end of SDL comment
+    out << "// end of sceneSDL\n\n";
+    return out.str();
 }
     
 
-CavityComponent::CavityComponent(CavityConfiguration configuration)
+CavityComponent::CavityComponent(){}
+
+
+CavityComponent::CavityComponent(CavityConfiguration _configuration)
 {
+    configuration = _configuration;
 }
+
+
+std::string CavityComponent::getComponentSDL()
+{
+    return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
+}
+    
+
 
 #ifdef BUILD_CUDA_COMPONENTS
 FVIComponent::FVIComponent(FVIX fvix)

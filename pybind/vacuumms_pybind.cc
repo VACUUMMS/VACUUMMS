@@ -136,8 +136,22 @@ PYBIND11_MODULE(vacuumms, m)
     ;
     
     py::class_<SceneComponent>(m, "SceneComponent")
+        .def("getComponentSDL", &SceneComponent::getComponentSDL)
         .def(py::init<>())
     ;
+
+    py::class_<ConfigurationComponent, SceneComponent>(m, "ConfigurationComponent")
+        .def(py::init<>())
+        .def(py::init<Configuration>())
+        .def("getComponentSDL", &ConfigurationComponent::getComponentSDL)
+    ;
+
+    py::class_<CavityComponent, SceneComponent>(m, "CavityComponent")
+        .def(py::init<>())
+        .def(py::init<CavityConfiguration>())
+        .def("getComponentSDL", &CavityComponent::getComponentSDL)
+    ;
+
 
 #ifdef BUILD_VORONOI_UTILS
 

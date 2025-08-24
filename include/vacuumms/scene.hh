@@ -25,6 +25,20 @@ SceneComponent
     public:
 
         std::string getComponentSDL();
+        void setClipComponent(int);
+        void setPhong(vacuumms_float);
+        void setTransmit(vacuumms_float);
+        void setColor(std::string);
+
+    private:
+
+        int clip = 0;
+        vacuumms_float phong = 0.0;
+        vacuumms_float transmit = 0.0;
+
+    protected:
+
+        std::string color;
 };
 
 class 
@@ -35,6 +49,7 @@ ConfigurationComponent : public SceneComponent
 {
     public:
 
+        ConfigurationComponent();
         ConfigurationComponent(Configuration);
         std::string getComponentSDL();
     
@@ -56,7 +71,18 @@ CavityComponent : public SceneComponent
 {
     public:
 
+        CavityComponent();
         CavityComponent(CavityConfiguration);
+        std::string getComponentSDL();
+    
+    private:
+    
+        vacuumms_float transmit;
+        vacuumms_float phong;
+        std::string color;
+        std::vector<vacuumms_float> box_dims;
+        int clip; // intersect with box
+        CavityConfiguration configuration;
 };
 
 #ifdef BUILD_CUDA_COMPONENTS
