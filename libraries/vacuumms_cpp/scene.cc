@@ -123,6 +123,21 @@ SceneComponent::SceneComponent()
 }
 */
 
+FTWComponent::FTWComponent()
+{
+};
+
+size_t Scene::addFTWComponent(FTWComponent* component)
+{
+    components.push_back(component);
+    return components.size();
+}
+
+std::string FTWComponent::getComponentSDL()
+{
+    return "this is FTW Component SDL\n\n";
+};
+
 
 void SceneComponent::setClipComponent(int _clip)
 {
@@ -148,13 +163,12 @@ void SceneComponent::setColor(std::string _color)
 }
 
 
-std::string SceneComponent::getComponentSDL()
+std::string SceneComponent::getComponentSDL() const
 {
     // Return an unit orange bubble centered at origin as default. 
     // return std::string("sphere{<0.0, 0.0, 0.0>, 1.0 texture{ pigment {color Orange  transmit 0.700000  }  finish {phong 0.700000}  } }\n");
     return std::string("// SceneComponent::getComponentSDL called on base type.\n\n");
 }
-
 
 ConfigurationComponent::ConfigurationComponent(){}
 
@@ -272,7 +286,8 @@ std::vector<vacuumms_float> Scene::getBoxDimensions()
 	return box_dimensions;
 }
 
-SceneComponent Scene::componentAt(int i)
+//FTW SceneComponent Scene::componentAt(int i)
+SceneComponent* Scene::componentAt(int i)
 {
 	return components[i];
 }
@@ -288,11 +303,30 @@ size_t Scene::getNumberOfComponents()
 	return components.size();
 }
 
-size_t Scene::addSceneComponent(SceneComponent comp)
+//FTW size_t Scene::addSceneComponent(SceneComponent comp)
+//FTW size_t Scene::addSceneComponent(SceneComponent* comp)
+/*
+size_t Scene::addSceneComponent(auto* comp)
 {
 	components.push_back(comp);
 	return components.size();
 }
+*/
+
+
+size_t Scene::addConfigurationComponent(ConfigurationComponent* comp)
+{
+	components.push_back(comp);
+	return components.size();
+}
+
+
+size_t Scene::addCavityComponent(CavityComponent* comp)
+{
+	components.push_back(comp);
+	return components.size();
+}
+
 
 void Scene::setBackgroundColor(std::string color)
 {
@@ -336,6 +370,38 @@ void Scene::setBoxColor(std::string color)
 	box_color = color;
 }
 
+int Scene::dumpSDL()  // dump POV source
+{
+    std::stringstream scene;
+
+    // Container
+
+    scene << generateContainerSDL();
+    
+    // Components
+        
+    for (const auto* obj : components) {
+        scene << obj->getComponentSDL(); // Calls the appropriate version
+        scene << std::endl;
+    }
+
+/*
+    for (int i=0; i < components.size(); i++)
+    {
+        scene << "// writing component " << i << std::endl;
+//FTW        scene << components[i].getComponentSDL();
+        scene << components[i]->getComponentSDL();
+        scene << std::endl;
+    }
+*/
+
+scene << "foo\n";
+
+    std::cout << scene.str();
+
+    return 0;
+}
+
 // I/O
 int Scene::createSceneFile(const char* filename)  // POV file
 {
@@ -351,7 +417,8 @@ int Scene::createSceneFile(const char* filename)  // POV file
         for (int i=0; i < components.size(); i++)
         {
             scene_file << "// writing component " << i << std::endl;
-            scene_file << components[i].getComponentSDL();
+//FTW            scene_file << components[i].getComponentSDL();
+            scene_file << components[i]->getComponentSDL();
             scene_file << std::endl;
         }
 

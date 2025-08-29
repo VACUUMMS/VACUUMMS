@@ -13,6 +13,8 @@
 #include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
 #include <vacuumms/scene.hh>
+//FTW
+#include <vacuumms/FTW.hh>
 
 #ifdef BUILD_VORONOI_UTILS
 #include <vacuumms/voronoi.hh>
@@ -36,6 +38,31 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(vacuumms, m)
 {
+
+    //FTW test
+    py::class_<FTWX>(m, "FTWX")
+        .def(py::init<>())
+        .def("add", &FTWX::add)
+        .def("play", &FTWX::play)
+        ;
+
+    py::class_<FTW, PyFTW /* trampoline */>(m, "FTW")
+        .def(py::init<>())
+        .def("dump", &FTW::dump)
+        ;
+
+    py::class_<FTW1, FTW>(m, "FTW1")
+        .def(py::init<>())
+        .def("dump", &FTW1::dump)
+        ;
+
+    py::class_<FTW2, FTW>(m, "FTW2")
+        .def(py::init<>())
+        .def("dump", &FTW2::dump)
+        ;
+
+
+
     // Declare a python wrapper and expose member functions for Parameters class
     py::class_<Parameters>(m, "Parameters")
         .def(py::init<>())
@@ -128,8 +155,12 @@ PYBIND11_MODULE(vacuumms, m)
         .def("renderScene", &Scene::renderScene)      // PNG file
         .def("applyStandardLight", &Scene::applyStandardLight)
         .def("applyAmbientLight", &Scene::applyAmbientLight)
-        .def("addSceneComponent", &Scene::addSceneComponent)
-//        std::string generateContainerSDL();
+//        .def("addSceneComponent", &Scene::addSceneComponent)
+        .def("addConfigurationComponent", &Scene::addConfigurationComponent)
+        .def("addCavityComponent", &Scene::addCavityComponent)
+        .def("generateContainerSDL", &Scene::generateContainerSDL)
+        .def("dumpSDL", &Scene::dumpSDL)
+
 //        SceneComponent componentAt(int i);
 //        size_t deleteComponentAt(int i);
 //        size_t getNumberOfComponents();
@@ -151,7 +182,6 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<CavityConfiguration>())
         .def("getComponentSDL", &CavityComponent::getComponentSDL)
     ;
-
 
 #ifdef BUILD_VORONOI_UTILS
 

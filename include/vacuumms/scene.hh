@@ -24,7 +24,9 @@ SceneComponent
 {
     public:
 
-        std::string getComponentSDL();
+virtual std::string getComponentSDL() const;
+//FTW        virtual std::string getComponentSDL() const = 0;
+//FTW        virtual std::string getComponentSDL() = 0;
         void setClipComponent(int);
         void setPhong(vacuumms_float);
         void setTransmit(vacuumms_float);
@@ -40,6 +42,20 @@ SceneComponent
 
         std::string color;
 };
+
+
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+FTWComponent: public SceneComponent
+{
+    public:
+
+        FTWComponent();
+        std::string getComponentSDL();
+};
+
 
 class 
 #ifdef PYBIND11_EXPORTS 
@@ -110,14 +126,21 @@ Scene
     public:
 
         // I/O
+        int dumpSDL();  // dump POV source to stdout
         int createSceneFile(const char* filename);  // POV file
         int renderScene(const char* filename);      // PNG file
         std::string generateContainerSDL();
 
-        SceneComponent componentAt(int i);
+//FTW        SceneComponent componentAt(int i);
+        SceneComponent* componentAt(int i);
         size_t deleteComponentAt(int i);
         size_t getNumberOfComponents();
-        size_t addSceneComponent(SceneComponent);
+//FTW        size_t addSceneComponent(SceneComponent);
+//FTW        size_t addSceneComponent(SceneComponent*);
+//FTW        size_t addSceneComponent(auto*);
+        size_t addConfigurationComponent(ConfigurationComponent*);
+        size_t addCavityComponent(CavityComponent*);
+        size_t addFTWComponent(FTWComponent*);
 
         void setBoxDimensions(std::vector<vacuumms_float>);
         std::vector<vacuumms_float> getBoxDimensions();
@@ -137,7 +160,8 @@ Scene
         int show_box = 0;
 
         std::vector<std::vector<vacuumms_float>> light_sources;
-        std::vector<SceneComponent> components;
+//FTW        std::vector<SceneComponent> components;
+        std::vector<SceneComponent*> components;
         
         std::vector<vacuumms_float> camera_location = {40, 40, 40};
         std::vector<vacuumms_float> camera_look_at = {0, 0, 0};
