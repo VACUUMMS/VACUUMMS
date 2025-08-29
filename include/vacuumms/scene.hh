@@ -24,9 +24,7 @@ SceneComponent
 {
     public:
 
-virtual std::string getComponentSDL() const;
-//FTW        virtual std::string getComponentSDL() const = 0;
-//FTW        virtual std::string getComponentSDL() = 0;
+        virtual std::string getComponentSDL() const;
         void setClipComponent(int);
         void setPhong(vacuumms_float);
         void setTransmit(vacuumms_float);
@@ -41,6 +39,20 @@ virtual std::string getComponentSDL() const;
     protected:
 
         std::string color;
+};
+
+
+// Trampoline class for SceneComponent
+class PySceneComponent : public SceneComponent {
+public:
+    using SceneComponent::SceneComponent; // Inherit constructors
+    std::string getComponentSDL() const override {
+        PYBIND11_OVERRIDE_PURE(
+            std::string,    // Return type
+            SceneComponent, // Parent class
+            getComponentSDL // Function name
+        );
+    }
 };
 
 
@@ -67,13 +79,13 @@ ConfigurationComponent : public SceneComponent
 
         ConfigurationComponent();
         ConfigurationComponent(Configuration);
-        std::string getComponentSDL();
+        std::string getComponentSDL() const;
     
     private:
     
         vacuumms_float transmit;
         vacuumms_float phong;
-        std::string color;
+        std::string color = "Red";
         std::vector<vacuumms_float> box_dims;
         int clip; // intersect with box
         Configuration configuration;
@@ -89,13 +101,13 @@ CavityComponent : public SceneComponent
 
         CavityComponent();
         CavityComponent(CavityConfiguration);
-        std::string getComponentSDL();
+        std::string getComponentSDL() const;
     
     private:
     
         vacuumms_float transmit;
         vacuumms_float phong;
-        std::string color;
+        std::string color = "White";
         std::vector<vacuumms_float> box_dims;
         int clip; // intersect with box
         CavityConfiguration configuration;
@@ -136,11 +148,11 @@ Scene
         size_t deleteComponentAt(int i);
         size_t getNumberOfComponents();
 //FTW        size_t addSceneComponent(SceneComponent);
-//FTW        size_t addSceneComponent(SceneComponent*);
+        size_t addSceneComponent(SceneComponent*);
 //FTW        size_t addSceneComponent(auto*);
-        size_t addConfigurationComponent(ConfigurationComponent*);
-        size_t addCavityComponent(CavityComponent*);
-        size_t addFTWComponent(FTWComponent*);
+//        size_t addConfigurationComponent(ConfigurationComponent*);
+//        size_t addCavityComponent(CavityComponent*);
+//        size_t addFTWComponent(FTWComponent*);
 
         void setBoxDimensions(std::vector<vacuumms_float>);
         std::vector<vacuumms_float> getBoxDimensions();

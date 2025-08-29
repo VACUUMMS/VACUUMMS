@@ -39,14 +39,16 @@ namespace py = pybind11;
 PYBIND11_MODULE(vacuumms, m)
 {
 
+/*
     //FTW test
     py::class_<FTWX>(m, "FTWX")
         .def(py::init<>())
         .def("add", &FTWX::add)
         .def("play", &FTWX::play)
         ;
-
-    py::class_<FTW, PyFTW /* trampoline */>(m, "FTW")
+*/
+//    py::class_<FTW, PyFTW /* trampoline */>(m, "FTW")
+/*
         .def(py::init<>())
         .def("dump", &FTW::dump)
         ;
@@ -60,7 +62,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<>())
         .def("dump", &FTW2::dump)
         ;
-
+*/
 
 
     // Declare a python wrapper and expose member functions for Parameters class
@@ -155,9 +157,9 @@ PYBIND11_MODULE(vacuumms, m)
         .def("renderScene", &Scene::renderScene)      // PNG file
         .def("applyStandardLight", &Scene::applyStandardLight)
         .def("applyAmbientLight", &Scene::applyAmbientLight)
-//        .def("addSceneComponent", &Scene::addSceneComponent)
-        .def("addConfigurationComponent", &Scene::addConfigurationComponent)
-        .def("addCavityComponent", &Scene::addCavityComponent)
+        .def("addSceneComponent", &Scene::addSceneComponent)
+//        .def("addConfigurationComponent", &Scene::addConfigurationComponent)
+//        .def("addCavityComponent", &Scene::addCavityComponent)
         .def("generateContainerSDL", &Scene::generateContainerSDL)
         .def("dumpSDL", &Scene::dumpSDL)
 

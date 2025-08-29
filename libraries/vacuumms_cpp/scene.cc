@@ -127,6 +127,7 @@ FTWComponent::FTWComponent()
 {
 };
 
+/* FTW
 size_t Scene::addFTWComponent(FTWComponent* component)
 {
     components.push_back(component);
@@ -137,7 +138,7 @@ std::string FTWComponent::getComponentSDL()
 {
     return "this is FTW Component SDL\n\n";
 };
-
+*/
 
 void SceneComponent::setClipComponent(int _clip)
 {
@@ -162,7 +163,6 @@ void SceneComponent::setColor(std::string _color)
     color = _color;
 }
 
-
 std::string SceneComponent::getComponentSDL() const
 {
     // Return an unit orange bubble centered at origin as default. 
@@ -179,7 +179,7 @@ ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 }
 
 
-std::string ConfigurationComponent::getComponentSDL()
+std::string ConfigurationComponent::getComponentSDL() const
 {
     std::stringstream out;
     out << "// Configuration Component\n\n";
@@ -211,13 +211,15 @@ std::string ConfigurationComponent::getComponentSDL()
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
 
-    setColor("Red");
-
     // iterate over configuration and get the goods
-    for (int i = 0; i < configuration.getSize(); i++)
+//    for (int i = 0; i < configuration.getSize(); i++)
+//FTW    for (const auto* record : configuration.records) 
+    for (const auto record : configuration.records) 
     {
-        ConfigurationRecord record = configuration.recordAt(i);
-printf("dumping configuration record %d: %f\t%f\t%f\t%f\t%f\n", i, record.x, record.y, record.z, record.sigma, record.epsilon);
+//        obj->specificFunction(); // Calls the appropriate version
+//        ConfigurationRecord record = configuration.recordAt(i);
+
+printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
 
         if (clip) 
         {
@@ -263,7 +265,7 @@ CavityComponent::CavityComponent(CavityConfiguration _configuration)
 }
 
 
-std::string CavityComponent::getComponentSDL()
+std::string CavityComponent::getComponentSDL() const
 {
     return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
 }
@@ -303,17 +305,17 @@ size_t Scene::getNumberOfComponents()
 	return components.size();
 }
 
+
 //FTW size_t Scene::addSceneComponent(SceneComponent comp)
-//FTW size_t Scene::addSceneComponent(SceneComponent* comp)
-/*
-size_t Scene::addSceneComponent(auto* comp)
+//size_t Scene::addSceneComponent(auto* comp)
+size_t Scene::addSceneComponent(SceneComponent* comp)
 {
 	components.push_back(comp);
 	return components.size();
 }
-*/
 
 
+/*
 size_t Scene::addConfigurationComponent(ConfigurationComponent* comp)
 {
 	components.push_back(comp);
@@ -326,6 +328,7 @@ size_t Scene::addCavityComponent(CavityComponent* comp)
 	components.push_back(comp);
 	return components.size();
 }
+*/
 
 
 void Scene::setBackgroundColor(std::string color)
