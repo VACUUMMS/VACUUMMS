@@ -117,28 +117,6 @@ std::string Scene::generateContainerSDL()
 	return out.str();
 }
 
-/* implicitly defined
-SceneComponent::SceneComponent()
-{
-}
-*/
-
-FTWComponent::FTWComponent()
-{
-};
-
-/* FTW
-size_t Scene::addFTWComponent(FTWComponent* component)
-{
-    components.push_back(component);
-    return components.size();
-}
-
-std::string FTWComponent::getComponentSDL()
-{
-    return "this is FTW Component SDL\n\n";
-};
-*/
 
 void SceneComponent::setClipComponent(int _clip)
 {
@@ -211,13 +189,8 @@ std::string ConfigurationComponent::getComponentSDL() const
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
 
-    // iterate over configuration and get the goods
-//    for (int i = 0; i < configuration.getSize(); i++)
-//FTW    for (const auto* record : configuration.records) 
     for (const auto record : configuration.records) 
     {
-//        obj->specificFunction(); // Calls the appropriate version
-//        ConfigurationRecord record = configuration.recordAt(i);
 
 printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
 
@@ -288,7 +261,6 @@ std::vector<vacuumms_float> Scene::getBoxDimensions()
 	return box_dimensions;
 }
 
-//FTW SceneComponent Scene::componentAt(int i)
 SceneComponent* Scene::componentAt(int i)
 {
 	return components[i];
@@ -306,8 +278,6 @@ size_t Scene::getNumberOfComponents()
 }
 
 
-//FTW size_t Scene::addSceneComponent(SceneComponent comp)
-//size_t Scene::addSceneComponent(auto* comp)
 size_t Scene::addSceneComponent(SceneComponent* comp)
 {
 	components.push_back(comp);
@@ -388,18 +358,6 @@ int Scene::dumpSDL()  // dump POV source
         scene << std::endl;
     }
 
-/*
-    for (int i=0; i < components.size(); i++)
-    {
-        scene << "// writing component " << i << std::endl;
-//FTW        scene << components[i].getComponentSDL();
-        scene << components[i]->getComponentSDL();
-        scene << std::endl;
-    }
-*/
-
-scene << "foo\n";
-
     std::cout << scene.str();
 
     return 0;
@@ -420,7 +378,6 @@ int Scene::createSceneFile(const char* filename)  // POV file
         for (int i=0; i < components.size(); i++)
         {
             scene_file << "// writing component " << i << std::endl;
-//FTW            scene_file << components[i].getComponentSDL();
             scene_file << components[i]->getComponentSDL();
             scene_file << std::endl;
         }
