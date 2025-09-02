@@ -91,6 +91,7 @@ ConfigurationComponent : public SceneComponent
         Configuration configuration;
 };
 
+
 class 
 #ifdef PYBIND11_EXPORTS 
 PYBIND11_EXPORT 
@@ -112,6 +113,7 @@ CavityComponent : public SceneComponent
         int clip; // intersect with box
         CavityConfiguration configuration;
 };
+
 
 #ifdef BUILD_CUDA_COMPONENTS
 
@@ -143,16 +145,10 @@ Scene
         int renderScene(const char* filename);      // PNG file
         std::string generateContainerSDL();
 
-//FTW        SceneComponent componentAt(int i);
         SceneComponent* componentAt(int i);
         size_t deleteComponentAt(int i);
         size_t getNumberOfComponents();
-//FTW        size_t addSceneComponent(SceneComponent);
         size_t addSceneComponent(SceneComponent*);
-//FTW        size_t addSceneComponent(auto*);
-//        size_t addConfigurationComponent(ConfigurationComponent*);
-//        size_t addCavityComponent(CavityComponent*);
-//        size_t addFTWComponent(FTWComponent*);
 
         void setBoxDimensions(std::vector<vacuumms_float>);
         std::vector<vacuumms_float> getBoxDimensions();
@@ -172,7 +168,6 @@ Scene
         int show_box = 0;
 
         std::vector<std::vector<vacuumms_float>> light_sources;
-//FTW        std::vector<SceneComponent> components;
         std::vector<SceneComponent*> components;
         
         std::vector<vacuumms_float> camera_location = {40, 40, 40};

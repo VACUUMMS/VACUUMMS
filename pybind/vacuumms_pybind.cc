@@ -60,6 +60,8 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<Configuration>(m, "Configuration")
         .def(py::init<char*>())
+        .def(py::init<char*, std::vector<vacuumms_float>>())
+        .def(py::init<char*, std::vector<vacuumms_float>, vacuumms_float>())
         .def("__repr__", &Configuration::__repr__)
         .def("setBoxDimensions", &Configuration::setBoxDimensions)
         .def("getBoxDimensions", &Configuration::getBoxDimensions)
@@ -83,9 +85,15 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
-    /* Subclass notes: Declare any operation that will be called on 
-       all operations in base class. It will use the method from derived
-       class, even though it is not listed explicitly for derived class. */
+    /* Operations subclass notes: 
+ 
+       Declare any operation that will be called on all operations in 
+       base class. It will use the method from derived class, even
+       though it is not listed explicitly for derived class. 
+
+       There is no Trampoline class because subclasses aren't overriding 
+       base class methods in a way that requires it.
+    */
 
     // Operations classes
     
@@ -121,6 +129,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("__repr__", &PDDX::__repr__)
     ;
 
+
     // Scene interface, for generating and rendering POVRay SDL
     
     py::class_<Scene>(m, "Scene")
@@ -130,8 +139,6 @@ PYBIND11_MODULE(vacuumms, m)
         .def("applyStandardLight", &Scene::applyStandardLight)
         .def("applyAmbientLight", &Scene::applyAmbientLight)
         .def("addSceneComponent", &Scene::addSceneComponent)
-//        .def("addConfigurationComponent", &Scene::addConfigurationComponent)
-//        .def("addCavityComponent", &Scene::addCavityComponent)
         .def("generateContainerSDL", &Scene::generateContainerSDL)
         .def("dumpSDL", &Scene::dumpSDL)
 

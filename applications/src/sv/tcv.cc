@@ -55,7 +55,12 @@ int main(int argc, char* argv[])
     initializeRandomNumberGenerator2(0);
 
     CavityConfiguration configuration = CavityConfiguration(stdin);
-    configuration.setBoxDimensions(box_x, box_y, box_z);
+    // configuration.setBoxDimensions(box_x, box_y, box_z);
+    std::vector<vacuumms_float> box_dims(3);
+    box_dims[0] = box_x;
+    box_dims[1] = box_y;
+    box_dims[2] = box_z;
+    configuration.setBoxDimensions(box_dims);
 
     successes=0;
 

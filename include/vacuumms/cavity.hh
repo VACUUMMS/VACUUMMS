@@ -54,14 +54,17 @@ CavityConfiguration
 
         std::vector<Cavity> records;
 
-        vacuumms_float box_x;
-        vacuumms_float box_y;
-        vacuumms_float box_z;
+//        vacuumms_float box_x;
+//        vacuumms_float box_y;
+//        vacuumms_float box_z;
+
+        std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
 
         CavityConfiguration();
         CavityConfiguration(const char *filename);
         CavityConfiguration(FILE *instream);
-        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
+//        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
+        void setBoxDimensions(std::vector<vacuumms_float> dims);
         void setMirrorDepth(int _mirror_depth);
         Cavity recordAt(int i);
         void deleteRecordAt(int i);

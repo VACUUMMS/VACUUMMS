@@ -159,32 +159,8 @@ ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 
 std::string ConfigurationComponent::getComponentSDL() const
 {
-    std::stringstream out;
-    out << "// Configuration Component\n\n";
-
-/*
-  if (getFlagParam("-transmit")) // sets up transmit string
-  {
-    getDoubleParam("-transmit", &transmit);
-    sprintf(transmit_str, " transmit %lf ", transmit);
-  }
-  if (getFlagParam("-phong")) // sets up phong string
-  {
-    getDoubleParam("-phong", &phong);
-    sprintf(phong_str, " finish {phong %lf} ", phong);
-  }
-  getStringParam("-color", &color);
-
-  printf("// begin gfg2pov records\n");
-
-    // we use diameter, pov uses radius...
-    d *= .5;
-
-    if (getFlagParam("-clip")) printf("intersection {sphere{<%lf, %lf, %lf>, %lf} box {<0,0,0>< %lf, %lf, %lf>} texture{ pigment {color %s %s } %s }}\n",
-                                      x, y, z, d, box_x, box_y, box_z, color, transmit_str, phong_str);
-    else printf("sphere{<%lf, %lf, %lf>, %lf texture{ pigment {color %s %s } %s } }\n", x, y, z, d, color, transmit_str, phong_str);
-  }
-*/
+    std::stringstream sdl;
+    sdl << "// Configuration Component\n\n";
 
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
@@ -196,7 +172,7 @@ printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y,
 
         if (clip) 
         {
-            out << "intersection {sphere{<" 
+            sdl << "intersection {sphere{<" 
                 << record.x
                 << ", " << record.y 
                 << ", " << record.z
@@ -211,7 +187,7 @@ printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y,
         }
         else 
         {
-            out << "sphere{<" 
+            sdl << "sphere{<" 
                 << record.x
                 << ", " << record.y
                 << ", " << record.z
@@ -224,8 +200,8 @@ printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y,
     }
 
     // end of SDL comment
-    out << "// end of sceneSDL\n\n";
-    return out.str();
+    sdl << "// end of ConfigurationComponent SDL\n\n";
+    return sdl.str();
 }
     
 
@@ -240,9 +216,51 @@ CavityComponent::CavityComponent(CavityConfiguration _configuration)
 
 std::string CavityComponent::getComponentSDL() const
 {
-    return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
+//    return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
+    std::stringstream sdl;
+    sdl << "// Cavity Component\n\n";
+
+    std::string transmit_str = " transmit " + std::to_string(transmit);
+    std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
+
+    for (const auto record : configuration.records) 
+    {
+
+printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
+
+        if (clip) 
+        {
+            sdl << "intersection {sphere{<" 
+                << record.x
+                << ", " << record.y 
+                << ", " << record.z
+                << ">, " << (record.d * 0.5)
+                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
+                << ", " << configuration.box_dimensions[1]
+                << ", " << configuration.box_dimensions[2]
+                << ">} texture { pigment { color "
+                << color << " " << transmit_str 
+                << " } " << phong_str << " }}\n"
+                ;
+        }
+        else 
+        {
+            sdl << "sphere{<" 
+                << record.x
+                << ", " << record.y
+                << ", " << record.z
+                << ">, " << (record.d * 0.5) 
+                << "texture{ pigment {color " 
+                << color << " " << transmit_str 
+                << " } " << phong_str << " } }\n"
+                ;
+        }
+    }
+
+    // end of SDL comment
+    sdl << "// end of CavityComponent SDL\n\n";
+    return sdl.str();
 }
-    
 
 
 #ifdef BUILD_CUDA_COMPONENTS

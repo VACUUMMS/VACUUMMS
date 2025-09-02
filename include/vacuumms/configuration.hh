@@ -52,6 +52,8 @@ Configuration
         vacuumms_float temperature = 1.0f;
 
         Configuration(const char *filename);
+        Configuration(const char *filename, std::vector<vacuumms_float>);
+        Configuration(const char *filename, std::vector<vacuumms_float>, vacuumms_float);
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
         Configuration();
         void dumpContents();
