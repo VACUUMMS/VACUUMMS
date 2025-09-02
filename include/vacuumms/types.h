@@ -15,6 +15,8 @@
     #define vacuumms_float float
 #endif
 
+#define vacuumms_double double
+
 #include <vacuumms/limits.h>
 
 

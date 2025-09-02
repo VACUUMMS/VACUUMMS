@@ -83,6 +83,7 @@ CavityConfiguration::CavityConfiguration(const char *filename)
         records.push_back(Cavity(x, y, z, d));
     }
 }
+
     
 CavityConfiguration::CavityConfiguration(FILE *instream)
 {
@@ -95,6 +96,7 @@ CavityConfiguration::CavityConfiguration(FILE *instream)
         records.push_back(Cavity(x, y, z, d));
     }
 }
+
     
 //void CavityConfiguration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
 void CavityConfiguration::setBoxDimensions(std::vector<vacuumms_float> _dims)
@@ -102,31 +104,42 @@ void CavityConfiguration::setBoxDimensions(std::vector<vacuumms_float> _dims)
     box_dimensions = _dims;
 }
 
+
 void CavityConfiguration::setMirrorDepth(int _mirror_depth)
 {
     mirror_depth = _mirror_depth;
 }
+
 
 Cavity CavityConfiguration::recordAt(int i)
 {
     return records[i];
 }
 
+
 void CavityConfiguration::deleteRecordAt(int i)
 {
     records.erase(records.begin() + i);
 }
+
 
 int CavityConfiguration::getSize()
 {
     return records.size();
 }
 
+
 int CavityConfiguration::pushBack(Cavity _cavity)
 {
     records.push_back(_cavity);
     return records.size();
 }
+
+void CavityConfiguration::reset()
+{
+    records.clear();
+}
+
 
 int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz)
 {

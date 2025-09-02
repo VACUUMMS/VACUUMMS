@@ -53,6 +53,7 @@ CavityConfiguration
     public:
 
         std::vector<Cavity> records;
+        void reset();
 
 //        vacuumms_float box_x;
 //        vacuumms_float box_y;

@@ -22,11 +22,16 @@ DDX : public Operation
         DDX(Configuration c, Parameters p);
         DDX(Configuration c);
         DDX();
-//        CavityConfiguration getOutput();
         void execute();
         void setParameters(Parameters p);
         void setConfiguration(Configuration c);
         Configuration getConfiguration();
+        void setNumberOfSamples(int);
+        void setSeed(int);
+        void setVerletCutoff(vacuumms_float);
+        void setNumberOfSteps(int);
+        void setMinDiameter(vacuumms_float);
+        void Randomize();
         static void printUsage();
         CavityConfiguration getResult();
 
@@ -61,7 +66,7 @@ DDX : public Operation
         double close_sigma12[VACUUMMS_MAX_CLOSE];
         double close_epsilon[VACUUMMS_MAX_CLOSE];
 
-        double box_x=6, box_y=6, box_z=6;
+        double box_x=0.0, box_y=0.0, box_z=0.0;
         double verlet_cutoff=100.0;
 
         //double step_size_factor = 1.0;
