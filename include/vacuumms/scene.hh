@@ -24,8 +24,50 @@ SceneComponent
 {
     public:
 
+        virtual std::string getComponentSDL() const;
+        void setClipComponent(int);
+        void setPhong(vacuumms_float);
+        void setTransmit(vacuumms_float);
+        void setColor(std::string);
+
+    private:
+
+        int clip = 0;
+        vacuumms_float phong = 0.0;
+        vacuumms_float transmit = 0.0;
+
+    protected:
+
+        std::string color;
+};
+
+
+// Trampoline class for SceneComponent
+class PySceneComponent : public SceneComponent {
+public:
+    using SceneComponent::SceneComponent; // Inherit constructors
+    std::string getComponentSDL() const override {
+        PYBIND11_OVERRIDE_PURE(
+            std::string,    // Return type
+            SceneComponent, // Parent class
+            getComponentSDL // Function name
+        );
+    }
+};
+
+
+class 
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT 
+#endif
+FTWComponent: public SceneComponent
+{
+    public:
+
+        FTWComponent();
         std::string getComponentSDL();
 };
+
 
 class 
 #ifdef PYBIND11_EXPORTS 
@@ -35,18 +77,20 @@ ConfigurationComponent : public SceneComponent
 {
     public:
 
+        ConfigurationComponent();
         ConfigurationComponent(Configuration);
-        std::string getComponentSDL();
+        std::string getComponentSDL() const;
     
     private:
     
         vacuumms_float transmit;
         vacuumms_float phong;
-        std::string color;
+        std::string color = "Red";
         std::vector<vacuumms_float> box_dims;
         int clip; // intersect with box
         Configuration configuration;
 };
+
 
 class 
 #ifdef PYBIND11_EXPORTS 
@@ -56,8 +100,20 @@ CavityComponent : public SceneComponent
 {
     public:
 
+        CavityComponent();
         CavityComponent(CavityConfiguration);
+        std::string getComponentSDL() const;
+    
+    private:
+    
+        vacuumms_float transmit;
+        vacuumms_float phong;
+        std::string color = "White";
+        std::vector<vacuumms_float> box_dims;
+        int clip; // intersect with box
+        CavityConfiguration configuration;
 };
+
 
 #ifdef BUILD_CUDA_COMPONENTS
 
@@ -84,14 +140,15 @@ Scene
     public:
 
         // I/O
+        int dumpSDL();  // dump POV source to stdout
         int createSceneFile(const char* filename);  // POV file
         int renderScene(const char* filename);      // PNG file
         std::string generateContainerSDL();
 
-        SceneComponent componentAt(int i);
+        SceneComponent* componentAt(int i);
         size_t deleteComponentAt(int i);
         size_t getNumberOfComponents();
-        size_t addSceneComponent(SceneComponent);
+        size_t addSceneComponent(SceneComponent*);
 
         void setBoxDimensions(std::vector<vacuumms_float>);
         std::vector<vacuumms_float> getBoxDimensions();
@@ -111,7 +168,7 @@ Scene
         int show_box = 0;
 
         std::vector<std::vector<vacuumms_float>> light_sources;
-        std::vector<SceneComponent> components;
+        std::vector<SceneComponent*> components;
         
         std::vector<vacuumms_float> camera_location = {40, 40, 40};
         std::vector<vacuumms_float> camera_look_at = {0, 0, 0};

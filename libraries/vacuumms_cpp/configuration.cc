@@ -32,6 +32,22 @@ Configuration::Configuration(const char *filename)
         fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
         records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
     }
+
+    fclose(infile);
+}
+
+
+Configuration::Configuration(const char *filename, std::vector<vacuumms_float> _box_dimensions) 
+    : Configuration(filename)
+{
+    box_dimensions = _box_dimensions;
+}    
+
+
+Configuration::Configuration(const char *filename, std::vector<vacuumms_float> _box_dimensions, vacuumms_float _temperature) 
+    : Configuration(filename, _box_dimensions)
+{
+    temperature = _temperature;
 }
 
 

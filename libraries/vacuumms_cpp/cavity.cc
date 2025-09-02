@@ -96,11 +96,10 @@ CavityConfiguration::CavityConfiguration(FILE *instream)
     }
 }
     
-void CavityConfiguration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
+//void CavityConfiguration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
+void CavityConfiguration::setBoxDimensions(std::vector<vacuumms_float> _dims)
 {
-    box_x = _box_x;
-    box_y = _box_y;
-    box_z = _box_z;
+    box_dimensions = _dims;
 }
 
 void CavityConfiguration::setMirrorDepth(int _mirror_depth)
@@ -136,6 +135,10 @@ int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, va
 
     for (i=0; i<getSize(); i++)
     {
+        vacuumms_float box_x = box_dimensions[0];
+        vacuumms_float box_y = box_dimensions[1];
+        vacuumms_float box_z = box_dimensions[2];
+
         // Check inclusion in each of the eight mirror box images:
 
         // (0,0,0):

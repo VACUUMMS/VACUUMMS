@@ -117,32 +117,151 @@ std::string Scene::generateContainerSDL()
 	return out.str();
 }
 
-/* implicitly defined
-SceneComponent::SceneComponent()
-{
-}
-*/
 
-std::string SceneComponent::getComponentSDL()
+void SceneComponent::setClipComponent(int _clip)
+{
+    clip = _clip;
+}
+
+
+void SceneComponent::setTransmit(vacuumms_float _transmit)
+{
+    transmit = _transmit;
+}
+
+
+void SceneComponent::setPhong(vacuumms_float _phong)
+{
+    phong = _phong;
+}
+
+
+void SceneComponent::setColor(std::string _color)
+{
+    color = _color;
+}
+
+std::string SceneComponent::getComponentSDL() const
 {
     // Return an unit orange bubble centered at origin as default. 
-    return std::string("sphere{<0.0, 0.0, 0.0>, 1.0 texture{ pigment {color Orange  transmit 0.700000  }  finish {phong 0.700000}  } }\n");
+    // return std::string("sphere{<0.0, 0.0, 0.0>, 1.0 texture{ pigment {color Orange  transmit 0.700000  }  finish {phong 0.700000}  } }\n");
+    return std::string("// SceneComponent::getComponentSDL called on base type.\n\n");
 }
+
+ConfigurationComponent::ConfigurationComponent(){}
+
 
 ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 {
     configuration = _configuration;
 }
 
-std::string ConfigurationComponent::getComponentSDL()
+
+std::string ConfigurationComponent::getComponentSDL() const
 {
-    return "foo";
+    std::stringstream sdl;
+    sdl << "// Configuration Component\n\n";
+
+    std::string transmit_str = " transmit " + std::to_string(transmit);
+    std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
+
+    for (const auto record : configuration.records) 
+    {
+
+printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
+
+        if (clip) 
+        {
+            sdl << "intersection {sphere{<" 
+                << record.x
+                << ", " << record.y 
+                << ", " << record.z
+                << ">, " << (record.sigma * 0.5)
+                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
+                << ", " << configuration.box_dimensions[1]
+                << ", " << configuration.box_dimensions[2]
+                << ">} texture { pigment { color "
+                << color << " " << transmit_str 
+                << " } " << phong_str << " }}\n"
+                ;
+        }
+        else 
+        {
+            sdl << "sphere{<" 
+                << record.x
+                << ", " << record.y
+                << ", " << record.z
+                << ">, " << (record.sigma *0.5) 
+                << "texture{ pigment {color " 
+                << color << " " << transmit_str 
+                << " } " << phong_str << " } }\n"
+                ;
+        }
+    }
+
+    // end of SDL comment
+    sdl << "// end of ConfigurationComponent SDL\n\n";
+    return sdl.str();
 }
     
 
-CavityComponent::CavityComponent(CavityConfiguration configuration)
+CavityComponent::CavityComponent(){}
+
+
+CavityComponent::CavityComponent(CavityConfiguration _configuration)
 {
+    configuration = _configuration;
 }
+
+
+std::string CavityComponent::getComponentSDL() const
+{
+//    return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
+    std::stringstream sdl;
+    sdl << "// Cavity Component\n\n";
+
+    std::string transmit_str = " transmit " + std::to_string(transmit);
+    std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
+
+    for (const auto record : configuration.records) 
+    {
+
+printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
+
+        if (clip) 
+        {
+            sdl << "intersection {sphere{<" 
+                << record.x
+                << ", " << record.y 
+                << ", " << record.z
+                << ">, " << (record.d * 0.5)
+                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
+                << ", " << configuration.box_dimensions[1]
+                << ", " << configuration.box_dimensions[2]
+                << ">} texture { pigment { color "
+                << color << " " << transmit_str 
+                << " } " << phong_str << " }}\n"
+                ;
+        }
+        else 
+        {
+            sdl << "sphere{<" 
+                << record.x
+                << ", " << record.y
+                << ", " << record.z
+                << ">, " << (record.d * 0.5) 
+                << "texture{ pigment {color " 
+                << color << " " << transmit_str 
+                << " } " << phong_str << " } }\n"
+                ;
+        }
+    }
+
+    // end of SDL comment
+    sdl << "// end of CavityComponent SDL\n\n";
+    return sdl.str();
+}
+
 
 #ifdef BUILD_CUDA_COMPONENTS
 FVIComponent::FVIComponent(FVIX fvix)
@@ -160,7 +279,7 @@ std::vector<vacuumms_float> Scene::getBoxDimensions()
 	return box_dimensions;
 }
 
-SceneComponent Scene::componentAt(int i)
+SceneComponent* Scene::componentAt(int i)
 {
 	return components[i];
 }
@@ -176,11 +295,29 @@ size_t Scene::getNumberOfComponents()
 	return components.size();
 }
 
-size_t Scene::addSceneComponent(SceneComponent comp)
+
+size_t Scene::addSceneComponent(SceneComponent* comp)
 {
 	components.push_back(comp);
 	return components.size();
 }
+
+
+/*
+size_t Scene::addConfigurationComponent(ConfigurationComponent* comp)
+{
+	components.push_back(comp);
+	return components.size();
+}
+
+
+size_t Scene::addCavityComponent(CavityComponent* comp)
+{
+	components.push_back(comp);
+	return components.size();
+}
+*/
+
 
 void Scene::setBackgroundColor(std::string color)
 {
@@ -224,6 +361,26 @@ void Scene::setBoxColor(std::string color)
 	box_color = color;
 }
 
+int Scene::dumpSDL()  // dump POV source
+{
+    std::stringstream scene;
+
+    // Container
+
+    scene << generateContainerSDL();
+    
+    // Components
+        
+    for (const auto* obj : components) {
+        scene << obj->getComponentSDL(); // Calls the appropriate version
+        scene << std::endl;
+    }
+
+    std::cout << scene.str();
+
+    return 0;
+}
+
 // I/O
 int Scene::createSceneFile(const char* filename)  // POV file
 {
@@ -239,7 +396,7 @@ int Scene::createSceneFile(const char* filename)  // POV file
         for (int i=0; i < components.size(); i++)
         {
             scene_file << "// writing component " << i << std::endl;
-            scene_file << components[i].getComponentSDL();
+            scene_file << components[i]->getComponentSDL();
             scene_file << std::endl;
         }
 

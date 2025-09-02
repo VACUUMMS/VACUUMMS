@@ -88,7 +88,18 @@ void DDX::execute()
   if (p.getFlagParam((char*)"-randomize")) randomize();
   else initializeRandomNumberGeneratorTo(seed);
 
+
+  // Get box_dims from config info
+  std::vector<vacuumms_float> box_dims = c.getBoxDimensions();
+  box_x = box_dims[0];
+  box_y = box_dims[1];
+  box_z = box_dims[2];
+printf("Using box_xyz = %f, %f, %f\n", box_x, box_y, box_z);
+  // override if passed as params.
   p.getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
+printf("Using box_xyz = %f, %f, %f\n", box_x, box_y, box_z);
+  result.setBoxDimensions(box_dims);
+
   p.getDoubleParam((char*)"-characteristic_length", &characteristic_length);
   p.getDoubleParam((char*)"-characteristic_energy", &characteristic_energy);
   p.getDoubleParam((char*)"-precision_parameter", &precision_parameter);
@@ -148,7 +159,7 @@ void DDX::execute()
       }
     }
   }
-
+  
 } // end DDX::execute()
 
 void DDX::generateTestPoint()
