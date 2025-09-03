@@ -29,6 +29,9 @@ std::string Scene::generateContainerSDL()
         << "," << camera_look_at[2] 
         << "> right 1.0 angle 45}\n";
 
+    // If no light sources are present, then apply standard light now.
+    if (light_sources.size() == 0) applyStandardLight();
+        
     // ambient light
 
 	if (ambient_light) out << "global_settings { ambient_light rgb <" << ambient_light << "," << ambient_light << "," << ambient_light << "> }\n"; 
@@ -168,7 +171,7 @@ std::string ConfigurationComponent::getComponentSDL() const
     for (const auto record : configuration.records) 
     {
 
-printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
+//FTW printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
 
         if (clip) 
         {
@@ -226,7 +229,7 @@ std::string CavityComponent::getComponentSDL() const
     for (const auto record : configuration.records) 
     {
 
-printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
+//FTW printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
 
         if (clip) 
         {
@@ -329,6 +332,11 @@ void Scene::setCameraLocation(std::vector<vacuumms_float> location)
 	camera_location = location;
 }
 
+void Scene::setCameraLookAt(std::vector<vacuumms_float> look_at)
+{
+	camera_look_at = look_at;
+}
+
 size_t Scene::addLightSource(std::vector<vacuumms_float> source, std::string color)
 {
 	light_sources.push_back(source);
@@ -411,6 +419,12 @@ int Scene::createSceneFile(const char* filename)  // POV file
     }
 }
 
+void Scene::setRenderDimensions(int width, int height)
+{
+    render_width = width;
+    render_height = height;
+}
+
 int Scene::renderScene(const char* filename)      // PNG file
 {
     std::string basename = std::filesystem::path(filename).stem().string();
@@ -418,7 +432,8 @@ int Scene::renderScene(const char* filename)      // PNG file
 
     createSceneFile(pov_filename.c_str());
 
-    std::string command = "povray -W1920 -H1080 " + pov_filename;
+    //FTW std::string command = "povray -W1920 -H1080 " + pov_filename;
+    std::string command = "povray -W" + std::to_string(render_width) + " -H" + std::to_string(render_height) + " " + pov_filename;
     std::string rm_command = "rm -f " + pov_filename;
 
     // Render

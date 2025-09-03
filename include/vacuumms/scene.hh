@@ -161,11 +161,14 @@ Scene
         void applyAmbientLight();
         void setShowBox(int);
         void setBoxColor(std::string);
+        void setRenderDimensions(int, int);
 
     private:
 
         int ambient_light = 0;
         int show_box = 0;
+        int render_width = 1920;
+        int render_height = 1080;
 
         std::vector<std::vector<vacuumms_float>> light_sources;
         std::vector<SceneComponent*> components;

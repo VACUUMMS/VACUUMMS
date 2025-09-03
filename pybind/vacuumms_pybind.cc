@@ -141,7 +141,10 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<Scene>(m, "Scene")
         .def(py::init<>())
         .def("createSceneFile", &Scene::createSceneFile)  // POV file
-        .def("renderScene", &Scene::renderScene)      // PNG file
+        .def("renderScene", &Scene::renderScene)          // PNG file
+        .def("setRenderDimensions", &Scene::setRenderDimensions)
+        .def("setCameraLocation", &Scene::setCameraLocation)
+        .def("setCameraLookAt", &Scene::setCameraLookAt)
         .def("applyStandardLight", &Scene::applyStandardLight)
         .def("applyAmbientLight", &Scene::applyAmbientLight)
         .def("addSceneComponent", &Scene::addSceneComponent)
@@ -155,6 +158,8 @@ PYBIND11_MODULE(vacuumms, m)
     
     py::class_<SceneComponent>(m, "SceneComponent")
         .def("getComponentSDL", &SceneComponent::getComponentSDL)
+        .def("setTransmit", &SceneComponent::setTransmit)
+        .def("setPhong", &SceneComponent::setPhong)
         .def(py::init<>())
     ;
 
