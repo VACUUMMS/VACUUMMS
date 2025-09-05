@@ -159,6 +159,7 @@ Scene
         size_t addLightSource(std::vector<vacuumms_float>, std::string color);
         size_t applyStandardLight();
         void applyAmbientLight();
+        void clearLightSources();
         void setShowBox(int);
         void setBoxColor(std::string);
         void setRenderDimensions(int, int);

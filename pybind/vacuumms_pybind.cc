@@ -82,6 +82,7 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<CavityConfiguration>(m, "CavityConfiguration")
         .def(py::init<char*>())
+        .def("scrubDuplicates", &CavityConfiguration::scrubDuplicates)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
@@ -147,6 +148,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setCameraLookAt", &Scene::setCameraLookAt)
         .def("applyStandardLight", &Scene::applyStandardLight)
         .def("applyAmbientLight", &Scene::applyAmbientLight)
+        .def("addLightSource", &Scene::addLightSource)
+        .def("clearLightSources", &Scene::clearLightSources)
         .def("addSceneComponent", &Scene::addSceneComponent)
         .def("generateContainerSDL", &Scene::generateContainerSDL)
         .def("dumpSDL", &Scene::dumpSDL)

@@ -67,6 +67,7 @@ CavityConfiguration
 //        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
         void setBoxDimensions(std::vector<vacuumms_float> dims);
         void setMirrorDepth(int _mirror_depth);
+        void scrubDuplicates();
         Cavity recordAt(int i);
         void deleteRecordAt(int i);
         int getSize();
@@ -80,6 +81,7 @@ CavityConfiguration
     private:
 
         int mirror_depth = 1;
+        vacuumms_float duplicate_threshold = 0.001f;
 
 }; // end class CavityConfiguration
 

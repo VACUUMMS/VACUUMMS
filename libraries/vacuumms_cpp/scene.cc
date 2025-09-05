@@ -17,10 +17,12 @@ std::string Scene::generateContainerSDL()
 
 	// headers
 	
+    out << "#version 3.7;\n";
+    out << "global_settings { assumed_gamma 1.0 }\n";
     out << "#include \"colors.inc\"\n";
-
+    out << "\n";
     out << "background {color " << background_color << "}\n";
-
+    out << "\n";
     out << "camera {location <" << camera_location[0] 
         << "," << camera_location[1] 
         << "," << camera_location[2] 
@@ -359,6 +361,11 @@ size_t Scene::applyStandardLight()
     return light_sources.size();
 }
 
+void Scene::clearLightSources()
+{
+    light_sources.clear();
+}
+
 void Scene::setShowBox(int yn)
 {
 	show_box = yn;
@@ -432,8 +439,8 @@ int Scene::renderScene(const char* filename)      // PNG file
 
     createSceneFile(pov_filename.c_str());
 
-    //FTW std::string command = "povray -W1920 -H1080 " + pov_filename;
-    std::string command = "povray -W" + std::to_string(render_width) + " -H" + std::to_string(render_height) + " " + pov_filename;
+    // Redirecting stderr to /dev/null because POVRay sends output there which causes jupyter to hang.
+    std::string command = "povray -W" + std::to_string(render_width) + " -H" + std::to_string(render_height) + " " + pov_filename + " 2>/dev/null";
     std::string rm_command = "rm -f " + pov_filename;
 
     // Render

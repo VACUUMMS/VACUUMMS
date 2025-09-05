@@ -141,6 +141,47 @@ void CavityConfiguration::reset()
 }
 
 
+void CavityConfiguration::scrubDuplicates()
+{
+    vacuumms_float box_x = box_dimensions[0];
+    vacuumms_float box_y = box_dimensions[1];
+    vacuumms_float box_z = box_dimensions[2];
+
+// std::cout << records.size() << " records.\n";
+    for (size_t index = 0; index < records.size(); index++)
+    {
+// std::cout << "record " << index << ".\n";
+        for (size_t pairing = index + 1; pairing < records.size();)
+        {
+// std::cout << "comparing record " << pairing << ".\n";
+            // compare center to image in all adjacent mirror boxes
+
+            for (vacuumms_float shift_x=-box_x; shift_x<=box_x; shift_x += box_x)
+            for (vacuumms_float shift_y=-box_y; shift_y<=box_y; shift_y += box_y)
+            for (vacuumms_float shift_z=-box_z; shift_z<=box_z; shift_z += box_z)
+            {
+                vacuumms_float dsq = (shift_x + records[pairing].x - records[index].x) * (shift_x + records[pairing].x - records[index].x)
+                                   + (shift_y + records[pairing].y - records[index].y) * (shift_y + records[pairing].y - records[index].y)
+                                   + (shift_z + records[pairing].z - records[index].z) * (shift_z + records[pairing].z - records[index].z);
+
+                if (dsq < duplicate_threshold)
+                {
+// std::cout << "erasing record " << pairing << "\n";
+                    records.erase(records.begin() + pairing);
+                    goto mirrors_done; // no need to keep looking, we know it's a duplicate
+                }
+            }
+
+            // No duplicate found so move on to next pairing;
+            pairing++;
+
+            mirrors_done:
+            ;
+        }
+    }
+}
+
+
 int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz)
 {
     int i;
