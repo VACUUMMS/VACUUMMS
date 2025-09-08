@@ -68,6 +68,7 @@ CavityConfiguration
         void setBoxDimensions(std::vector<vacuumms_float> dims);
         void setMirrorDepth(int _mirror_depth);
         void scrubDuplicates();
+        std::vector<vacuumms_float> getDiameters();
         Cavity recordAt(int i);
         void deleteRecordAt(int i);
         int getSize();
@@ -95,6 +96,13 @@ CavitySizeDistribution : public Histogram
     public:
 
         CavitySizeDistribution(CavityConfiguration cc, Parameters p);
+        CavitySizeDistribution(CavityConfiguration cc);
+
+//        setBinWidth(vacuumms_float);
+//        setNumberOfBins(int);
+
+        std::vector<std::tuple<vacuumms_float, vacuumms_float>> getResult();
+        
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();

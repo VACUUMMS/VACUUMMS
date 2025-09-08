@@ -182,6 +182,18 @@ void CavityConfiguration::scrubDuplicates()
 }
 
 
+std::vector<vacuumms_float> CavityConfiguration::getDiameters()
+{
+    std::vector<vacuumms_float> diameters;
+    for (const auto& record : records) 
+    {
+        diameters.push_back(record.d);
+    }
+
+    return diameters;
+}
+
+
 int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz)
 {
     int i;
@@ -283,7 +295,7 @@ CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameter
     }
     if (p.getFlagParam((char*)"-width"))
     {
-        setWidthOfBins(p.getFloatParam((char*)"-width"));
+        setBinWidth(p.getFloatParam((char*)"-width"));
     }
 
     // // implement later
@@ -295,6 +307,42 @@ CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameter
 //        int which_bin = (int)(cc.recordAt(i).d / width_of_bins);
 //        histogram[which_bin]++;
     }
+}
+
+
+CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc) 
+    : cc(cc)
+{
+    for (int i=0; i<cc.getSize(); i++) bin(cc.recordAt(i).d);
+}
+
+
+/* to Histogram class
+void CavitySizeDistribution::setBinWidth(vacuumms_float _width)
+{
+    width = _width;
+}
+
+
+void CavitySizeDistribution::setNumberOfBins(int _n_bins)
+{
+    n_bins = _n_bins;
+}
+*/
+
+
+std::vector<std::tuple<vacuumms_float, vacuumms_float>> CavitySizeDistribution::getResult()
+{
+    for (int i=0; i<cc.getSize(); i++) bin(cc.recordAt(i).d);
+
+    std::vector<std::tuple<vacuumms_float, vacuumms_float>> result;
+
+    for (int i = 1; i <= bins.size(); ++i) 
+    {
+//        result.emplace_back(i, i * 2); // Tuple of (i, i*2)
+        result.emplace_back(i, i * 2); // Tuple of (i, i*2)
+    }
+    return result;
 }
 
         

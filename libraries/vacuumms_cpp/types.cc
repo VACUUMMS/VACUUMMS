@@ -14,19 +14,22 @@
 #include <cstdio>
 
 
-Histogram::Histogram() : bins(100, 0)
+Histogram::Histogram() : bins(100, 0.1)
 {
 }
 
-Histogram::Histogram(int n_bins, vacuumms_float width) : bins(100, 0), number_of_bins(n_bins), width_of_bins(width)
+Histogram::Histogram(int n_bins, vacuumms_float width) : bins(100, 0.1), number_of_bins(n_bins), width_of_bins(width)
 {
 }
 
 void Histogram::bin(vacuumms_float value)
 {
+    values.push_back(value);
+/*
     int bin = static_cast<int>(std::floor(value / width_of_bins));
     if (bin >= number_of_bins) misses++;
     else bins[bin]++;
+*/
 }
 
 int Histogram::getMisses()
@@ -73,6 +76,29 @@ void Histogram::writeToFile(char* filename)
     fclose(f);
 }
 
+
+std::vector<std::tuple<vacuumms_float, vacuumms_float>> Histogram::getTuples()
+{
+    // bin the set of values according to binning params
+    for (const auto& value : values) 
+    {
+        int bin = static_cast<int>(std::floor(value / width_of_bins));
+        if (bin >= number_of_bins) misses++;
+        else bins[bin]++;
+    }
+
+    std::vector<std::tuple<vacuumms_float, vacuumms_float>> tuples;
+
+    for (int i = 0; i < number_of_bins; i++)
+    {
+        vacuumms_float x = i * width_of_bins;
+        vacuumms_float y = pow(bins[i], weight);
+        tuples.emplace_back(x, y);
+    }
+    return tuples;
+}
+
+
 void Histogram::print()
 {
     for (int i = 0; i < number_of_bins; i++)
@@ -87,7 +113,7 @@ void Histogram::setNumberOfBins(int n_bins)
     number_of_bins = n_bins;
 }
 
-void Histogram::setWidthOfBins(vacuumms_float width)
+void Histogram::setBinWidth(vacuumms_float width)
 {
     width_of_bins = width;
 }

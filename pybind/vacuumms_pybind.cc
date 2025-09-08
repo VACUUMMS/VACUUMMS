@@ -83,6 +83,7 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<CavityConfiguration>(m, "CavityConfiguration")
         .def(py::init<char*>())
         .def("scrubDuplicates", &CavityConfiguration::scrubDuplicates)
+        .def("getDiameters", &CavityConfiguration::getDiameters)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
@@ -249,19 +250,6 @@ PYBIND11_MODULE(vacuumms, m)
 
     // Other classes
     
-    // Interface to CSD (Histogram subclass)
-
-    py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
-        .def(py::init<CavityConfiguration, Parameters>())
-        .def("setWeightingExponent", &Histogram::setWeightingExponent)
-        .def("print", &Histogram::print)
-        .def("normalize", &Histogram::normalize)
-        .def("smooth", &Histogram::smooth)
-        .def("writeToFile", &Histogram::writeToFile)
-        .def("__repr__", &CavitySizeDistribution::__repr__)
-    ;
-
-
     // Histogram type
     
     py::class_<Histogram>(m, "Histogram")
@@ -273,6 +261,22 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setWeightingExponent", &Histogram::setWeightingExponent)
         .def("__repr__", &Histogram::__repr__)
         ;
+
+    // Interface to CSD (Histogram subclass)
+
+    py::class_<CavitySizeDistribution, Histogram>(m, "CavitySizeDistribution")
+        .def(py::init<CavityConfiguration, Parameters>())
+        .def(py::init<CavityConfiguration>())
+// subclass        .def("setWeightingExponent", &Histogram::setWeightingExponent)
+//        .def("print", &Histogram::print)
+        .def("setBinWidth", &CavitySizeDistribution::setBinWidth)
+        .def("setNumberOfBins", &CavitySizeDistribution::setNumberOfBins)
+        .def("getTuples", &CavitySizeDistribution::getTuples)
+//        .def("normalize", &Histogram::normalize)
+//        .def("smooth", &Histogram::smooth)
+        .def("__repr__", &CavitySizeDistribution::__repr__)
+    ;
+
 
 
 } // end of bindings 
