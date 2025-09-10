@@ -9,7 +9,7 @@
 #include <vacuumms/limits.h>
 
 #include <vacuumms/parameters.hh>
-#include <vacuumms/types.hh>
+#include <vacuumms/histogram.hh>
 #include <vacuumms/exports.hh>
 
 

@@ -5,7 +5,7 @@
 #include <vacuumms/operations.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/parameters.hh>
-#include <vacuumms/types.hh>
+//#include <vacuumms/types.hh>
 
 #include <vacuumms/exports.hh>
 

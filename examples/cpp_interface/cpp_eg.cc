@@ -1,7 +1,7 @@
-#include <vacuumms/types.hh>
 #include <cstdio>
 
 
+#include <vacuumms/histogram.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 #include <vacuumms/parameters.hh>

@@ -1,14 +1,9 @@
-/* vacuumms/types.cc */
-
-/* Implementation of types from types.hh, representing 
- * types that have not already been otherwise implemented 
- * in C++ 
- */
+/* libraries/libvacuumms_cpp/histogram.cc */
 
 #include <vacuumms/limits.h>
 #include <vacuumms/types.h>
 
-#include <vacuumms/types.hh>
+#include <vacuumms/histogram.hh>
 
 #include <cmath>
 #include <cstdio>
@@ -25,17 +20,39 @@ Histogram::Histogram(int n_bins, vacuumms_float width) : bins(100, 0.1), number_
 void Histogram::bin(vacuumms_float value)
 {
     values.push_back(value);
-/*
-    int bin = static_cast<int>(std::floor(value / width_of_bins));
-    if (bin >= number_of_bins) misses++;
-    else bins[bin]++;
-*/
 }
+
+
+void Histogram::generate()
+{
+    // null out existing values
+    for (int bin = 0; bin < number_of_bins; bin++) bins[bin] = 0;
+    misses = 0;
+
+    for (const auto& value : values) 
+    {
+        int bin = static_cast<int>(std::floor((value - starting_value) / width_of_bins));
+        if ((bin >= number_of_bins) || (bin < 0)) misses++;
+        else bins[bin]++;
+    }
+}
+
 
 int Histogram::getMisses()
 {
     return misses;
 }
+
+
+void Histogram::applyWeightExponent(int exponent)
+{
+    for (int bin = 0; bin < number_of_bins; bin++)
+    {
+        vacuumms_float weight = pow((starting_value + (bin * width_of_bins)), exponent);
+        bins[bin] *= weight;
+    }
+}
+
 
 void Histogram::smooth(int iterations)
 {
@@ -52,16 +69,15 @@ void Histogram::smooth(int iterations)
     }
 }
 
+
 void Histogram::normalize()
 {
     vacuumms_float total = 0.0f;
 
-    for (int i = 0; i < number_of_bins; i++)
-        total += pow(bins[i], weight);
-    for (int i = 0; i < number_of_bins; i++)
-        bins[i] /= total; 
-    
-    scaler = number_of_bins;
+    for (int bin = 0; bin < number_of_bins; bin++)
+        total += bins[bin];
+    for (int bin = 0; bin < number_of_bins; bin++)
+        bins[bin] /= total; 
 }
 
         
@@ -70,7 +86,7 @@ void Histogram::writeToFile(char* filename)
     FILE *f = fopen(filename, "w");
     for (int i = 0; i < number_of_bins; i++)
     {
-        vacuumms_float value = pow(bins[i], weight);
+        vacuumms_float value = bins[i];
         fprintf(f, "%f\t%f\n", (vacuumms_float)(i * width_of_bins), value);
     }
     fclose(f);
@@ -79,20 +95,12 @@ void Histogram::writeToFile(char* filename)
 
 std::vector<std::tuple<vacuumms_float, vacuumms_float>> Histogram::getTuples()
 {
-    // bin the set of values according to binning params
-    for (const auto& value : values) 
-    {
-        int bin = static_cast<int>(std::floor(value / width_of_bins));
-        if (bin >= number_of_bins) misses++;
-        else bins[bin]++;
-    }
-
     std::vector<std::tuple<vacuumms_float, vacuumms_float>> tuples;
 
     for (int i = 0; i < number_of_bins; i++)
     {
-        vacuumms_float x = i * width_of_bins;
-        vacuumms_float y = pow(bins[i], weight);
+        vacuumms_float x = starting_value + i * width_of_bins;
+        vacuumms_float y = bins[i];
         tuples.emplace_back(x, y);
     }
     return tuples;
@@ -103,15 +111,17 @@ void Histogram::print()
 {
     for (int i = 0; i < number_of_bins; i++)
     {
-        vacuumms_float value = pow(bins[i], weight);
-        printf("%f\t%f\n", (vacuumms_float)(i * width_of_bins), value);
+        printf("%f\t%f\n", (vacuumms_float)(starting_value + (i * width_of_bins)), bins[i]);
     }
+    fflush(stdout);
 }
+
 
 void Histogram::setNumberOfBins(int n_bins)
 {
     number_of_bins = n_bins;
 }
+
 
 void Histogram::setBinWidth(vacuumms_float width)
 {
@@ -119,10 +129,18 @@ void Histogram::setBinWidth(vacuumms_float width)
 }
 
 
-void Histogram::setWeightingExponent(vacuumms_float _weight)
+void Histogram::setStartingValue(vacuumms_float _starting_value)
 {
-    weight = _weight;
+    starting_value = _starting_value;
 }
+
+
+void Histogram::setValueRange(vacuumms_float _starting_value, vacuumms_float _end_value)
+{
+    starting_value = _starting_value;
+    width_of_bins = (_end_value - _starting_value) / number_of_bins;
+}
+
 
 #ifdef BUILD_PYBIND_BINDINGS 
 
@@ -130,11 +148,18 @@ pybind11::str Histogram::__repr__()
 {
     pybind11::str retval;
 
+    // Scaler value used to make distribution output print nicely
+    vacuumms_float max_bin_size = 0.0f;
+    for (int i = 0; i < number_of_bins; i++) 
+        if (bins[i] > max_bin_size) max_bin_size = bins[i];
+    scaler = 100 / (max_bin_size);
+
     for (int i = 0; i < number_of_bins; i++)
     {
-        retval += pybind11::str(std::to_string(i * width_of_bins));
+        retval += pybind11::str(std::to_string(starting_value + (i * width_of_bins)));
         retval += pybind11::str(":\t");
-        for (int j = 0; j < scaler * pow(bins[i], weight); j++)
+
+        for (int j = 1; j < (scaler * bins[i]); j++)
         {
             retval += pybind11::str("*");
         }
@@ -144,18 +169,4 @@ pybind11::str Histogram::__repr__()
 }
 
 #endif
-
-/*
-class EnergyArray
-{
-//  float energy[][][];
-};
-
-
-class FVI
-{
-//  float intensity[256][256][256];
-};
-
-*/
 

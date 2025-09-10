@@ -256,9 +256,22 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<>())
         .def(py::init<int, vacuumms_float>())
         .def("bin", &Histogram::bin)
-        .def("getMisses", &Histogram::getMisses)        
+        .def("setBinWidth", &Histogram::setBinWidth)
+        .def("setNumberOfBins", &Histogram::setNumberOfBins)
+        .def("setStartingValue", &Histogram::setStartingValue)
+        .def("setValueRange", &Histogram::setValueRange)
+
+        .def("generate", &Histogram::generate)
+
+        // after generating
+        
+        .def("smooth", &Histogram::smooth)
+        .def("normalize", &Histogram::normalize)
+        .def("applyWeightExponent", &Histogram::applyWeightExponent)
+        .def("getTuples", &Histogram::getTuples)
+        .def("print", &Histogram::print)
         .def("writeToFile", &Histogram::writeToFile)
-        .def("setWeightingExponent", &Histogram::setWeightingExponent)
+        .def("getMisses", &Histogram::getMisses)        
         .def("__repr__", &Histogram::__repr__)
         ;
 
@@ -267,14 +280,6 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<CavitySizeDistribution, Histogram>(m, "CavitySizeDistribution")
         .def(py::init<CavityConfiguration, Parameters>())
         .def(py::init<CavityConfiguration>())
-// subclass        .def("setWeightingExponent", &Histogram::setWeightingExponent)
-//        .def("print", &Histogram::print)
-        .def("setBinWidth", &CavitySizeDistribution::setBinWidth)
-        .def("setNumberOfBins", &CavitySizeDistribution::setNumberOfBins)
-        .def("getTuples", &CavitySizeDistribution::getTuples)
-//        .def("normalize", &Histogram::normalize)
-//        .def("smooth", &Histogram::smooth)
-        .def("__repr__", &CavitySizeDistribution::__repr__)
     ;
 
 
