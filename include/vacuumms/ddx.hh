@@ -30,6 +30,7 @@ DDX : public Operation
         void setSeed(int);
         void setVerletCutoff(vacuumms_float);
         void setNumberOfSteps(int);
+        void setPrecisionParameter(vacuumms_float);
         void setMinDiameter(vacuumms_float);
         void Randomize();
         static void printUsage();

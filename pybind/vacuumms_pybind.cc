@@ -84,6 +84,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<char*>())
         .def("scrubDuplicates", &CavityConfiguration::scrubDuplicates)
         .def("getDiameters", &CavityConfiguration::getDiameters)
+        .def("replicate", &CavityConfiguration::replicate)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
@@ -118,6 +119,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setSeed", &DDX::setSeed)
         .def("setVerletCutoff", &DDX::setVerletCutoff)
         .def("setNumberOfSteps", &DDX::setNumberOfSteps)
+        .def("setPrecisionParameter", &DDX::setPrecisionParameter)
         .def("setMinDiameter", &DDX::setMinDiameter)
         .def("randomize", &DDX::Randomize)
         .def("getResult", &DDX::getResult)
@@ -145,6 +147,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def("createSceneFile", &Scene::createSceneFile)  // POV file
         .def("renderScene", &Scene::renderScene)          // PNG file
         .def("setRenderDimensions", &Scene::setRenderDimensions)
+        .def("setBoxDimensions", &Scene::setBoxDimensions)
+        .def("setLowerBoxDimensions", &Scene::setLowerBoxDimensions)
         .def("setCameraLocation", &Scene::setCameraLocation)
         .def("setCameraLookAt", &Scene::setCameraLookAt)
         .def("applyStandardLight", &Scene::applyStandardLight)
@@ -161,10 +165,13 @@ PYBIND11_MODULE(vacuumms, m)
     ;
     
     py::class_<SceneComponent>(m, "SceneComponent")
+        .def(py::init<>())
         .def("getComponentSDL", &SceneComponent::getComponentSDL)
         .def("setTransmit", &SceneComponent::setTransmit)
         .def("setPhong", &SceneComponent::setPhong)
-        .def(py::init<>())
+        .def("setColor", &SceneComponent::setColor)
+        .def("setBoxDimensions", &SceneComponent::setBoxDimensions)
+        .def("setLowerBoxDimensions", &SceneComponent::setLowerBoxDimensions)
     ;
 
     py::class_<ConfigurationComponent, SceneComponent>(m, "ConfigurationComponent")

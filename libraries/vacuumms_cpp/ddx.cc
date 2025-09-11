@@ -50,6 +50,12 @@ void DDX::setNumberOfSamples(int _number_of_samples)
 }
 
 
+void DDX::setPrecisionParameter(vacuumms_float _precision_parameter)
+{
+    precision_parameter = _precision_parameter;
+}
+
+
 void DDX::setSeed(int _seed)
 {
     seed = _seed;
@@ -315,9 +321,10 @@ void DDX::findEnergyMinimum()
 
         old_energy = calculateRepulsion();
 
-        step_x = grad_x * characteristic_energy * characteristic_length; while (step_x * step_x > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_x *=.5;}
-        step_y = grad_y * characteristic_energy * characteristic_length; while (step_y * step_y > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_y *=.5;}
-        step_z = grad_z * characteristic_energy * characteristic_length; while (step_z * step_z > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_z *=.5;}
+        vacuumms_double alpha = 0.5;
+        step_x = grad_x * characteristic_energy * characteristic_length; while (step_x * step_x > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_x *= alpha;}
+        step_y = grad_y * characteristic_energy * characteristic_length; while (step_y * step_y > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_y *= alpha;}
+        step_z = grad_z * characteristic_energy * characteristic_length; while (step_z * step_z > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_z *= alpha;}
 
         // removed this criteria for assessing minima.... step size no longer shrinks because gradient is now normalized
         // step_sq = step_x * step_x + step_y * step_y + step_z * step_z;

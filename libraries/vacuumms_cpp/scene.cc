@@ -51,7 +51,7 @@ std::string Scene::generateContainerSDL()
 			<< "> color " << light_color << "}\n";
     }
     
-    // box
+    // box -- This is using <0,0,0> as corner... should use lower_box_dimensions, but is used rarely, so fix it another day...
     
     if (show_box)
     {
@@ -146,6 +146,19 @@ void SceneComponent::setColor(std::string _color)
     color = _color;
 }
 
+
+void SceneComponent::setBoxDimensions(std::vector<vacuumms_float> _box_dimensions)
+{
+    box_dimensions = _box_dimensions;
+}
+
+
+void SceneComponent::setLowerBoxDimensions(std::vector<vacuumms_float> _lower_box_dimensions)
+{
+    lower_box_dimensions = _lower_box_dimensions;
+}
+
+
 std::string SceneComponent::getComponentSDL() const
 {
     // Return an unit orange bubble centered at origin as default. 
@@ -159,6 +172,7 @@ ConfigurationComponent::ConfigurationComponent(){}
 ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 {
     configuration = _configuration;
+    color = "Red";
 }
 
 
@@ -182,9 +196,12 @@ std::string ConfigurationComponent::getComponentSDL() const
                 << ", " << record.y 
                 << ", " << record.z
                 << ">, " << (record.sigma * 0.5)
-                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
-                << ", " << configuration.box_dimensions[1]
-                << ", " << configuration.box_dimensions[2]
+                << "} box {<" << lower_box_dimensions[0] 
+                << ", " << lower_box_dimensions[1]
+                << ", " << lower_box_dimensions[2]
+                << "><" << box_dimensions[0] 
+                << ", " << box_dimensions[1]
+                << ", " << box_dimensions[2]
                 << ">} texture { pigment { color "
                 << color << " " << transmit_str 
                 << " } " << phong_str << " }}\n"
@@ -216,6 +233,7 @@ CavityComponent::CavityComponent(){}
 CavityComponent::CavityComponent(CavityConfiguration _configuration)
 {
     configuration = _configuration;
+    color = "White";
 }
 
 
@@ -240,9 +258,13 @@ std::string CavityComponent::getComponentSDL() const
                 << ", " << record.y 
                 << ", " << record.z
                 << ">, " << (record.d * 0.5)
-                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
-                << ", " << configuration.box_dimensions[1]
-                << ", " << configuration.box_dimensions[2]
+
+                << "} box {<" << lower_box_dimensions[0] 
+                << ", " << lower_box_dimensions[1]
+                << ", " << lower_box_dimensions[2]
+                << "><" << box_dimensions[0] 
+                << ", " << box_dimensions[1]
+                << ", " << box_dimensions[2]
                 << ">} texture { pigment { color "
                 << color << " " << transmit_str 
                 << " } " << phong_str << " }}\n"
@@ -274,26 +296,35 @@ FVIComponent::FVIComponent(FVIX fvix)
 }
 #endif
 
-void Scene::setBoxDimensions(std::vector<vacuumms_float> dims)
+void Scene::setBoxDimensions(std::vector<vacuumms_float> _box_dimensions)
 {
-	box_dimensions = dims;
+	box_dimensions = _box_dimensions;
 }
+
+
+void Scene::setLowerBoxDimensions(std::vector<vacuumms_float> _lower_box_dimensions)
+{
+	lower_box_dimensions = _lower_box_dimensions;
+}
+
 
 std::vector<vacuumms_float> Scene::getBoxDimensions()
 {
 	return box_dimensions;
 }
 
+
 SceneComponent* Scene::componentAt(int i)
 {
 	return components[i];
 }
 
-size_t Scene::deleteComponentAt(int i)
+
+void Scene::deleteComponentAt(int i)
 {
     components.erase(components.begin() + i);
-    return components.size();
 }
+
 
 size_t Scene::getNumberOfComponents()
 {
@@ -301,27 +332,10 @@ size_t Scene::getNumberOfComponents()
 }
 
 
-size_t Scene::addSceneComponent(SceneComponent* comp)
+void Scene::addSceneComponent(SceneComponent* comp)
 {
 	components.push_back(comp);
-	return components.size();
 }
-
-
-/*
-size_t Scene::addConfigurationComponent(ConfigurationComponent* comp)
-{
-	components.push_back(comp);
-	return components.size();
-}
-
-
-size_t Scene::addCavityComponent(CavityComponent* comp)
-{
-	components.push_back(comp);
-	return components.size();
-}
-*/
 
 
 void Scene::setBackgroundColor(std::string color)
@@ -339,10 +353,9 @@ void Scene::setCameraLookAt(std::vector<vacuumms_float> look_at)
 	camera_look_at = look_at;
 }
 
-size_t Scene::addLightSource(std::vector<vacuumms_float> source, std::string color)
+void Scene::addLightSource(std::vector<vacuumms_float> source, std::string color)
 {
 	light_sources.push_back(source);
-    return light_sources.size();
 }
 
 void Scene::applyAmbientLight()
@@ -350,7 +363,7 @@ void Scene::applyAmbientLight()
     ambient_light = 1;
 }
 
-size_t Scene::applyStandardLight()
+void Scene::applyStandardLight()
 {
 	addLightSource({0,0,100}, "White");
 	addLightSource({0,100,0}, "White");
@@ -358,7 +371,6 @@ size_t Scene::applyStandardLight()
 	addLightSource({0,0,-100}, "White");
 	addLightSource({0,-100,0}, "White");
 	addLightSource({-100,0,0}, "White");
-    return light_sources.size();
 }
 
 void Scene::clearLightSources()
@@ -391,7 +403,7 @@ int Scene::dumpSDL()  // dump POV source
         scene << std::endl;
     }
 
-    std::cout << scene.str();
+    std::cout << scene.str() << std::flush;
 
     return 0;
 }
@@ -421,7 +433,7 @@ int Scene::createSceneFile(const char* filename)  // POV file
     }
     else
     {
-        std::cout << "Could not write file " << filename << std::endl;
+        std::cout << "Could not write file " << filename << std::endl << std::flush;
         return 1;
     }
 }
@@ -447,22 +459,22 @@ int Scene::renderScene(const char* filename)      // PNG file
     int result = std::system(command.c_str());
     if (result == 0) 
 	{
-        std::cout << "POV-Ray render completed successfully.\n";
+        std::cout << "POV-Ray render completed successfully." << std::endl;
     } 
 	else 
 	{
-        std::cerr << "POV-Ray render failed with exit code: " << result << "\n";
+        std::cerr << "POV-Ray render failed with exit code: " << result << std::endl;
     }
 
     // Clean up
     int rm_result = std::system(rm_command.c_str());
     if (rm_result == 0) 
 	{
-        std::cout << "POV-Ray temporary file deleted successfully.\n";
+        std::cout << "POV-Ray temporary file deleted successfully." << std::endl;
     } 
 	else 
 	{
-        std::cerr << "POV-Ray temporary file could not be deleted, failed with exit code: " << rm_result << "\n";
+        std::cerr << "POV-Ray temporary file could not be deleted, failed with exit code: " << rm_result << std::endl;
     }
 
     return result;

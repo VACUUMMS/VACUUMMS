@@ -10,12 +10,12 @@
 /* May later add code to declare this as double precision */
 
 #ifdef VACUUMMS_DOUBLE_PRECISION
-    #define vacuumms_float double
+    typedef double vacuumms_float;
 #else
-    #define vacuumms_float float
+    typedef float vacuumms_float;
 #endif
 
-#define vacuumms_double double
+typedef double vacuumms_double;
 
 #include <vacuumms/limits.h>
 

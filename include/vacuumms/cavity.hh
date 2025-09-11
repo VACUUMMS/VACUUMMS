@@ -52,19 +52,10 @@ CavityConfiguration
 {
     public:
 
-        std::vector<Cavity> records;
-        void reset();
-
-//        vacuumms_float box_x;
-//        vacuumms_float box_y;
-//        vacuumms_float box_z;
-
-        std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
-
         CavityConfiguration();
         CavityConfiguration(const char *filename);
         CavityConfiguration(FILE *instream);
-//        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
+        void replicate(int depth);
         void setBoxDimensions(std::vector<vacuumms_float> dims);
         void setMirrorDepth(int _mirror_depth);
         void scrubDuplicates();
@@ -74,6 +65,10 @@ CavityConfiguration
         int getSize();
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
         int pushBack(Cavity _cavity);
+        void reset();
+
+        std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
+        std::vector<Cavity> records;
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
@@ -83,6 +78,7 @@ CavityConfiguration
 
         int mirror_depth = 1;
         vacuumms_float duplicate_threshold = 0.001f;
+        int replication_depth = 0;
 
 }; // end class CavityConfiguration
 

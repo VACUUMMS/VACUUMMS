@@ -98,6 +98,29 @@ CavityConfiguration::CavityConfiguration(FILE *instream)
 }
 
     
+void CavityConfiguration::replicate(int depth)
+{
+    // Use size of original vector
+    size_t size = records.size();
+
+    for (int r = 0; r < size; r++)
+    {
+        for (int i=-depth; i<=depth; i++)
+        for (int j=-depth; j<=depth; j++)
+        for (int k=-depth; k<=depth; k++)
+        {
+            // skip the center box
+            if (!((i == 0) && (j == 0) && (k == 0)))
+                pushBack(Cavity((box_dimensions[0] * i) + records[r].x,
+                         (box_dimensions[1] * j) + records[r].y,
+                         (box_dimensions[2] * k) + records[r].z,
+                         records[r].d));
+        }
+    }
+    replication_depth += depth;
+}
+
+
 //void CavityConfiguration::setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z)
 void CavityConfiguration::setBoxDimensions(std::vector<vacuumms_float> _dims)
 {
