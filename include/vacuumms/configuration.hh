@@ -43,7 +43,6 @@ Configuration
 
         int crammed = 0;
         int mirror_depth = 1;
-        int replication_depth = 0;
 
     public:
    
@@ -72,7 +71,8 @@ Configuration
         int pushBack(ConfigurationRecord);
         void cram();
         int isCrammed();
-        void replicate(int depth);
+        // void replicate(int depth);
+        void replicate(std::vector<int> depths);
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();

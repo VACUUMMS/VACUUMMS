@@ -24,16 +24,24 @@ Configuration::Configuration()
 Configuration::Configuration(const char *filename)
 {
     FILE* infile = fopen(filename, "r");
-    vacuumms_float x, y, z, sigma, epsilon;
-    records = std::vector<ConfigurationRecord>();    
-
-    while (!feof(infile))
+    if (infile == NULL)
     {
-        fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
-        records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
+        printf("Failed to open file: %s\n", strerror(errno)); // Print error message
+        fflush(stdout);
     }
+    else
+    {
+        vacuumms_float x, y, z, sigma, epsilon;
+        records = std::vector<ConfigurationRecord>();    
 
-    fclose(infile);
+        while (!feof(infile))
+        {
+            fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
+            records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
+        }
+
+        fclose(infile);
+    }
 }
 
 
@@ -169,9 +177,15 @@ void Configuration::cram()
 {
     for (int i=0; i<records.size(); i++)
     {
+        // check for atoms above upper bound
         while (records[i].x > box_dimensions[0]) records[i].x -= box_dimensions[0];
         while (records[i].y > box_dimensions[1]) records[i].y -= box_dimensions[1];
         while (records[i].z > box_dimensions[2]) records[i].z -= box_dimensions[2];
+
+        // check for atoms below lower bound
+        while (records[i].x < 0.0f) records[i].x += box_dimensions[0];
+        while (records[i].y < 0.0f) records[i].y += box_dimensions[1];
+        while (records[i].z < 0.0f) records[i].z += box_dimensions[2];
     }
     crammed = 1;
 }
@@ -183,6 +197,7 @@ int Configuration::isCrammed()
 }
 
 
+/*
 void Configuration::replicate(int depth)
 {
     // Use size of original vector
@@ -203,7 +218,30 @@ void Configuration::replicate(int depth)
                                              records[r].epsilon)); 
         }
     }
-    replication_depth += depth;
+}
+*/
+
+
+void Configuration::replicate(std::vector<int> depths)
+{
+    // Use size of original vector
+    size_t size = records.size();
+
+    for (int r = 0; r < size; r++)
+    {
+        for (int i=0; i<=depths[0]; i++)
+        for (int j=0; j<=depths[1]; j++)
+        for (int k=0; k<=depths[2]; k++)
+        {
+            // skip the center box
+            if (!((i == 0) && (j == 0) && (k == 0)))
+                pushBack(ConfigurationRecord((box_dimensions[0] * i) + records[r].x, 
+                                             (box_dimensions[1] * j) + records[r].y, 
+                                             (box_dimensions[2] * k) + records[r].z, 
+                                             records[r].sigma, 
+                                             records[r].epsilon)); 
+        }
+    }
 }
 
 

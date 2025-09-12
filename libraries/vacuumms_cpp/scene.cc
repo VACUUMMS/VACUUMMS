@@ -147,6 +147,18 @@ void SceneComponent::setColor(std::string _color)
 }
 
 
+void SceneComponent::setClip()
+{
+    clip = 1;
+}
+
+
+void SceneComponent::unsetClip()
+{
+    clip = 0;
+}
+
+
 void SceneComponent::setBoxDimensions(std::vector<vacuumms_float> _box_dimensions)
 {
     box_dimensions = _box_dimensions;
@@ -250,7 +262,6 @@ std::string CavityComponent::getComponentSDL() const
     {
 
 //FTW printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
-
         if (clip) 
         {
             sdl << "intersection {sphere{<" 

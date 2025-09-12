@@ -29,6 +29,8 @@ SceneComponent
         void setPhong(vacuumms_float);
         void setTransmit(vacuumms_float);
         void setColor(std::string);
+        void setClip();
+        void unsetClip();
         void setBoxDimensions(std::vector<vacuumms_float>);
         void setLowerBoxDimensions(std::vector<vacuumms_float>);
 
@@ -88,7 +90,7 @@ ConfigurationComponent : public SceneComponent
 //        vacuumms_float phong;
 //        std::string color = "Red";
 //        std::vector<vacuumms_float> box_dims;
-        int clip; // intersect with box
+//        int clip; // intersect with box
         Configuration configuration;
 };
 
@@ -111,7 +113,7 @@ CavityComponent : public SceneComponent
 //        vacuumms_float phong;
 //        std::string color = "White";
 //        std::vector<vacuumms_float> box_dims;
-        int clip; // intersect with box
+//        int clip; // intersect with box
         CavityConfiguration configuration;
 };
 

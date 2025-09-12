@@ -170,6 +170,8 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setTransmit", &SceneComponent::setTransmit)
         .def("setPhong", &SceneComponent::setPhong)
         .def("setColor", &SceneComponent::setColor)
+        .def("setClip", &SceneComponent::setClip)
+        .def("unsetClip", &SceneComponent::unsetClip)
         .def("setBoxDimensions", &SceneComponent::setBoxDimensions)
         .def("setLowerBoxDimensions", &SceneComponent::setLowerBoxDimensions)
     ;

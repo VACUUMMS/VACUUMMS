@@ -130,21 +130,34 @@ void DDX::execute()
     // Clear old results, if any
     result.reset();
 
+    if (c.getSize() == 0) 
+    {
+        std::cout << "no atoms in configuration, declining to execute." << std::endl;
+        return;
+    }
+    
+    // Get box_dims from config info
+    std::vector<vacuumms_float> box_dims = c.getBoxDimensions();
+    box_x = box_dims[0];
+    box_y = box_dims[1];
+    box_z = box_dims[2];
+
+    // override if passed as params.
+    p.getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
+    result.setBoxDimensions(box_dims);
+
+    if (box_x * box_y * box_z < 0.000001) 
+    {
+        std::cout << "box dimensions not properly set in configuration, declining to execute." << std::endl;
+        return;
+    }
+
     vacuumms_double sq_distance_from_initial_pt;
 
     verbose = p.getFlagParam((char*)"-verbose");
     p.getIntParam((char*)"-seed", &seed);
     if (seed == 0) seed = randomize();
     else initializeRandomNumberGeneratorTo(seed);
-
-    // Get box_dims from config info
-    std::vector<vacuumms_float> box_dims = c.getBoxDimensions();
-    box_x = box_dims[0];
-    box_y = box_dims[1];
-    box_z = box_dims[2];
-    // override if passed as params.
-    p.getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
-    result.setBoxDimensions(box_dims);
 
     if ((box_x * box_y * box_z) == 0.0) 
     {
