@@ -184,6 +184,8 @@ ConfigurationComponent::ConfigurationComponent(){}
 ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 {
     configuration = _configuration;
+    setBoxDimensions(configuration.getBoxDimensions());
+    // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
     color = "Red";
 }
 
@@ -245,6 +247,8 @@ CavityComponent::CavityComponent(){}
 CavityComponent::CavityComponent(CavityConfiguration _configuration)
 {
     configuration = _configuration;
+    setBoxDimensions(configuration.getBoxDimensions());
+    // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
     color = "White";
 }
 

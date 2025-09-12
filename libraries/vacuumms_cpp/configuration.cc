@@ -229,9 +229,9 @@ void Configuration::replicate(std::vector<int> depths)
 
     for (int r = 0; r < size; r++)
     {
-        for (int i=0; i<=depths[0]; i++)
-        for (int j=0; j<=depths[1]; j++)
-        for (int k=0; k<=depths[2]; k++)
+        for (int i=0; i<depths[0]; i++)
+        for (int j=0; j<depths[1]; j++)
+        for (int k=0; k<depths[2]; k++)
         {
             // skip the center box
             if (!((i == 0) && (j == 0) && (k == 0)))
@@ -242,6 +242,11 @@ void Configuration::replicate(std::vector<int> depths)
                                              records[r].epsilon)); 
         }
     }
+
+    // Now adjust box dimensions
+    box_dimensions[0] *= depths[0];
+    box_dimensions[1] *= depths[1];
+    box_dimensions[2] *= depths[2];
 }
 
 

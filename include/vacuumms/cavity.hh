@@ -55,8 +55,9 @@ CavityConfiguration
         CavityConfiguration();
         CavityConfiguration(const char *filename);
         CavityConfiguration(FILE *instream);
-        void replicate(int depth);
+        void replicate(std::vector<int> depths);
         void setBoxDimensions(std::vector<vacuumms_float> dims);
+        std::vector<vacuumms_float> getBoxDimensions();
         void setMirrorDepth(int _mirror_depth);
         void scrubDuplicates();
         std::vector<vacuumms_float> getDiameters();
@@ -78,7 +79,6 @@ CavityConfiguration
 
         int mirror_depth = 1;
         vacuumms_float duplicate_threshold = 0.001f;
-        int replication_depth = 0;
 
 }; // end class CavityConfiguration
 

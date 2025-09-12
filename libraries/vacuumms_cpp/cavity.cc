@@ -98,16 +98,16 @@ CavityConfiguration::CavityConfiguration(FILE *instream)
 }
 
     
-void CavityConfiguration::replicate(int depth)
+void CavityConfiguration::replicate(std::vector<int> depths)
 {
     // Use size of original vector
     size_t size = records.size();
 
     for (int r = 0; r < size; r++)
     {
-        for (int i=-depth; i<=depth; i++)
-        for (int j=-depth; j<=depth; j++)
-        for (int k=-depth; k<=depth; k++)
+        for (int i=0; i<depths[0]; i++)
+        for (int j=0; j<depths[1]; j++)
+        for (int k=0; k<depths[2]; k++)
         {
             // skip the center box
             if (!((i == 0) && (j == 0) && (k == 0)))
@@ -117,7 +117,11 @@ void CavityConfiguration::replicate(int depth)
                          records[r].d));
         }
     }
-    replication_depth += depth;
+
+    // Now adjust box dimensions
+    box_dimensions[0] *= depths[0];
+    box_dimensions[1] *= depths[1];
+    box_dimensions[2] *= depths[2];
 }
 
 
@@ -128,10 +132,18 @@ void CavityConfiguration::setBoxDimensions(std::vector<vacuumms_float> _dims)
 }
 
 
+std::vector<vacuumms_float> CavityConfiguration::getBoxDimensions()
+{
+    return box_dimensions;
+}
+
+
+/* what was this even for?
 void CavityConfiguration::setMirrorDepth(int _mirror_depth)
 {
     mirror_depth = _mirror_depth;
 }
+*/
 
 
 Cavity CavityConfiguration::recordAt(int i)
