@@ -68,6 +68,12 @@ void DDX::setVerletCutoff(vacuumms_float _verlet_cutoff)
 }
 
 
+void DDX::setVerletExtent(int _verlet_extent)
+{
+    verlet_extent = _verlet_extent;
+}
+
+
 void DDX::setNumberOfSteps(int _n_steps)
 {
     n_steps = _n_steps;
@@ -255,6 +261,33 @@ void DDX::makeVerletList()
     close_molecules=0;
     for (i=0; i<number_of_molecules; i++)
     {
+        for (int index_x = -verlet_extent; index_x <= verlet_extent; index_x++)
+        for (int index_y = -verlet_extent; index_y <= verlet_extent; index_y++)
+        for (int index_z = -verlet_extent; index_z <= verlet_extent; index_z++)
+        {
+            shift_x = index_x * box_x;
+            shift_y = index_y * box_y;
+            shift_z = index_z * box_z;
+
+            dx = shift_x + x[i] - test_x;
+            dy = shift_y + y[i] - test_y;
+            dz = shift_z + z[i] - test_z;
+
+            dd = dx*dx + dy*dy + dz*dz;
+
+            if (dd < verlet_cutoff) 
+            {  
+                close_x[close_molecules] = shift_x + x[i];
+                close_y[close_molecules] = shift_y + y[i];
+                close_z[close_molecules] = shift_z + z[i];
+                close_sigma[close_molecules] = sigma[i];
+                close_sigma6[close_molecules] = sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i];
+                close_sigma12[close_molecules] = close_sigma6[close_molecules]*close_sigma6[close_molecules];
+                close_epsilon[close_molecules] = epsilon[i];
+
+                close_molecules++;
+            }
+/*
         for (shift_x = -box_x; shift_x <= box_x; shift_x += box_x)
         for (shift_y = -box_y; shift_y <= box_y; shift_y += box_y)
         for (shift_z = -box_z; shift_z <= box_z; shift_z += box_z)
@@ -277,6 +310,7 @@ void DDX::makeVerletList()
 
                 close_molecules++;
             }
+*/
         }
     }
 } // end DDX::makeVerletList()
@@ -289,9 +323,19 @@ void DDX::findEnergyMinimum()
     vacuumms_double old_energy;
     vacuumms_double new_energy;
     vacuumms_double grad_x, grad_y, grad_z;
-    vacuumms_double step_x, step_y, step_z;
+//    vacuumms_double step_x, step_y, step_z;
     int i;
     vacuumms_double drift_sq;
+
+/*
+    vacuumms_float step_x = characteristic_length;
+    vacuumms_float step_y = characteristic_length;
+    vacuumms_float step_z = characteristic_length;
+*/
+
+    vacuumms_float alpha = 0.95f;
+    vacuumms_float multiplier = 0.001f;
+    vacuumms_float learning_rate = 0.01f;
 
     makeVerletList();
 
@@ -328,16 +372,33 @@ void DDX::findEnergyMinimum()
         // normalize the gradient
         vacuumms_double grad_sq = grad_x * grad_x + grad_y * grad_y + grad_z * grad_z;
         vacuumms_double grad_modulus = sqrt(grad_sq);
+//std::cout << "grad_modulus: " << grad_modulus << std::endl;
+//FTW declare convergence if grad_modulus is small
+if (grad_modulus < 10.0f) 
+{
+//    std::cout << "grad_modulus indicates convergence, stopping after " << attempts << std::endl;
+    break;
+}
+
         grad_x /= grad_modulus;
         grad_y /= grad_modulus;
         grad_z /= grad_modulus;
 
         old_energy = calculateRepulsion();
 
+/*
         vacuumms_double alpha = 0.5;
         step_x = grad_x * characteristic_energy * characteristic_length; while (step_x * step_x > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_x *= alpha;}
         step_y = grad_y * characteristic_energy * characteristic_length; while (step_y * step_y > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_y *= alpha;}
         step_z = grad_z * characteristic_energy * characteristic_length; while (step_z * step_z > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_z *= alpha;}
+*/
+
+        // multiplier *= alpha;
+        vacuumms_float step_x = learning_rate * grad_x; // * characteristic_length; 
+        vacuumms_float step_y = learning_rate * grad_y; // * characteristic_length; 
+        vacuumms_float step_z = learning_rate * grad_z; // * characteristic_length; 
+
+//std::cout << attempts << ": " << step_x << ", " << step_y << ", " << step_z << std::endl;
 
         // removed this criteria for assessing minima.... step size no longer shrinks because gradient is now normalized
         // step_sq = step_x * step_x + step_y * step_y + step_z * step_z;
@@ -347,14 +408,26 @@ void DDX::findEnergyMinimum()
         test_y += step_y;
         test_z += step_z;
  
+/*
         // check repulsion at new location
         new_energy = calculateRepulsion();
+        if (new_energy - old_energy > 0.0f) 
+        {
+std::cout << attempts << std::endl;
+            break;
+        }
+*/
+
+/*
         // if the energy fluctuates up by a fraction of the characteristic energy, call it
         if (new_energy - old_energy > precision_parameter * characteristic_energy)
         {
             break;
         }
-    }
+*/
+    } // attempts
+//std::cout << "done ." << std::endl;
+
 } // end DDX::findEnergyMinimum()
 
 
@@ -441,9 +514,10 @@ void DDX::expandTestParticle()
 
         slope = (e1-e0)/(r1-r0);
         step_size = -energy/slope;
-
+//std::cout << "step_size" << step_size << std::endl;
         diameter = diameter + step_size;
 
-        if (step_size*step_size < .00000001) break;
+//FTW        if (step_size*step_size < .00000001) break;
+        if (step_size*step_size < 1.0e-24) break;
     }
 } // end DDX::expandTestParticle()

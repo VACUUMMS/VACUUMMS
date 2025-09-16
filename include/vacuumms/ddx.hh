@@ -29,6 +29,7 @@ DDX : public Operation
         void setNumberOfSamples(int);
         void setSeed(int);
         void setVerletCutoff(vacuumms_float);
+        void setVerletExtent(int);
         void setNumberOfSteps(int);
         void setPrecisionParameter(vacuumms_float);
         void setMinDiameter(vacuumms_float);
@@ -77,6 +78,7 @@ DDX : public Operation
         int volume_sampling = 0;
         int include_center_energy = 0;
         int show_steps = 0;
+        int verlet_extent = 1;
 
         double test_x0, test_y0, test_z0;
         double test_x, test_y, test_z;

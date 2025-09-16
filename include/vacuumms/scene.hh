@@ -33,10 +33,13 @@ SceneComponent
         void unsetClip();
         void setBoxDimensions(std::vector<vacuumms_float>);
         void setLowerBoxDimensions(std::vector<vacuumms_float>);
+        void hide();
+        void show();
 
     protected:
 
         int clip = 0;
+        int hidden = 0;
         std::string color = "Yellow";
         vacuumms_float phong = 0.0;
         vacuumms_float transmit = 0.0;
@@ -81,7 +84,7 @@ ConfigurationComponent : public SceneComponent
     public:
 
         ConfigurationComponent();
-        ConfigurationComponent(Configuration);
+        ConfigurationComponent(Configuration*);
         std::string getComponentSDL() const;
     
     private:
@@ -91,7 +94,7 @@ ConfigurationComponent : public SceneComponent
 //        std::string color = "Red";
 //        std::vector<vacuumms_float> box_dims;
 //        int clip; // intersect with box
-        Configuration configuration;
+        Configuration* configuration;
 };
 
 
@@ -104,7 +107,7 @@ CavityComponent : public SceneComponent
     public:
 
         CavityComponent();
-        CavityComponent(CavityConfiguration);
+        CavityComponent(CavityConfiguration*);
         std::string getComponentSDL() const;
     
     private:
@@ -114,7 +117,7 @@ CavityComponent : public SceneComponent
 //        std::string color = "White";
 //        std::vector<vacuumms_float> box_dims;
 //        int clip; // intersect with box
-        CavityConfiguration configuration;
+        CavityConfiguration* configuration;
 };
 
 

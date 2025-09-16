@@ -171,6 +171,18 @@ void SceneComponent::setLowerBoxDimensions(std::vector<vacuumms_float> _lower_bo
 }
 
 
+void SceneComponent::hide()
+{
+    hidden = 1;
+}
+
+
+void SceneComponent::show()
+{
+    hidden = 0;
+}
+
+
 std::string SceneComponent::getComponentSDL() const
 {
     // Return an unit orange bubble centered at origin as default. 
@@ -181,10 +193,10 @@ std::string SceneComponent::getComponentSDL() const
 ConfigurationComponent::ConfigurationComponent(){}
 
 
-ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
+ConfigurationComponent::ConfigurationComponent(Configuration* _configuration)
 {
     configuration = _configuration;
-    setBoxDimensions(configuration.getBoxDimensions());
+    setBoxDimensions(configuration->getBoxDimensions());
     // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
     color = "Red";
 }
@@ -192,13 +204,15 @@ ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
 
 std::string ConfigurationComponent::getComponentSDL() const
 {
+    if (hidden) return "// Configuration Component hidden\n\n";
+
     std::stringstream sdl;
     sdl << "// Configuration Component\n\n";
 
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
 
-    for (const auto record : configuration.records) 
+    for (const auto record : configuration->records) 
     {
 
 //FTW printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
@@ -244,10 +258,10 @@ std::string ConfigurationComponent::getComponentSDL() const
 CavityComponent::CavityComponent(){}
 
 
-CavityComponent::CavityComponent(CavityConfiguration _configuration)
+CavityComponent::CavityComponent(CavityConfiguration* _configuration)
 {
     configuration = _configuration;
-    setBoxDimensions(configuration.getBoxDimensions());
+    setBoxDimensions(configuration->getBoxDimensions());
     // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
     color = "White";
 }
@@ -255,17 +269,17 @@ CavityComponent::CavityComponent(CavityConfiguration _configuration)
 
 std::string CavityComponent::getComponentSDL() const
 {
-//    return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
+    if (hidden) return "// Cavity Component hidden\n\n";
+
     std::stringstream sdl;
     sdl << "// Cavity Component\n\n";
 
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
 
-    for (const auto record : configuration.records) 
+    for (const auto record : configuration->records) 
     {
 
-//FTW printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
         if (clip) 
         {
             sdl << "intersection {sphere{<" 

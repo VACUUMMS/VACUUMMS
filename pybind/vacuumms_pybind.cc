@@ -118,6 +118,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setNumberOfSamples", &DDX::setNumberOfSamples)
         .def("setSeed", &DDX::setSeed)
         .def("setVerletCutoff", &DDX::setVerletCutoff)
+        .def("setVerletExtent", &DDX::setVerletExtent)
         .def("setNumberOfSteps", &DDX::setNumberOfSteps)
         .def("setPrecisionParameter", &DDX::setPrecisionParameter)
         .def("setMinDiameter", &DDX::setMinDiameter)
@@ -174,17 +175,19 @@ PYBIND11_MODULE(vacuumms, m)
         .def("unsetClip", &SceneComponent::unsetClip)
         .def("setBoxDimensions", &SceneComponent::setBoxDimensions)
         .def("setLowerBoxDimensions", &SceneComponent::setLowerBoxDimensions)
+        .def("hide", &SceneComponent::hide)
+        .def("show", &SceneComponent::show)
     ;
 
     py::class_<ConfigurationComponent, SceneComponent>(m, "ConfigurationComponent")
         .def(py::init<>())
-        .def(py::init<Configuration>())
+        .def(py::init<Configuration*>())
         .def("getComponentSDL", &ConfigurationComponent::getComponentSDL)
     ;
 
     py::class_<CavityComponent, SceneComponent>(m, "CavityComponent")
         .def(py::init<>())
-        .def(py::init<CavityConfiguration>())
+        .def(py::init<CavityConfiguration*>())
         .def("getComponentSDL", &CavityComponent::getComponentSDL)
     ;
 
