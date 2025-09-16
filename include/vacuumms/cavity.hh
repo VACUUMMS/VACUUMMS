@@ -78,7 +78,7 @@ CavityConfiguration
     private:
 
         int mirror_depth = 1;
-        vacuumms_float duplicate_threshold = 0.001f;
+        vacuumms_float duplicate_threshold = 0.1f;
 
 }; // end class CavityConfiguration
 
@@ -94,12 +94,8 @@ CavitySizeDistribution : public Histogram
         CavitySizeDistribution(CavityConfiguration cc, Parameters p);
         CavitySizeDistribution(CavityConfiguration cc);
 
-//        setBinWidth(vacuumms_float);
-//        setNumberOfBins(int);
-
         std::vector<std::tuple<vacuumms_float, vacuumms_float>> getResult();
         
-
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
 #endif
