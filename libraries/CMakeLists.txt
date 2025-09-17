@@ -38,9 +38,10 @@ add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/configuration.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/operations.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/ddx.cc
-    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pddx.cc
+#    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/pddx.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/histogram.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/prng.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/rng.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/lammps.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/scene.cc
 )

@@ -5,7 +5,7 @@
 #include <vacuumms/cavity.hh>
 
 #include <vacuumms/limits.h>
-#include <vacuumms/rng.h>
+#include <vacuumms/rng.hh>
 
 #include <math.h>
 
@@ -50,12 +50,6 @@ void DDX::setNumberOfSamples(int _number_of_samples)
 }
 
 
-void DDX::setPrecisionParameter(vacuumms_float _precision_parameter)
-{
-    precision_parameter = _precision_parameter;
-}
-
-
 void DDX::setSeed(int _seed)
 {
     seed = _seed;
@@ -83,6 +77,18 @@ void DDX::setNumberOfSteps(int _n_steps)
 void DDX::setMinDiameter(vacuumms_float _min_diameter)
 {
     min_diameter = _min_diameter;
+}
+
+
+void DDX::setLearningRate(vacuumms_float _learning_rate)
+{
+    learning_rate = _learning_rate;
+}
+
+
+void DDX::setTolerance(vacuumms_float _tolerance)
+{
+    tolerance = _tolerance;
 }
 
 
@@ -158,12 +164,14 @@ void DDX::execute()
         return;
     }
 
-    vacuumms_double sq_distance_from_initial_pt;
+    vacuumms_float sq_distance_from_initial_pt;
 
     verbose = p.getFlagParam((char*)"-verbose");
     p.getIntParam((char*)"-seed", &seed);
-    if (seed == 0) seed = randomize();
-    else initializeRandomNumberGeneratorTo(seed);
+//    if (seed == 0) seed = randomize();
+//    else initializeRandomNumberGeneratorTo(seed);
+
+    rng = MersenneTwister(seed);
 
     if ((box_x * box_y * box_z) == 0.0) 
     {
@@ -171,16 +179,16 @@ void DDX::execute()
         return;
     }
 
-    p.getDoubleParam((char*)"-characteristic_length", &characteristic_length);
-    p.getDoubleParam((char*)"-characteristic_energy", &characteristic_energy);
-    p.getDoubleParam((char*)"-precision_parameter", &precision_parameter);
-    p.getDoubleParam((char*)"-verlet_cutoff", &verlet_cutoff);
+//    p.getFloatParam((char*)"-characteristic_length", &characteristic_length);
+//    p.getDoubleParam((char*)"-characteristic_energy", &characteristic_energy);
+//    p.getDoubleParam((char*)"-precision_parameter", &precision_parameter);
+    p.getFloatParam((char*)"-verlet_cutoff", &verlet_cutoff);
     p.getIntParam((char*)"-n", &number_of_samples);
     p.getIntParam((char*)"-n_steps", &n_steps);
     volume_sampling = p.getFlagParam((char*)"-volume_sampling");
     include_center_energy = p.getFlagParam((char*)"-include_center_energy");
     show_steps = p.getFlagParam((char*)"-show_steps");
-    p.getDoubleParam((char*)"-min_diameter", &min_diameter);
+    p.getFloatParam((char*)"-min_diameter", &min_diameter);
 
     if (p.getFlagParam((char*)"-usage")) printUsage();
 
@@ -203,8 +211,10 @@ void DDX::execute()
     {
         generateTestPoint();
         while (calculateEnergy(0.0) > 0) generateTestPoint();
+std::cout << "starting at " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
     
         findEnergyMinimum();
+std::cout << "got " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
     
         sq_distance_from_initial_pt = (test_x-test_x0)*(test_x-test_x0) + (test_y-test_y0)*(test_y-test_y0) + (test_z-test_z0)*(test_z-test_z0);
         if (!volume_sampling || (sq_distance_from_initial_pt < .25 * diameter * diameter))
@@ -222,6 +232,7 @@ void DDX::execute()
                 while (test_z >= box_z) test_z -= box_z;
                 while (test_z < 0) test_z += box_z;
 
+//std::cout << "pushing " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
                 result.pushBack(Cavity(test_x, test_y, test_z, diameter));
             }
         }
@@ -232,9 +243,14 @@ void DDX::execute()
 
 void DDX::generateTestPoint()
 {
-    test_x = test_x0 = rnd() * box_x;
-    test_y = test_y0 = rnd() * box_y;
-    test_z = test_z0 = rnd() * box_z;
+//std::cout << "entering with " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
+    test_x = test_x0 = rng.next_float() * box_x;
+    test_y = test_y0 = rng.next_float() * box_y;
+    test_z = test_z0 = rng.next_float() * box_z;
+//std::cout << "exiting with " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
+//std::cout << "exiting with(0) " << test_x0 << ", " << test_y0 << ", " << test_z0 << ": " << diameter << std::endl;
+//for (int i=0;i<100;i++) std::cout << rng.next_float() << "\t";
+//std::cout<<std::endl;
 
     makeVerletList();
 } // end DDX::generateTestPoint()
@@ -243,8 +259,8 @@ void DDX::generateTestPoint()
 void DDX::makeVerletList()
 {
     int i;
-    vacuumms_double dx, dy, dz, dd;
-    vacuumms_double shift_x, shift_y, shift_z;
+    vacuumms_float dx, dy, dz, dd;
+    vacuumms_float shift_x, shift_y, shift_z;
 
     while (test_x > box_x) test_x -= box_x;
     while (test_y > box_y) test_y -= box_y;
@@ -318,20 +334,13 @@ void DDX::makeVerletList()
 
 void DDX::findEnergyMinimum()
 {
-    vacuumms_double dx, dy, dz, dd, d6, d14;
-    vacuumms_double factor;
-    vacuumms_double old_energy;
-    vacuumms_double new_energy;
-    vacuumms_double grad_x, grad_y, grad_z;
-//    vacuumms_double step_x, step_y, step_z;
+    vacuumms_float dx, dy, dz, dd, d6, d14;
+    vacuumms_float factor;
+    vacuumms_float old_energy;
+    vacuumms_float new_energy;
+    vacuumms_float grad_x, grad_y, grad_z;
     int i;
-    vacuumms_double drift_sq;
-
-/*
-    vacuumms_float step_x = characteristic_length;
-    vacuumms_float step_y = characteristic_length;
-    vacuumms_float step_z = characteristic_length;
-*/
+    vacuumms_float drift_sq;
 
     vacuumms_float alpha = 0.95f;
     vacuumms_float multiplier = 0.001f;
@@ -370,28 +379,20 @@ void DDX::findEnergyMinimum()
         }
 
         // normalize the gradient
-        vacuumms_double grad_sq = grad_x * grad_x + grad_y * grad_y + grad_z * grad_z;
-        vacuumms_double grad_modulus = sqrt(grad_sq);
-//std::cout << "grad_modulus: " << grad_modulus << std::endl;
-//FTW declare convergence if grad_modulus is small
-if (grad_modulus < 10.0f) 
-{
-//    std::cout << "grad_modulus indicates convergence, stopping after " << attempts << std::endl;
-    break;
-}
+        vacuumms_float grad_sq = grad_x * grad_x + grad_y * grad_y + grad_z * grad_z;
+        vacuumms_float grad_modulus = sqrt(grad_sq);
+
+        // declare convergence if grad_modulus is small
+        if (grad_modulus < 10.0f) 
+        {
+            break;
+        }
 
         grad_x /= grad_modulus;
         grad_y /= grad_modulus;
         grad_z /= grad_modulus;
 
         old_energy = calculateRepulsion();
-
-/*
-        vacuumms_double alpha = 0.5;
-        step_x = grad_x * characteristic_energy * characteristic_length; while (step_x * step_x > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_x *= alpha;}
-        step_y = grad_y * characteristic_energy * characteristic_length; while (step_y * step_y > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_y *= alpha;}
-        step_z = grad_z * characteristic_energy * characteristic_length; while (step_z * step_z > characteristic_length * characteristic_length * precision_parameter * precision_parameter) {step_z *= alpha;}
-*/
 
         // multiplier *= alpha;
         vacuumms_float step_x = learning_rate * grad_x; // * characteristic_length; 
@@ -431,10 +432,10 @@ std::cout << attempts << std::endl;
 } // end DDX::findEnergyMinimum()
 
 
-vacuumms_double DDX::calculateRepulsion()
+vacuumms_float DDX::calculateRepulsion()
 {
-    vacuumms_double repulsion=0;
-    vacuumms_double dx, dy, dz, dd, d6, d12;
+    vacuumms_float repulsion=0;
+    vacuumms_float dx, dy, dz, dd, d6, d12;
     int i;
 
     for (i=0; i<close_molecules; i++)
@@ -453,12 +454,12 @@ vacuumms_double DDX::calculateRepulsion()
 } // end DDX::calculateRepulsion()
 
 
-vacuumms_double DDX::calculateEnergy(vacuumms_double test_diameter)
+vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
 {
-    vacuumms_double repulsion=0;
-    vacuumms_double attraction=0;
-    vacuumms_double dx, dy, dz, dd, d6, d12;
-    vacuumms_double sigma, sigma6, sigma12;
+    vacuumms_float repulsion=0;
+    vacuumms_float attraction=0;
+    vacuumms_float dx, dy, dz, dd, d6, d12;
+    vacuumms_float sigma, sigma6, sigma12;
     int i;
 
     for (i=0; i<close_molecules; i++)
@@ -484,17 +485,77 @@ vacuumms_double DDX::calculateEnergy(vacuumms_double test_diameter)
 
 void DDX::expandTestParticle()
 {
-    vacuumms_double slope;
-    vacuumms_double step_size;
-    vacuumms_double energy, old_energy;
-    vacuumms_double e0, e1, r0, r1;
+//FTWdiameter = 5; return; //FTW
+    int iter=0, max_iter = 100; 
+
+    vacuumms_float epsilon_1 = 1.0e-9; // suggestion was 1.0e-6, for first derivative test
+    vacuumms_float epsilon_2 = 1.0e-36; // suggestion was 1.0e-10, for second derivative test
+    vacuumms_float h = 1.0e-3; // suggestion was 1.0e-5, for finite difference step size
+    vacuumms_float diameter_step = 0.001; // stepping increment for initial guess
+    vacuumms_float step_tolerance = 1.0e-6;
+
+    // improved initial guess
+    diameter = 0.0f; 
+    vacuumms_float old_energy = calculateEnergy(diameter);
+    if (old_energy > 0) return; // If zero diameter gives positive insertion energy, not a cavity.
+    while (diameter += diameter_step)
+    {
+        vacuumms_float energy = calculateEnergy(diameter);
+        if (energy > old_energy) break;
+        old_energy = energy;
+    }
+    diameter -= diameter_step; //revert to last guess
+
+    while (iter < max_iter) 
+    {
+        // Compute derivatives using finite differences
+        vacuumms_float deriv1 = (calculateEnergy(diameter + h) - calculateEnergy(diameter - h)) / (2.0 * h);
+        vacuumms_float deriv2 = (calculateEnergy(diameter + h) - 2.0 * calculateEnergy(diameter) + calculateEnergy(diameter - h)) / (h * h);
+
+        // Check for zero second derivative, and call it if curve is too flat
+        if (fabs(deriv2) < epsilon_2) 
+        {
+            return;
+        }
+
+        // Newton's update: r_{n+1} = r_n - E'(r_n)/E''(r_n)
+        // r_new = r - deriv1 / deriv2;
+        vacuumms_float step_size = - deriv1 / deriv2;
+
+        // check convergence based on step size
+        if (fabs(step_size) < step_tolerance) 
+        {
+            return;
+        }
+
+        // Check convergence based on 1st derivative
+        if (fabs(deriv1) < epsilon_1) 
+        {
+            return;
+        }
+
+        // update
+        diameter += step_size;
+        iter++;
+    }
+
+    // reached max_iter, so give up and return 
+}
+
+/* original
+void DDX::expandTestParticle()
+{
+    vacuumms_float slope;
+    vacuumms_float step_size;
+    vacuumms_float energy, old_energy;
+    vacuumms_float e0, e1, r0, r1;
 
     diameter = 0;
 
     // improved initial guess
     old_energy = calculateEnergy(diameter);
     if (old_energy > 0) return;
-    while (diameter += .1)
+    while (diameter += .01)
     {
         energy = calculateEnergy(diameter);
         if (energy > old_energy) break;
@@ -518,6 +579,7 @@ void DDX::expandTestParticle()
         diameter = diameter + step_size;
 
 //FTW        if (step_size*step_size < .00000001) break;
-        if (step_size*step_size < 1.0e-24) break;
+        if (step_size*step_size < 1.0e-12) break;
     }
 } // end DDX::expandTestParticle()
+*/

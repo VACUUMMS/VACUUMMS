@@ -302,23 +302,6 @@ int CavityConfiguration::checkInclusion(vacuumms_float tx, vacuumms_float ty, va
     return 0;
 }
 
-/*
-CavitySizeDistribution::CavitySizeDistribution(Parameters p)
-{
-    getStringParam("input_file_name", input_file_name);
-    p.getIntParam((char*)"n_bins", &n_bins);
-    p.getDoubleParam((char*)"resolution", &resolution);
-    
-}
-
-//IN
-int n_bins = 100;
-double resolution = .01;
-const char *input_file_name;
-//OUT
-int histogram[1000];
-*/
-
 
 CavitySizeDistribution::CavitySizeDistribution(CavityConfiguration cc, Parameters p) 
     : cc(cc), p(p)

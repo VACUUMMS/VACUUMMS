@@ -10,7 +10,7 @@
 #include <vacuumms/cavity.hh>
 #include <vacuumms/operations.hh>
 #include <vacuumms/ddx.hh>
-#include <vacuumms/pddx.hh>
+//#include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
 #include <vacuumms/scene.hh>
 
@@ -120,10 +120,10 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setVerletCutoff", &DDX::setVerletCutoff)
         .def("setVerletExtent", &DDX::setVerletExtent)
         .def("setNumberOfSteps", &DDX::setNumberOfSteps)
+        .def("setMinDiameter", &DDX::setMinDiameter)
         .def("setLearningRate", &DDX::setLearningRate)
         .def("setTolerance", &DDX::setTolerance)
-        .def("setPrecisionParameter", &DDX::setPrecisionParameter)
-        .def("setMinDiameter", &DDX::setMinDiameter)
+//        .def("setPrecisionParameter", &DDX::setPrecisionParameter)
         .def("randomize", &DDX::Randomize)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
@@ -131,6 +131,7 @@ PYBIND11_MODULE(vacuumms, m)
 
     // Interface to PDDX (Operation subclass)
     
+/* needs internal work
     py::class_<PDDX, Operation>(m, "PDDX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
@@ -141,6 +142,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
     ;
+*/
 
 
     // Scene interface, for generating and rendering POVRay SDL
