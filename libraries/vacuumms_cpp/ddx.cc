@@ -50,9 +50,10 @@ void DDX::setNumberOfSamples(int _number_of_samples)
 }
 
 
-void DDX::setSeed(int _seed)
+void DDX::setRNGSeed(int _rng_seed)
 {
-    seed = _seed;
+    rng_seed = _rng_seed;
+    rng = MersenneTwister(rng_seed);
 }
 
 
@@ -89,14 +90,6 @@ void DDX::setLearningRate(vacuumms_float _learning_rate)
 void DDX::setTolerance(vacuumms_float _tolerance)
 {
     tolerance = _tolerance;
-}
-
-
-void DDX::Randomize()
-{
-    seed = 0; // Zero seed will force randomization
-//    int val = randomize();
-//printf("initialized RNG to %d\n", val);
 }
 
 
@@ -166,12 +159,13 @@ void DDX::execute()
 
     vacuumms_float sq_distance_from_initial_pt;
 
-    verbose = p.getFlagParam((char*)"-verbose");
-    p.getIntParam((char*)"-seed", &seed);
+// The fate of these depends on the fate of the parameters interface
+//    verbose = p.getFlagParam((char*)"-verbose");
+//    p.getIntParam((char*)"-seed", &seed);
 //    if (seed == 0) seed = randomize();
 //    else initializeRandomNumberGeneratorTo(seed);
 
-    rng = MersenneTwister(seed);
+//    rng = MersenneTwister(seed);
 
     if ((box_x * box_y * box_z) == 0.0) 
     {
@@ -179,6 +173,7 @@ void DDX::execute()
         return;
     }
 
+// The fate of these depends on the fate of the parameters interface
 //    p.getFloatParam((char*)"-characteristic_length", &characteristic_length);
 //    p.getDoubleParam((char*)"-characteristic_energy", &characteristic_energy);
 //    p.getDoubleParam((char*)"-precision_parameter", &precision_parameter);
@@ -211,10 +206,8 @@ void DDX::execute()
     {
         generateTestPoint();
         while (calculateEnergy(0.0) > 0) generateTestPoint();
-std::cout << "starting at " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
     
         findEnergyMinimum();
-std::cout << "got " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
     
         sq_distance_from_initial_pt = (test_x-test_x0)*(test_x-test_x0) + (test_y-test_y0)*(test_y-test_y0) + (test_z-test_z0)*(test_z-test_z0);
         if (!volume_sampling || (sq_distance_from_initial_pt < .25 * diameter * diameter))
@@ -232,7 +225,6 @@ std::cout << "got " << test_x << ", " << test_y << ", " << test_z << ": " << dia
                 while (test_z >= box_z) test_z -= box_z;
                 while (test_z < 0) test_z += box_z;
 
-//std::cout << "pushing " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
                 result.pushBack(Cavity(test_x, test_y, test_z, diameter));
             }
         }
@@ -243,14 +235,9 @@ std::cout << "got " << test_x << ", " << test_y << ", " << test_z << ": " << dia
 
 void DDX::generateTestPoint()
 {
-//std::cout << "entering with " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
     test_x = test_x0 = rng.next_float() * box_x;
     test_y = test_y0 = rng.next_float() * box_y;
     test_z = test_z0 = rng.next_float() * box_z;
-//std::cout << "exiting with " << test_x << ", " << test_y << ", " << test_z << ": " << diameter << std::endl;
-//std::cout << "exiting with(0) " << test_x0 << ", " << test_y0 << ", " << test_z0 << ": " << diameter << std::endl;
-//for (int i=0;i<100;i++) std::cout << rng.next_float() << "\t";
-//std::cout<<std::endl;
 
     makeVerletList();
 } // end DDX::generateTestPoint()
@@ -303,30 +290,6 @@ void DDX::makeVerletList()
 
                 close_molecules++;
             }
-/*
-        for (shift_x = -box_x; shift_x <= box_x; shift_x += box_x)
-        for (shift_y = -box_y; shift_y <= box_y; shift_y += box_y)
-        for (shift_z = -box_z; shift_z <= box_z; shift_z += box_z)
-        {
-            dx = shift_x + x[i] - test_x;
-            dy = shift_y + y[i] - test_y;
-            dz = shift_z + z[i] - test_z;
-
-            dd = dx*dx + dy*dy + dz*dz;
-
-            if (dd < verlet_cutoff) 
-            {  
-                close_x[close_molecules] = shift_x + x[i];
-                close_y[close_molecules] = shift_y + y[i];
-                close_z[close_molecules] = shift_z + z[i];
-                close_sigma[close_molecules] = sigma[i];
-                close_sigma6[close_molecules] = sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i];
-                close_sigma12[close_molecules] = close_sigma6[close_molecules]*close_sigma6[close_molecules];
-                close_epsilon[close_molecules] = epsilon[i];
-
-                close_molecules++;
-            }
-*/
         }
     }
 } // end DDX::makeVerletList()
@@ -349,7 +312,7 @@ void DDX::findEnergyMinimum()
     makeVerletList();
 
     // begin loop to iterate until minimum found
-    for (attempts=0; attempts<n_steps; attempts++)
+    for (int attempts=0; attempts<n_steps; attempts++)
     {
         drift_sq = (test_x-verlet_center_x)*(test_x-verlet_center_x) 
                  + (test_y-verlet_center_y)*(test_y-verlet_center_y) 
@@ -394,40 +357,15 @@ void DDX::findEnergyMinimum()
 
         old_energy = calculateRepulsion();
 
-        // multiplier *= alpha;
-        vacuumms_float step_x = learning_rate * grad_x; // * characteristic_length; 
-        vacuumms_float step_y = learning_rate * grad_y; // * characteristic_length; 
-        vacuumms_float step_z = learning_rate * grad_z; // * characteristic_length; 
-
-//std::cout << attempts << ": " << step_x << ", " << step_y << ", " << step_z << std::endl;
-
-        // removed this criteria for assessing minima.... step size no longer shrinks because gradient is now normalized
-        // step_sq = step_x * step_x + step_y * step_y + step_z * step_z;
-        // if (step_sq < (characteristic_length * characteristic_length * precision_parameter * precision_parameter)) break;  // close enough, exit loop
+        vacuumms_float step_x = learning_rate * grad_x;
+        vacuumms_float step_y = learning_rate * grad_y;
+        vacuumms_float step_z = learning_rate * grad_z;
 
         test_x += step_x;
         test_y += step_y;
         test_z += step_z;
  
-/*
-        // check repulsion at new location
-        new_energy = calculateRepulsion();
-        if (new_energy - old_energy > 0.0f) 
-        {
-std::cout << attempts << std::endl;
-            break;
-        }
-*/
-
-/*
-        // if the energy fluctuates up by a fraction of the characteristic energy, call it
-        if (new_energy - old_energy > precision_parameter * characteristic_energy)
-        {
-            break;
-        }
-*/
     } // attempts
-//std::cout << "done ." << std::endl;
 
 } // end DDX::findEnergyMinimum()
 
@@ -485,7 +423,6 @@ vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
 
 void DDX::expandTestParticle()
 {
-//FTWdiameter = 5; return; //FTW
     int iter=0, max_iter = 100; 
 
     vacuumms_float epsilon_1 = 1.0e-9; // suggestion was 1.0e-6, for first derivative test
@@ -539,47 +476,5 @@ void DDX::expandTestParticle()
         iter++;
     }
 
-    // reached max_iter, so give up and return 
+    // reached max_iter, so give up and accept value thus far 
 }
-
-/* original
-void DDX::expandTestParticle()
-{
-    vacuumms_float slope;
-    vacuumms_float step_size;
-    vacuumms_float energy, old_energy;
-    vacuumms_float e0, e1, r0, r1;
-
-    diameter = 0;
-
-    // improved initial guess
-    old_energy = calculateEnergy(diameter);
-    if (old_energy > 0) return;
-    while (diameter += .01)
-    {
-        energy = calculateEnergy(diameter);
-        if (energy > old_energy) break;
-        old_energy = energy;
-    }
-    
-    // Newton's method
-
-    while(1)
-    {
-        r0 = diameter - .001;
-        r1 = diameter + .001;
-
-        e0 = calculateEnergy(r0);
-        e1 = calculateEnergy(r1);
-        energy = calculateEnergy(diameter);
-
-        slope = (e1-e0)/(r1-r0);
-        step_size = -energy/slope;
-//std::cout << "step_size" << step_size << std::endl;
-        diameter = diameter + step_size;
-
-//FTW        if (step_size*step_size < .00000001) break;
-        if (step_size*step_size < 1.0e-12) break;
-    }
-} // end DDX::expandTestParticle()
-*/

@@ -23,20 +23,19 @@ DDX : public Operation
         DDX(Configuration c, Parameters p);
         DDX(Configuration c);
         DDX();
+
         void execute();
         void setParameters(Parameters p);
         void setConfiguration(Configuration c);
         Configuration getConfiguration();
         void setNumberOfSamples(int);
-        void setSeed(int);
         void setVerletCutoff(vacuumms_float);
         void setVerletExtent(int);
         void setNumberOfSteps(int);
-//        void setPrecisionParameter(vacuumms_float);
         void setMinDiameter(vacuumms_float);
         void setLearningRate(vacuumms_float);
         void setTolerance(vacuumms_float);
-        void Randomize();
+        void setRNGSeed(int);
         static void printUsage();
         CavityConfiguration getResult();
 
@@ -74,7 +73,6 @@ DDX : public Operation
         vacuumms_float box_x=0.0, box_y=0.0, box_z=0.0;
         vacuumms_float verlet_cutoff=100.0;
 
-        //double step_size_factor = 1.0;
         int n_steps = 1000;
 
         int number_of_samples = 1;
@@ -88,23 +86,15 @@ DDX : public Operation
         vacuumms_float verlet_center_x, verlet_center_y, verlet_center_z;
         vacuumms_float diameter = 1.0;
         vacuumms_float min_diameter = 0.0;
-//        vacuumms_float characteristic_length = 1.0;
-//        double characteristic_energy = 1.0;
-//        double precision_parameter = 0.001; // decimal 
 
         vacuumms_float learning_rate = 0.01f;
         vacuumms_float tolerance = 10.0f;
-        int seed = 1;
         
         MersenneTwister rng;
+        int rng_seed = 1;
 
         int number_of_molecules = 0;
         int close_molecules;
-        int attempts;
-
-        FILE *instream;
-
-        int verbose;
 
 }; // end class DDX
 
