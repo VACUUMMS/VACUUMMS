@@ -187,7 +187,7 @@ void DDX::execute()
     for (int sample_number = 0; sample_number < number_of_samples; sample_number++)
     {
         generateTestPoint();
-        while (calculateEnergy(0.0) > 0) generateTestPoint();
+        while (calculateEnergy(0.0) > 0.0f) generateTestPoint();
     
         findEnergyMinimum();
 
@@ -398,10 +398,51 @@ vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
         attraction += close_epsilon[i] * sigma6/d6;
     }
 
-    return 4.0 * (repulsion - attraction);
+    vacuumms_float energy = 4.0 * (repulsion - attraction);
+    return energy;
 } // end DDX::calculateEnergy()
 
 
+void DDX::expandTestParticle()
+{
+    vacuumms_float step_tolerance = 1.0e-6;
+    vacuumms_float h = 1.0e-6; // Finite difference step size
+
+    // Initial guess
+    diameter = 0.0f;
+    vacuumms_float diameter_step = 0.01;
+    while(calculateEnergy(diameter += diameter_step) < 0);
+    
+    //while (iteration++ < number_of_steps) 
+    for (int iteration = 0; iteration < number_of_steps; iteration++) 
+    {
+        vacuumms_float energy = calculateEnergy(diameter);
+        vacuumms_float d_energy = (calculateEnergy(diameter + h) - calculateEnergy(diameter - h)) / (2.0 * h);
+
+        if (fabs(d_energy) < 1e-10)
+        {
+            printf("Error: Derivative too small.\n");
+            fflush(stdout);
+            return;
+        }
+
+        vacuumms_float step_size = - energy / d_energy;
+
+        if ((fabs(step_size) < step_tolerance) || (fabs(energy) < step_tolerance)) 
+        {
+            diameter += step_size;
+            return;
+        }
+
+        diameter += step_size;
+    }
+
+    // ran out of iterations, return diameter without explicit convergence
+    return;
+}
+    
+
+/*
 void DDX::expandTestParticle()
 {
     int iter=0, max_iter = 100; 
@@ -417,13 +458,19 @@ void DDX::expandTestParticle()
     diameter = 0.0f; 
     vacuumms_float old_energy = calculateEnergy(diameter);
     if (old_energy > 0) return; // If zero diameter gives positive insertion energy, not a cavity.
-    while (diameter += diameter_step)
+
+    while(calculateEnergy(diameter += diameter_step) < 0) ;
+/*
+    while (1)
     {
+        diameter += diameter_step; // increase diameter until energy is positive
         vacuumms_float energy = calculateEnergy(diameter);
-        if (energy > old_energy) break;
-        old_energy = energy;
+//        if (energy > old_energy) break;
+        if (energy > 0.0f) break;
+//        old_energy = energy;
     }
-    diameter -= diameter_step; //revert to last guess
+//    diameter -= diameter_step; //revert to last guess
+*//*
 
     while (iter < max_iter) 
     {
@@ -444,12 +491,14 @@ void DDX::expandTestParticle()
         // check convergence based on step size
         if (fabs(step_size) < step_tolerance) 
         {
+std::cout << "tolerance: " << diameter << " / " << calculateEnergy(diameter) << std::endl;
             return;
         }
 
         // Check convergence based on 1st derivative
         if (fabs(deriv1) < epsilon_1) 
         {
+std::cout << "deriv1: " << diameter << " / " << calculateEnergy(diameter) << std::endl;
             return;
         }
 
@@ -457,6 +506,8 @@ void DDX::expandTestParticle()
         diameter += step_size;
         iter++;
     }
+std::cout << "max_iter: " << diameter << " / " << calculateEnergy(diameter) << std::endl;
 
     // reached max_iter, so give up and accept value thus far 
 }
+*/

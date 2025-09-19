@@ -88,7 +88,7 @@ DDX : public Operation
         vacuumms_float test_x0, test_y0, test_z0;
         vacuumms_float test_x, test_y, test_z;
         vacuumms_float verlet_center_x, verlet_center_y, verlet_center_z;
-        vacuumms_float diameter = 1.0;
+        vacuumms_float diameter = 10.0;
 
         MersenneTwister rng;
 
