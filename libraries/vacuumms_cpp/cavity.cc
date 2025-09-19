@@ -182,13 +182,10 @@ void CavityConfiguration::scrubDuplicates()
     vacuumms_float box_y = box_dimensions[1];
     vacuumms_float box_z = box_dimensions[2];
 
-// std::cout << records.size() << " records.\n";
     for (size_t index = 0; index < records.size(); index++)
     {
-// std::cout << "record " << index << ".\n";
         for (size_t pairing = index + 1; pairing < records.size();)
         {
-// std::cout << "comparing record " << pairing << ".\n";
             // compare center to image in all adjacent mirror boxes
 
             for (vacuumms_float shift_x=-box_x; shift_x<=box_x; shift_x += box_x)
@@ -201,7 +198,6 @@ void CavityConfiguration::scrubDuplicates()
 
                 if (dsq < duplicate_threshold)
                 {
-// std::cout << "erasing record " << pairing << "\n";
                     records.erase(records.begin() + pairing);
                     goto mirrors_done; // no need to keep looking, we know it's a duplicate
                 }

@@ -10,14 +10,17 @@
 #include <math.h>
 
 
-DDX::DDX(Configuration c, Parameters p) : 
-    c{c}, p{p} 
+DDX::DDX(Configuration _configuration, Parameters _parameters) //: 
+//    configuration{_configuration}, parameters{_parameters} 
 {
+    setConfiguration(_configuration);
+    setParameters(_parameters);
 }
 
-DDX::DDX(Configuration c) : 
-    c{c} 
+DDX::DDX(Configuration _configuration) //: 
+//    configuration{_configuration} 
 {
+    setConfiguration(_configuration);
 }
 
 DDX::DDX()
@@ -25,22 +28,31 @@ DDX::DDX()
 }
 
 
-void DDX::setParameters(Parameters _p)
+void DDX::setParameters(Parameters _parameters)
 {
-    p = _p;
-    Operation::setParameters(_p);
+    parameters = _parameters;
+
+    parameters.getFloatParam((char*)"-verlet_cutoff", &verlet_cutoff);
+    parameters.getIntParam((char*)"-verlet_extent", &verlet_extent);
+    parameters.getIntParam((char*)"-number_of_samples", &number_of_samples);
+    parameters.getIntParam((char*)"-number_of_steps", &number_of_steps);
+    parameters.getIntParam((char*)"-rng_seed", &rng_seed);
+    parameters.getFloatParam((char*)"-min_diameter", &min_diameter);
+    parameters.getFloatParam((char*)"-learning_rate", &learning_rate);
+    parameters.getFloatParam((char*)"-tolerance", &tolerance);
+    volume_sampling = parameters.getFlagParam((char*)"-volume_sampling");
 }
 
 
-void DDX::setConfiguration(Configuration _c)
+void DDX::setConfiguration(Configuration _configuration)
 {
-    c = _c;
+    configuration = _configuration;
 }
 
 
 Configuration DDX::getConfiguration()
 {
-    return c;
+    return configuration;
 }
 
 
@@ -69,9 +81,9 @@ void DDX::setVerletExtent(int _verlet_extent)
 }
 
 
-void DDX::setNumberOfSteps(int _n_steps)
+void DDX::setNumberOfSteps(int _number_of_steps)
 {
-    n_steps = _n_steps;
+    number_of_steps = _number_of_steps;
 }
 
 
@@ -97,8 +109,8 @@ void DDX::setTolerance(vacuumms_float _tolerance)
 pybind11::str DDX::__repr__()
 {
     pybind11::str retval;
-    retval += c.__repr__();
-    retval += p.__repr__();
+    retval += configuration.__repr__();
+    retval += parameters.__repr__();
     retval += result.__repr__();
     return retval;
 }
@@ -116,15 +128,11 @@ void DDX::printUsage()
     printf("\nDDX usage:\t-box [ 6.0 6.0 6.0 ]\n");
     printf("\t\t-seed [ 1 ]\n");
     printf("\t\t-randomize \n");
-    printf("\t\t-characteristic_length [ 1.0 ]\n");
-    printf("\t\t-characteristic_energy [ 1.0 ]\n");
-    printf("\t\t-precision_parameter [ 0.001 ]\n");
-    printf("\t\t-n_steps [ 1000 ] (roughly reciprocal of precision parameter)\n");
+    printf("\t\t-number_of_steps [ 1000 ] (roughly reciprocal of precision parameter)\n");
     printf("\t\t-show_steps (includes steps taken as final column)\n");
     printf("\t\t-verlet_cutoff [ 100.0 ]\n");
     printf("\t\t-n [ 1 ]\n");
     printf("\t\t-volume_sampling \n");
-    printf("\t\t-include_center_energy \n");
     printf("\t\t-min_diameter [ 0.0 ]");
     printf("\n");
 }
@@ -134,38 +142,27 @@ void DDX::execute()
 {
     // Clear old results, if any
     result.reset();
+    result.setBoxDimensions(configuration.getBoxDimensions());
 
-    if (c.getSize() == 0) 
+    if (configuration.getSize() == 0) 
     {
         std::cout << "no atoms in configuration, declining to execute." << std::endl;
         return;
     }
     
     // Get box_dims from config info
-    std::vector<vacuumms_float> box_dims = c.getBoxDimensions();
+    std::vector<vacuumms_float> box_dims = configuration.getBoxDimensions();
     box_x = box_dims[0];
     box_y = box_dims[1];
     box_z = box_dims[2];
 
-    // override if passed as params.
-    p.getVectorParam((char*)"-box", &box_x, &box_y, &box_z);
-    result.setBoxDimensions(box_dims);
-
     if (box_x * box_y * box_z < 0.000001) 
     {
-        std::cout << "box dimensions not properly set in configuration, declining to execute." << std::endl;
+        std::cout << "vanishingly small box volume set in configuration, declining to execute." << std::endl;
         return;
     }
 
     vacuumms_float sq_distance_from_initial_pt;
-
-// The fate of these depends on the fate of the parameters interface
-//    verbose = p.getFlagParam((char*)"-verbose");
-//    p.getIntParam((char*)"-seed", &seed);
-//    if (seed == 0) seed = randomize();
-//    else initializeRandomNumberGeneratorTo(seed);
-
-//    rng = MersenneTwister(seed);
 
     if ((box_x * box_y * box_z) == 0.0) 
     {
@@ -173,25 +170,11 @@ void DDX::execute()
         return;
     }
 
-// The fate of these depends on the fate of the parameters interface
-//    p.getFloatParam((char*)"-characteristic_length", &characteristic_length);
-//    p.getDoubleParam((char*)"-characteristic_energy", &characteristic_energy);
-//    p.getDoubleParam((char*)"-precision_parameter", &precision_parameter);
-    p.getFloatParam((char*)"-verlet_cutoff", &verlet_cutoff);
-    p.getIntParam((char*)"-n", &number_of_samples);
-    p.getIntParam((char*)"-n_steps", &n_steps);
-    volume_sampling = p.getFlagParam((char*)"-volume_sampling");
-    include_center_energy = p.getFlagParam((char*)"-include_center_energy");
-    show_steps = p.getFlagParam((char*)"-show_steps");
-    p.getFloatParam((char*)"-min_diameter", &min_diameter);
-
-    if (p.getFlagParam((char*)"-usage")) printUsage();
-
     // was  loadConfiguration(); 
     // now just copy over the records and run the old algorithm
-    for (int i=0; i<c.getSize(); i++) 
+    for (int i=0; i<configuration.getSize(); i++) 
     {
-        ConfigurationRecord r = c.recordAt(i);
+        ConfigurationRecord r = configuration.recordAt(i);
         x[i] = r.x;
         y[i] = r.y;
         z[i] = r.z;
@@ -199,24 +182,23 @@ void DDX::execute()
         epsilon[i] = r.epsilon;
     }
   
-    number_of_molecules = c.getSize();
+    number_of_molecules = configuration.getSize();
   
-    int remaining_samples = number_of_samples;
-    while (remaining_samples-- > 0)
+    for (int sample_number = 0; sample_number < number_of_samples; sample_number++)
     {
         generateTestPoint();
         while (calculateEnergy(0.0) > 0) generateTestPoint();
     
         findEnergyMinimum();
+
+        makeVerletList();
+        expandTestParticle();
     
         sq_distance_from_initial_pt = (test_x-test_x0)*(test_x-test_x0) + (test_y-test_y0)*(test_y-test_y0) + (test_z-test_z0)*(test_z-test_z0);
         if (!volume_sampling || (sq_distance_from_initial_pt < .25 * diameter * diameter))
         {
-            makeVerletList();
-            expandTestParticle();
             if (diameter > min_diameter) 
             {
-
                 // correct for box edges...
                 while (test_x >= box_x) test_x -= box_x;
                 while (test_x < 0) test_x += box_x;
@@ -224,7 +206,6 @@ void DDX::execute()
                 while (test_y < 0) test_y += box_y;
                 while (test_z >= box_z) test_z -= box_z;
                 while (test_z < 0) test_z += box_z;
-
                 result.pushBack(Cavity(test_x, test_y, test_z, diameter));
             }
         }
@@ -312,7 +293,7 @@ void DDX::findEnergyMinimum()
     makeVerletList();
 
     // begin loop to iterate until minimum found
-    for (int attempts=0; attempts<n_steps; attempts++)
+    for (int attempts=0; attempts<number_of_steps; attempts++)
     {
         drift_sq = (test_x-verlet_center_x)*(test_x-verlet_center_x) 
                  + (test_y-verlet_center_y)*(test_y-verlet_center_y) 
@@ -430,6 +411,7 @@ void DDX::expandTestParticle()
     vacuumms_float h = 1.0e-3; // suggestion was 1.0e-5, for finite difference step size
     vacuumms_float diameter_step = 0.001; // stepping increment for initial guess
     vacuumms_float step_tolerance = 1.0e-6;
+
 
     // improved initial guess
     diameter = 0.0f; 

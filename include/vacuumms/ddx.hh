@@ -54,8 +54,19 @@ DDX : public Operation
         void expandTestParticle();
 
         CavityConfiguration result;
-        Configuration c;
-        Parameters p;
+        Configuration configuration;
+        Parameters parameters;
+
+        // settable parameters
+        vacuumms_float verlet_cutoff=100.0;
+        int verlet_extent = 1;
+        int number_of_samples = 1;
+        int number_of_steps = 100;
+        int rng_seed = 1;
+        vacuumms_float min_diameter = 0.0;
+        vacuumms_float learning_rate = 0.01f;
+        vacuumms_float tolerance = 10.0f;
+        int volume_sampling = 0;
 
         // Working vars from C implementation
         vacuumms_float x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
@@ -70,32 +81,19 @@ DDX : public Operation
         vacuumms_float close_sigma12[VACUUMMS_MAX_CLOSE];
         vacuumms_float close_epsilon[VACUUMMS_MAX_CLOSE];
 
-        vacuumms_float box_x=0.0, box_y=0.0, box_z=0.0;
-        vacuumms_float verlet_cutoff=100.0;
+        vacuumms_float box_x=0.0, box_y=0.0, box_z=0.0; // vals pulled from Configuration c
 
-        int n_steps = 1000;
 
-        int number_of_samples = 1;
-        int volume_sampling = 0;
-        int include_center_energy = 0;
-        int show_steps = 0;
-        int verlet_extent = 1;
-
+        // Operating parameters
         vacuumms_float test_x0, test_y0, test_z0;
         vacuumms_float test_x, test_y, test_z;
         vacuumms_float verlet_center_x, verlet_center_y, verlet_center_z;
         vacuumms_float diameter = 1.0;
-        vacuumms_float min_diameter = 0.0;
 
-        vacuumms_float learning_rate = 0.01f;
-        vacuumms_float tolerance = 10.0f;
-        
         MersenneTwister rng;
-        int rng_seed = 1;
 
         int number_of_molecules = 0;
         int close_molecules;
 
 }; // end class DDX
-
 
