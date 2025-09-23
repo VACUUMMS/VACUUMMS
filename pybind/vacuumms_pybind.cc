@@ -230,7 +230,7 @@ PYBIND11_MODULE(vacuumms, m)
 #endif
 
 
-    py::class_<FVIX>(m, "FVIX")
+    py::class_<FVIX, Operation>(m, "FVIX")
         .def(py::init<>())
         .def(py::init<Configuration>())
         .def(py::init<Configuration, Parameters>())
