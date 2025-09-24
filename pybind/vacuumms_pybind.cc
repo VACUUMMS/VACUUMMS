@@ -71,6 +71,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("isCrammed", &Configuration::isCrammed)
         .def("replicate", &Configuration::replicate)
         .def("getSize", &Configuration::getSize)
+        .def("writeToFile", &Configuration::writeToFile)
         ;
 
     py::class_<LAMMPSConfiguration, Configuration>(m, "LAMMPSConfiguration")

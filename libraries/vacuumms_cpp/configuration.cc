@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <vacuumms/configuration.hh>
 #include "vacuumms/types.h"
@@ -88,6 +89,24 @@ void Configuration::dumpContents()
 {
     for (int i = 0; i < records.size(); i++)
         printf("%f\t%f\t%f\t%f\t%f\n", records[i].x, records[i].y, records[i].z, records[i].sigma, records[i].epsilon);
+}
+
+
+void Configuration::writeToFile(const char* filename)
+{
+    std::ofstream file(filename);
+    if (file.is_open())
+    {
+        for (int i = 0; i < records.size(); i++)
+            file << records[i].x << "\t" << records[i].y << "\t" 
+                 << records[i].z << "\t" << records[i].sigma << "\t" 
+                 << records[i].epsilon << std::endl;
+        file.close();
+    }
+    else 
+    {
+        std::cerr << "Could not open " << filename << " for output." << std::endl;
+    }
 }
 
 

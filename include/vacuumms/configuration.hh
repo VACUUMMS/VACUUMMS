@@ -56,6 +56,8 @@ Configuration
         Configuration(FILE *pipe); // allows stdin to be used to create pipeline
         Configuration();
         void dumpContents();
+        void writeToFile(const char*);
+
         vacuumms_float insertionEnergy(vacuumms_float x, vacuumms_float y, vacuumms_float z, vacuumms_float sigma, vacuumms_float epsilon);
         void setMirrorDepth(int _mirror_depth);
 

@@ -69,9 +69,7 @@ Configuration FVIX::getConfiguration()
 
 void FVIX::setDimensions(std::vector<size_t> _dimensions)
 {
-printf("setting dimensions to %ld x %ld x %ld \n", _dimensions[0], _dimensions[1], _dimensions[2]);
     dimensions = _dimensions;
-printf("set dimensions to %ld x %ld x %ld \n", dimensions[0], dimensions[1], dimensions[2]);
 }
 
 std::vector<size_t> FVIX::getDimensions()
