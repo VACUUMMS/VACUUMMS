@@ -2,7 +2,11 @@
 
 #include <vacuumms/types.h>
 
+#include <vacuumms/scene.hh>
 #include <vacuumms/configuration.hh>
+#include <vacuumms/exports.hh>
+#include <vacuumms/rng.hh>
+
 
 extern const vacuumms_float machine_epsilon;
 extern const vacuumms_float sqrt_machine_epsilon;
@@ -71,7 +75,12 @@ class Variational2D
 
 };
 
-class Variational3D
+
+class
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT
+#endif
+Variational3D
 {
     private:
     
@@ -90,6 +99,8 @@ class Variational3D
         vacuumms_float end_y; 
         vacuumms_float end_z; 
         int n_var_points;
+
+        int verbose = 0;
 
         // parameters for inserted particle
         vacuumms_float sigma; 
@@ -110,6 +121,8 @@ class Variational3D
         vacuumms_float* var_x;
         vacuumms_float* var_y;
         vacuumms_float* var_z;
+
+        MersenneTwister rng;
 
     public:
 
@@ -134,6 +147,15 @@ class Variational3D
                       int n_var_points, 
                       Configuration *c);
 
+        Variational3D(std::vector<vacuumms_float> start, 
+                      std::vector<vacuumms_float> end, 
+                      vacuumms_float sigma,
+                      vacuumms_float epsilon,
+                      int n_var_points, 
+                      Configuration *c);
+
+        Variational3D();
+
         vacuumms_float* getX();
         vacuumms_float* getY();
         vacuumms_float* getZ();
@@ -141,10 +163,14 @@ class Variational3D
         void setAlpha(vacuumms_float _alpha);
         void setAlphaMax(vacuumms_float _alpha_max);
         void setDeltaMax(vacuumms_float _delta_max);
+        int getNVariationalPoints();
+        void setNVariationalPoints(int);
+        void setVerbose(int);
         void printValues();
         void iterate();
         void iterateWork();
         vacuumms_float adaptiveIterateAndUpdate();
+        void jitter(vacuumms_float);
 
         ~Variational3D();
 

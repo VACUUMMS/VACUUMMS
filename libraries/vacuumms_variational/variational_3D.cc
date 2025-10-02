@@ -67,6 +67,26 @@ Variational3D::Variational3D(vacuumms_float _start_x,
 }
 
 
+Variational3D::Variational3D(std::vector<vacuumms_float> start,
+                             std::vector<vacuumms_float> end,
+                             vacuumms_float _sigma,
+                             vacuumms_float _epsilon,
+                             int _n_var_points,
+                             Configuration *_configuration)
+{
+    init(start[0], start[1], start[2], end[0], end[1], end[2], _sigma, _epsilon, _n_var_points);
+    use_configuration_energy = true;
+    configuration = _configuration;
+    energy_function = nullptr;
+}
+
+
+Variational3D::Variational3D()
+{
+    std::cerr << "Variational3D default constructor not supported." << std::endl;
+}
+
+
 Variational3D::~Variational3D()
 {
     // free any resources allocated
@@ -575,7 +595,13 @@ attempt_iteration:
 
         if (delta > delta_max)
         {
-            printf("delta = %f > delta_max = %f, rescaling.\n", delta, delta_max);
+            if (verbose > 0)
+            {
+                std::cout << "delta = " << delta 
+                          << " > delta_max = " 
+                          << delta_max << ", rescaling." 
+                          << std::endl;
+            }
             delta_x *= (delta_max/delta);
             delta_y *= (delta_max/delta);
             delta_z *= (delta_max/delta);
@@ -697,6 +723,21 @@ attempt_iteration:
 } // adaptiveIterateAndUpdate()
 
 
+void Variational3D::jitter(vacuumms_float jitter_max)
+{
+    for (int i=0; i<n_var_points; i++)
+    {
+        vacuumms_float dx = (rng.next_float() - 0.5f) * jitter_max;
+        vacuumms_float dy = (rng.next_float() - 0.5f) * jitter_max;
+        vacuumms_float dz = (rng.next_float() - 0.5f) * jitter_max;
+
+        var_x[i] += dx;
+        var_y[i] += dy;
+        var_z[i] += dz;
+    }
+}
+
+
 vacuumms_float* Variational3D::getX()
 {
     return var_x;
@@ -713,3 +754,19 @@ vacuumms_float* Variational3D::getZ()
 {
     return var_z;
 }
+
+int Variational3D::getNVariationalPoints()
+{
+    return n_var_points;
+}
+
+void Variational3D::setNVariationalPoints(int _n_var_points)
+{
+    n_var_points = _n_var_points;
+}
+
+void Variational3D::setVerbose(int _verbose)
+{
+    verbose = _verbose;
+}
+

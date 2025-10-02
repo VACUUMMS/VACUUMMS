@@ -10,6 +10,11 @@
 #include <iostream>
 
 
+Cavity::Cavity()
+{
+}
+
+
 Cavity::Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _d)
 {
     x = _x;
@@ -17,6 +22,7 @@ Cavity::Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms
     z = _z;
     d = _d;
 }
+
 
 Cavity::Cavity(int _index, 
                vacuumms_float _x, 
@@ -33,10 +39,18 @@ Cavity::Cavity(int _index,
     drift = _drift;
 }
 
+
+std::vector<vacuumms_float> Cavity::getXYZ()
+{
+    return std::vector<vacuumms_float>{x,y,z};
+}
+
+
 void Cavity::setForeignKey(int _foreign_key)
 {
     foreign_key = _foreign_key;
 }
+
 
 int Cavity::getForeignKey()
 {
@@ -169,6 +183,13 @@ int CavityConfiguration::pushBack(Cavity _cavity)
     records.push_back(_cavity);
     return records.size();
 }
+
+
+void CavityConfiguration::setDuplicateThreshold(vacuumms_float _duplicate_threshold)
+{
+    duplicate_threshold = _duplicate_threshold;
+}
+
 
 void CavityConfiguration::reset()
 {

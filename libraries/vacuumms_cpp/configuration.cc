@@ -5,6 +5,10 @@
 #include "vacuumms/types.h"
 
 
+ConfigurationRecord::ConfigurationRecord()
+{
+}
+
 ConfigurationRecord::ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon)
 {
     x = _x;
@@ -12,6 +16,13 @@ ConfigurationRecord::ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, v
     z = _z;
     sigma = _sigma;
     epsilon = _epsilon;
+}
+
+
+std::vector<vacuumms_float> ConfigurationRecord::getXYZ()
+{
+    std::vector<vacuumms_float> xyz = {x, y, z};
+    return xyz;
 }
 
 
@@ -269,13 +280,34 @@ void Configuration::replicate(std::vector<int> depths)
 }
 
 
+void Configuration::shift(std::vector<vacuumms_float> amount)
+{
+    if (amount.size() < 3)
+    {
+        std::cerr << "Inadequate dimensions applied to shift()." << std::endl;
+        return;
+    }
+
+    for (int i=0; i < records.size(); i++) 
+    {
+        records[i].x += amount[0];
+        records[i].y += amount[1];
+        records[i].z += amount[2];
+    }
+}
+
+
 #ifdef BUILD_PYBIND_BINDINGS
 
 pybind11::str Configuration::__repr__()
 {
+    int max_records = 32;
+
     pybind11::str retval("");
 
-    for (int i=0; i<records.size(); i++)
+    int records_to_show = (records.size() < max_records) ? records.size() : max_records;
+
+    for (int i=0; i<records_to_show; i++)
         retval = retval + 
              pybind11::str(std::to_string(records[i].x)) +
              pybind11::str("\t") +
@@ -287,6 +319,8 @@ pybind11::str Configuration::__repr__()
              pybind11::str("\t") +
              pybind11::str(std::to_string(records[i].epsilon)) +
              pybind11::str("\n");
+
+    if (records_to_show >= max_records) retval = retval + pybind11::str("...\n");
 
     retval = retval + pybind11::str("box dims: ")
              + pybind11::str(std::to_string(box_dimensions[0]))

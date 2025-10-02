@@ -30,6 +30,7 @@ Cavity
         int index;
         int foreign_key;
 
+        Cavity();
         Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _d);
         Cavity(int _index, 
                vacuumms_float _x, 
@@ -38,6 +39,7 @@ Cavity
                vacuumms_float _d, 
                vacuumms_float _drift);
 
+        std::vector<vacuumms_float> getXYZ();
         void setForeignKey(int _foreign_key);
         int getForeignKey();
 
@@ -66,6 +68,7 @@ CavityConfiguration
         int getSize();
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
         int pushBack(Cavity _cavity);
+        void setDuplicateThreshold(vacuumms_float);
         void reset();
 
         std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
