@@ -67,6 +67,26 @@ Variational3D::Variational3D(vacuumms_float _start_x,
 }
 
 
+Variational3D::Variational3D(std::vector<vacuumms_float> start,
+                             std::vector<vacuumms_float> end,
+                             vacuumms_float _sigma,
+                             vacuumms_float _epsilon,
+                             int _n_var_points,
+                             Configuration *_configuration)
+{
+    init(start[0], start[1], start[2], end[0], end[1], end[2], _sigma, _epsilon, _n_var_points);
+    use_configuration_energy = true;
+    configuration = _configuration;
+    energy_function = nullptr;
+}
+
+
+Variational3D::Variational3D()
+{
+    std::cerr << "Variational3D default constructor not supported." << std::endl;
+}
+
+
 Variational3D::~Variational3D()
 {
     // free any resources allocated
@@ -76,22 +96,42 @@ Variational3D::~Variational3D()
 
 void Variational3D::printValues()
 {
-    std::cout << "#####" << start_x << " " << start_y << " " << start_z << std::endl;
+    std::cout << start_x << " " << start_y << " " << start_z << std::endl;
     for (int i=0; i<n_var_points; i++)
-        std::cout << "#####" << var_x[i] << " " << var_y[i] << " " << var_z[i] << std::endl;
-    std::cout << "#####" << end_x << " " << end_y << " " << end_z << std::endl;
+        std::cout << var_x[i] << " " << var_y[i] << " " << var_z[i] << std::endl;
+    std::cout << end_x << " " << end_y << " " << end_z << std::endl;
+}
+
+
+std::vector<std::vector<vacuumms_float>> Variational3D::getPoints() 
+{
+    std::vector<std::vector<vacuumms_float>> retval;
+    for (int i=0; i < n_var_points; i++)
+    {
+        std::vector<vacuumms_float> point = {var_x[i], var_y[i], var_z[i]};
+        retval.push_back(point);
+    }
+        
+    return retval; 
 }
 
     
 void Variational3D::setAlpha(vacuumms_float _alpha)
 {
     alpha = _alpha;
+    if (alpha > alpha_max) alpha_max = alpha;
 }
 
 
 void Variational3D::setAlphaMax(vacuumms_float _alpha_max)
 {
     alpha_max = _alpha_max;
+}
+
+    
+void Variational3D::setBeta(vacuumms_float _beta)
+{
+    beta = _beta;
 }
 
 
@@ -106,7 +146,7 @@ void Variational3D::setDeltaMax(vacuumms_float _delta_max)
  */
 void Variational3D::iterate()
 {
-    debug = getenv("VACUUMMS_DEBUG");
+//    debug = getenv("VACUUMMS_DEBUG");
 
     // Space for the perturbed curve values
     vacuumms_float new_x[n_var_points], new_y[n_var_points], new_z[n_var_points];
@@ -149,23 +189,43 @@ void Variational3D::iterate()
         vacuumms_float tangent_y = aft_y - fore_y;
         vacuumms_float tangent_z = aft_z - fore_z;
         
-        if (debug != NULL) printf("got tangent vector (%f, %f, %f)\n", tangent_x, tangent_y, tangent_z);
+//        if (debug != NULL) printf("got tangent vector (%f, %f, %f)\n", tangent_x, tangent_y, tangent_z);
+        if (verbose > 1) 
+        {
+            printf("got tangent vector (%f, %f, %f)\n", tangent_x, tangent_y, tangent_z);
+            fflush(stdout);
+        }
 
         vacuumms_float u_x, u_y, u_z; // unit axis of rotation, to be extracted from tangent
         vacuumms_float theta = extract_axis(0, 0, 1, tangent_x, tangent_y, tangent_z, &u_x, &u_y, &u_z);
 
-        if (debug != NULL) printf("got theta = %f and axis u = (%f, %f, %f)\n ", theta, u_x, u_y, u_z);
+//        if (debug != NULL) printf("got theta = %f and axis u = (%f, %f, %f)\n ", theta, u_x, u_y, u_z);
+        if (verbose > 1) 
+        {
+            printf("got theta = %f and axis u = (%f, %f, %f)\n ", theta, u_x, u_y, u_z);
+            fflush(stdout);
+        }
 
         // variables to receive the values of the rotated i and j unit vectors
         vacuumms_float i_x, i_y, i_z; 
         rotate_vector(1, 0, 0, theta, u_x, u_y, u_z, &i_x, &i_y, &i_z);
 
-        if (debug != NULL) printf("i rotates to (%f, %f, %f)\n", i_x, i_y, i_z);
+//        if (debug != NULL) printf("i rotates to (%f, %f, %f)\n", i_x, i_y, i_z);
+        if (verbose > 1) 
+        {
+            printf("i rotates to (%f, %f, %f)\n", i_x, i_y, i_z);
+            fflush(stdout);
+        }
 
         vacuumms_float j_x, j_y, j_z; 
         rotate_vector(0, 1, 0, theta, u_x, u_y, u_z, &j_x, &j_y, &j_z);
 
-        if (debug != NULL) printf("j rotates to (%f, %f, %f)\n", j_x, j_y, j_z);
+//        if (debug != NULL) printf("j rotates to (%f, %f, %f)\n", j_x, j_y, j_z);
+        if (verbose > 1) 
+        {
+            printf("j rotates to (%f, %f, %f)\n", j_x, j_y, j_z);
+            fflush(stdout);
+        }
 
         // The directional vectors are ostensibly normalized.
         // Resize the directionals as deltas:
@@ -178,7 +238,8 @@ void Variational3D::iterate()
         j_y *= sqrt_machine_epsilon;
         j_z *= sqrt_machine_epsilon;
 
-        if (debug != NULL) 
+//        if (debug != NULL) 
+        if (verbose > 1) 
         {
             printf("i resized to (%f, %f, %f)\n", i_x, i_y, i_z);
             printf("j resized to (%f, %f, %f)\n", i_x, i_y, i_z);
@@ -212,10 +273,12 @@ void Variational3D::iterate()
         vacuumms_float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
         vacuumms_float delta = sqrt(delta_sq);
 
-        if (debug != NULL)
+//        if (debug != NULL)
+        if (verbose > 1)
         {  
             printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", 
             dE_i, dE_j, delta_x, delta_y, delta_z, delta);
+            fflush(stdout);
         }
 
         new_x[i] = var_x[i] + delta_x; 
@@ -237,7 +300,7 @@ void Variational3D::iterate()
 
 vacuumms_float Variational3D::rebalancePoints3D()
 {
-    debug = getenv("VACUUMMS_DEBUG");
+//    debug = getenv("VACUUMMS_DEBUG");
 
     vacuumms_float original_curve_length = calculateCurveLength(
         start_x, start_y, start_z, 
@@ -301,7 +364,12 @@ vacuumms_float Variational3D::rebalancePoints3D()
     vacuumms_float backward_curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, new_forward_var_x, new_forward_var_y, new_forward_var_z);
 
     // should match
-    if (debug != NULL) printf("original backward curve_length = %f\n", backward_curve_length);
+//    if (debug != NULL) printf("original backward curve_length = %f\n", backward_curve_length);
+    if (verbose > 1) 
+    {
+        printf("original backward curve_length = %f\n", backward_curve_length);
+        fflush(stdout);
+    }
 
     // combine the results
     vacuumms_float new_var_x[n_var_points];
@@ -338,7 +406,7 @@ int Variational3D::respaceKernel(vacuumms_float _start_x, vacuumms_float _start_
                                  vacuumms_float _var_x[], vacuumms_float _var_y[], vacuumms_float _var_z[], 
                                  vacuumms_float _new_var_x[], vacuumms_float _new_var_y[], vacuumms_float _new_var_z[])
 {
-    debug = getenv("VACUUMMS_DEBUG");
+//    debug = getenv("VACUUMMS_DEBUG");
 
     vacuumms_float curve_length = calculateCurveLength(_start_x, _start_y, _start_z, _end_x, _end_y, _end_z, _var_x, _var_y, _var_z);
     // Cut each new segment along old path to this length
@@ -438,7 +506,7 @@ int Variational3D::respaceKernel(vacuumms_float _start_x, vacuumms_float _start_
 
 vacuumms_float Variational3D::calculateCurveLength(vacuumms_float _start_x, vacuumms_float _start_y, vacuumms_float _start_z, vacuumms_float _end_x, vacuumms_float _end_y, vacuumms_float _end_z, vacuumms_float _var_x[], vacuumms_float _var_y[], vacuumms_float _var_z[])
 {
-    debug = getenv("VACUUMMS_DEBUG");
+//    debug = getenv("VACUUMMS_DEBUG");
 
     // get the total length of curve
     vacuumms_float prev_x = _start_x;
@@ -477,7 +545,13 @@ vacuumms_float Variational3D::calculateCurveLength(vacuumms_float _start_x, vacu
  */
 vacuumms_float Variational3D::adaptiveIterateAndUpdate()
 {
-    debug = getenv("VACUUMMS_DEBUG");
+    iteration++;
+    if (verbose > 1) 
+    {
+        std::cout << "Iteration " << iteration << std::endl;
+    }
+    
+//    debug = getenv("VACUUMMS_DEBUG");
     int wedge_count = 0;
 
     vacuumms_float curve_length = calculateCurveLength(start_x, start_y, start_z, end_x, end_y, end_z, var_x, var_y, var_z);
@@ -485,7 +559,12 @@ vacuumms_float Variational3D::adaptiveIterateAndUpdate()
 
 attempt_iteration:
 
-    if (debug != NULL) printf("Attempting iteration with alpha = %f\n", alpha);
+//    if (debug != NULL) printf("Attempting iteration with alpha = %f\n", alpha);
+    if (verbose > 1) 
+    {
+        printf("Attempting iteration with alpha = %f\n", alpha);
+        fflush(stdout);
+    }
     
     vacuumms_float fore_x, aft_x;
     vacuumms_float fore_y, aft_y;
@@ -567,15 +646,23 @@ attempt_iteration:
         vacuumms_float delta_sq = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
         vacuumms_float delta = sqrt(delta_sq);
 
-        if (debug != NULL) 
+//        if (debug != NULL) 
+        if (verbose > 1) 
         {
-            printf("Got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", 
-                   dE_i, dE_j, delta_x, delta_y, delta_z, delta); 
+            printf("For variational point %d, got dE_i = %f, dE_j = %f, delta = (%f, %f, %f) |delta| = %f\n", 
+                   i, dE_i, dE_j, delta_x, delta_y, delta_z, delta); 
+            fflush(stdout);
         }
 
         if (delta > delta_max)
         {
-            printf("delta = %f > delta_max = %f, rescaling.\n", delta, delta_max);
+            if (verbose > 0)
+            {
+                std::cout << "delta = " << delta 
+                          << " > delta_max = " 
+                          << delta_max << ", rescaling." 
+                          << std::endl;
+            }
             delta_x *= (delta_max/delta);
             delta_y *= (delta_max/delta);
             delta_z *= (delta_max/delta);
@@ -680,21 +767,51 @@ attempt_iteration:
         var_z[i] = respace_var_z[i];
     }
 
-    if (debug != NULL) printf("successful update and rebalance. ");
+//    if (debug != NULL) printf("successful update and rebalance. ");
+    if (verbose > 1)
+    {
+        printf("successful update and rebalance. ");
+        fflush(stdout);
+    }
 
     // With success, increase alpha by factor of beta
     vacuumms_float new_alpha = alpha * beta;
 
     if (new_alpha < alpha_max) // success, so increase alpha
     {
-        if (debug != NULL) printf("Increasing alpha: %f * %f = %f\n", alpha, beta, new_alpha); 
+//        if (debug != NULL) printf("Increasing alpha: %f * %f = %f\n", alpha, beta, new_alpha); 
+        if (verbose > 1) 
+        {
+            printf("Increasing alpha: %f * %f = %f\n", alpha, beta, new_alpha); 
+            fflush(stdout);
+        }
         alpha = new_alpha;
     }
-    if (debug != NULL) printf("\n");
+//    if (debug != NULL) printf("\n");
+    if (verbose > 1) 
+    {
+        printf("\n");
+        fflush(stdout);
+    }
    
     return shrinkage;
 
 } // adaptiveIterateAndUpdate()
+
+
+void Variational3D::jitter(vacuumms_float jitter_max)
+{
+    for (int i=0; i<n_var_points; i++)
+    {
+        vacuumms_float dx = 2.0f * (rng.next_float() - 0.5f) * jitter_max;
+        vacuumms_float dy = 2.0f * (rng.next_float() - 0.5f) * jitter_max;
+        vacuumms_float dz = 2.0f * (rng.next_float() - 0.5f) * jitter_max;
+
+        var_x[i] += dx;
+        var_y[i] += dy;
+        var_z[i] += dz;
+    }
+}
 
 
 vacuumms_float* Variational3D::getX()
@@ -713,3 +830,19 @@ vacuumms_float* Variational3D::getZ()
 {
     return var_z;
 }
+
+int Variational3D::getNVariationalPoints()
+{
+    return n_var_points;
+}
+
+void Variational3D::setNVariationalPoints(int _n_var_points)
+{
+    n_var_points = _n_var_points;
+}
+
+void Variational3D::setVerbose(int _verbose)
+{
+    verbose = _verbose;
+}
+

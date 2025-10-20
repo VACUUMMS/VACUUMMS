@@ -10,7 +10,9 @@
 #include <vacuumms/cavity.hh>
 #include <vacuumms/operations.hh>
 #include <vacuumms/ddx.hh>
-#include <vacuumms/pddx.hh>
+#include <vacuumms/variational/variational.hh>
+#include <vacuumms/variational/variational_scene.hh>
+//#include <vacuumms/pddx.hh>
 #include <vacuumms/lammps.hh>
 #include <vacuumms/scene.hh>
 
@@ -59,6 +61,7 @@ PYBIND11_MODULE(vacuumms, m)
     // Configuration type(s)
 
     py::class_<Configuration>(m, "Configuration")
+        .def(py::init<>())
         .def(py::init<char*>())
         .def(py::init<char*, std::vector<vacuumms_float>>())
         .def(py::init<char*, std::vector<vacuumms_float>, vacuumms_float>())
@@ -68,20 +71,47 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setTemperature", &Configuration::setTemperature)
         .def("getTemperature", &Configuration::getTemperature)
         .def("cram", &Configuration::cram)
+        .def("shift", &Configuration::shift)
         .def("isCrammed", &Configuration::isCrammed)
         .def("replicate", &Configuration::replicate)
         .def("getSize", &Configuration::getSize)
+        .def("pushBack", &Configuration::pushBack)
+        .def("recordAt", &Configuration::recordAt)
+        .def("deleteRecordAt", &Configuration::deleteRecordAt)
+        .def("writeToFile", &Configuration::writeToFile)
         ;
+
 
     py::class_<LAMMPSConfiguration, Configuration>(m, "LAMMPSConfiguration")
         .def(py::init<std::string>())
         ;
 
 
+    py::class_<ConfigurationRecord>(m, "ConfigurationRecord")
+        .def(py::init<>())
+        .def(py::init<vacuumms_float, vacuumms_float, vacuumms_float, vacuumms_float, vacuumms_float>())
+        .def("getXYZ", &ConfigurationRecord::getXYZ)
+        ;
+
+
+    py::class_<Cavity>(m, "Cavity")
+        .def(py::init<>())
+        .def("getXYZ", &Cavity::getXYZ)
+        ;
+
+
     // CavityConfiguration type
 
     py::class_<CavityConfiguration>(m, "CavityConfiguration")
+        .def(py::init<>())
         .def(py::init<char*>())
+        .def("scrubDuplicates", &CavityConfiguration::scrubDuplicates)
+        .def("setDuplicateThreshold", &CavityConfiguration::setDuplicateThreshold)
+        .def("getDiameters", &CavityConfiguration::getDiameters)
+        .def("getSize", &CavityConfiguration::getSize)
+        .def("replicate", &CavityConfiguration::replicate)
+        .def("recordAt", &CavityConfiguration::recordAt)
+        .def("pushBack", &CavityConfiguration::pushBack)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
@@ -112,12 +142,21 @@ PYBIND11_MODULE(vacuumms, m)
         .def("printUsage", &DDX::printUsage)
         .def("getConfiguration", &DDX::getConfiguration)
         .def("setConfiguration", &DDX::setConfiguration)
+        .def("setNumberOfSamples", &DDX::setNumberOfSamples)
+        .def("setVerletCutoff", &DDX::setVerletCutoff)
+        .def("setVerletExtent", &DDX::setVerletExtent)
+        .def("setNumberOfSteps", &DDX::setNumberOfSteps)
+        .def("setMinDiameter", &DDX::setMinDiameter)
+        .def("setLearningRate", &DDX::setLearningRate)
+        .def("setTolerance", &DDX::setTolerance)
+        .def("setRNGSeed", &DDX::setRNGSeed)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
     ;
 
     // Interface to PDDX (Operation subclass)
     
+/* needs internal work
     py::class_<PDDX, Operation>(m, "PDDX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
@@ -128,6 +167,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
     ;
+*/
 
 
     // Scene interface, for generating and rendering POVRay SDL
@@ -135,11 +175,19 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<Scene>(m, "Scene")
         .def(py::init<>())
         .def("createSceneFile", &Scene::createSceneFile)  // POV file
-        .def("renderScene", &Scene::renderScene)      // PNG file
+        .def("renderScene", &Scene::renderScene)          // PNG file
+        .def("setRenderDimensions", &Scene::setRenderDimensions)
+        .def("setBoxDimensions", &Scene::setBoxDimensions)
+        .def("setLowerBoxDimensions", &Scene::setLowerBoxDimensions)
+        .def("setCameraLocation", &Scene::setCameraLocation)
+        .def("setCameraLookAt", &Scene::setCameraLookAt)
         .def("applyStandardLight", &Scene::applyStandardLight)
         .def("applyAmbientLight", &Scene::applyAmbientLight)
+        .def("addLightSource", &Scene::addLightSource)
+        .def("clearLightSources", &Scene::clearLightSources)
         .def("addSceneComponent", &Scene::addSceneComponent)
         .def("generateContainerSDL", &Scene::generateContainerSDL)
+        .def("setBackgroundColor", &Scene::setBackgroundColor)
         .def("dumpSDL", &Scene::dumpSDL)
 
 //        SceneComponent componentAt(int i);
@@ -148,20 +196,38 @@ PYBIND11_MODULE(vacuumms, m)
     ;
     
     py::class_<SceneComponent>(m, "SceneComponent")
-        .def("getComponentSDL", &SceneComponent::getComponentSDL)
         .def(py::init<>())
+        .def("getComponentSDL", &SceneComponent::getComponentSDL)
+        .def("setTransmit", &SceneComponent::setTransmit)
+        .def("setPhong", &SceneComponent::setPhong)
+        .def("setColor", &SceneComponent::setColor)
+        .def("setClip", &SceneComponent::setClip)
+        .def("unsetClip", &SceneComponent::unsetClip)
+        .def("setBoxDimensions", &SceneComponent::setBoxDimensions)
+        .def("setLowerBoxDimensions", &SceneComponent::setLowerBoxDimensions)
+        .def("hide", &SceneComponent::hide)
+        .def("show", &SceneComponent::show)
     ;
 
     py::class_<ConfigurationComponent, SceneComponent>(m, "ConfigurationComponent")
         .def(py::init<>())
-        .def(py::init<Configuration>())
+        .def(py::init<Configuration*>())
+        .def("rescale", &ConfigurationComponent::rescale)
         .def("getComponentSDL", &ConfigurationComponent::getComponentSDL)
     ;
 
     py::class_<CavityComponent, SceneComponent>(m, "CavityComponent")
         .def(py::init<>())
-        .def(py::init<CavityConfiguration>())
+        .def(py::init<CavityConfiguration*>())
+        .def("rescale", &CavityComponent::rescale)
         .def("getComponentSDL", &CavityComponent::getComponentSDL)
+    ;
+
+    py::class_<VariationalComponent, SceneComponent>(m, "VariationalComponent")
+        .def(py::init<>())
+        .def(py::init<Variational3D*>())
+        .def("getComponentSDL", &VariationalComponent::getComponentSDL)
+        .def("setDiameter", &VariationalComponent::setDiameter)
     ;
 
 #ifdef BUILD_VORONOI_UTILS
@@ -201,7 +267,7 @@ PYBIND11_MODULE(vacuumms, m)
 #endif
 
 
-    py::class_<FVIX>(m, "FVIX")
+    py::class_<FVIX, Operation>(m, "FVIX")
         .def(py::init<>())
         .def(py::init<Configuration>())
         .def(py::init<Configuration, Parameters>())
@@ -221,11 +287,21 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getAttraction", &FVIX::getAttraction)
         .def("getEnergy", &FVIX::getEnergy)
         .def("getFVI", &FVIX::getFVI)
+        .def("executeMask", &FVIX::executeMask)
 #ifdef BUILD_TIFF_UTILS
         .def("generateTIFF", &FVIX::generateTIFF)
 #endif
         .def("__repr__", &FVIX::__repr__)
     ;
+
+
+    // Flags to be set for executeMask()
+
+    m.attr("FVIX_ATTRACTION") = FVIX_ATTRACTION;
+    m.attr("FVIX_REPULSION")  = FVIX_REPULSION;
+    m.attr("FVIX_ENERGY")     = FVIX_ENERGY;
+    m.attr("FVIX_FVI")        = FVIX_FVI;
+
 
 #ifdef BUILD_CUDA_COMPONENTS
     m.def("finalize_cuda", &finalize_cuda)
@@ -235,30 +311,61 @@ PYBIND11_MODULE(vacuumms, m)
 
     // Other classes
     
-    // Interface to CSD (Histogram subclass)
-
-    py::class_<CavitySizeDistribution>(m, "CavitySizeDistribution")
-        .def(py::init<CavityConfiguration, Parameters>())
-        .def("setWeightingExponent", &Histogram::setWeightingExponent)
-        .def("print", &Histogram::print)
-        .def("normalize", &Histogram::normalize)
-        .def("smooth", &Histogram::smooth)
-        .def("writeToFile", &Histogram::writeToFile)
-        .def("__repr__", &CavitySizeDistribution::__repr__)
-    ;
-
-
     // Histogram type
     
     py::class_<Histogram>(m, "Histogram")
         .def(py::init<>())
         .def(py::init<int, vacuumms_float>())
         .def("bin", &Histogram::bin)
-        .def("getMisses", &Histogram::getMisses)        
+        .def("setBinWidth", &Histogram::setBinWidth)
+        .def("setNumberOfBins", &Histogram::setNumberOfBins)
+        .def("setStartingValue", &Histogram::setStartingValue)
+        .def("setValueRange", &Histogram::setValueRange)
+
+        .def("generate", &Histogram::generate)
+
+        // after generating
+        
+        .def("smooth", &Histogram::smooth)
+        .def("normalize", &Histogram::normalize)
+        .def("applyWeightExponent", &Histogram::applyWeightExponent)
+        .def("getTuples", &Histogram::getTuples)
+        .def("print", &Histogram::print)
         .def("writeToFile", &Histogram::writeToFile)
-        .def("setWeightingExponent", &Histogram::setWeightingExponent)
+        .def("getMisses", &Histogram::getMisses)        
         .def("__repr__", &Histogram::__repr__)
         ;
+
+    // Interface to CSD (Histogram subclass)
+
+    py::class_<CavitySizeDistribution, Histogram>(m, "CavitySizeDistribution")
+        .def(py::init<CavityConfiguration, Parameters>())
+        .def(py::init<CavityConfiguration>())
+    ;
+
+
+    // Variational 
+    // Variational3D(start.x, start.y, start.z, end.x, end.y, end.z, sigma, epsilon, n_var_points, &c_copy);
+
+    py::class_<Variational3D>(m, "Variational3D")
+        .def(py::init<>())
+        .def(py::init<std::vector<vacuumms_float>,   // start
+                      std::vector<vacuumms_float>,   // end
+                      vacuumms_float,                // sigma
+                      vacuumms_float,                // epsilon
+                      int,                           // n_var_points
+                      Configuration*>()
+            )
+        .def("setAlpha", &Variational3D::setAlpha)       // alpha sets proportionality of step size to gradient
+        .def("setAlphaMax", &Variational3D::setAlphaMax) // maximimum value of alpha
+        .def("setBeta", &Variational3D::setBeta)         // factor by which alpha increases with success
+        .def("setDeltaMax", &Variational3D::setDeltaMax) // delta is the actual step size taken, limited to avoid instability
+        .def("adaptiveIterateAndUpdate", &Variational3D::adaptiveIterateAndUpdate)
+        .def("printValues", &Variational3D::printValues)
+        .def("getPoints", &Variational3D::getPoints)
+        .def("setVerbose", &Variational3D::setVerbose)
+        .def("jitter", &Variational3D::jitter)
+    ; 
 
 
 } // end of bindings 

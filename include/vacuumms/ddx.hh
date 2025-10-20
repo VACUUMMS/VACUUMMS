@@ -9,6 +9,7 @@
 #include <vacuumms/parameters.hh>
 #include <vacuumms/operations.hh>
 #include <vacuumms/exports.hh>
+#include <vacuumms/rng.hh>
 
 
 class 
@@ -22,11 +23,19 @@ DDX : public Operation
         DDX(Configuration c, Parameters p);
         DDX(Configuration c);
         DDX();
-//        CavityConfiguration getOutput();
+
         void execute();
         void setParameters(Parameters p);
         void setConfiguration(Configuration c);
         Configuration getConfiguration();
+        void setNumberOfSamples(int);
+        void setVerletCutoff(vacuumms_float);
+        void setVerletExtent(int);
+        void setNumberOfSteps(int);
+        void setMinDiameter(vacuumms_float);
+        void setLearningRate(vacuumms_float);
+        void setTolerance(vacuumms_float);
+        void setRNGSeed(int);
         static void printUsage();
         CavityConfiguration getResult();
 
@@ -36,8 +45,8 @@ DDX : public Operation
 
     private:
 
-        double calculateRepulsion();
-        double calculateEnergy(double test_diameter);
+        vacuumms_float calculateRepulsion();
+        vacuumms_float calculateEnergy(vacuumms_float test_diameter);
 
         void generateTestPoint();
         void findEnergyMinimum();
@@ -45,51 +54,46 @@ DDX : public Operation
         void expandTestParticle();
 
         CavityConfiguration result;
-        Configuration c;
-        Parameters p;
+        Configuration configuration;
+        Parameters parameters;
+
+        // settable parameters
+        vacuumms_float verlet_cutoff=100.0;
+        int verlet_extent = 1;
+        int number_of_samples = 1;
+        int number_of_steps = 100;
+        int rng_seed = 1;
+        vacuumms_float min_diameter = 0.0;
+        vacuumms_float learning_rate = 0.01f;
+        vacuumms_float tolerance = 10.0f;
+        int volume_sampling = 0;
 
         // Working vars from C implementation
-        double x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-        double y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-        double z[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-        double sigma[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
-        double epsilon[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        vacuumms_float x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        vacuumms_float y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        vacuumms_float z[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        vacuumms_float sigma[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
+        vacuumms_float epsilon[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
 
-        double close_x[VACUUMMS_MAX_CLOSE], close_y[VACUUMMS_MAX_CLOSE], close_z[VACUUMMS_MAX_CLOSE];
-        double close_sigma[VACUUMMS_MAX_CLOSE];
-        double close_sigma6[VACUUMMS_MAX_CLOSE];
-        double close_sigma12[VACUUMMS_MAX_CLOSE];
-        double close_epsilon[VACUUMMS_MAX_CLOSE];
+        vacuumms_float close_x[VACUUMMS_MAX_CLOSE], close_y[VACUUMMS_MAX_CLOSE], close_z[VACUUMMS_MAX_CLOSE];
+        vacuumms_float close_sigma[VACUUMMS_MAX_CLOSE];
+        vacuumms_float close_sigma6[VACUUMMS_MAX_CLOSE];
+        vacuumms_float close_sigma12[VACUUMMS_MAX_CLOSE];
+        vacuumms_float close_epsilon[VACUUMMS_MAX_CLOSE];
 
-        double box_x=6, box_y=6, box_z=6;
-        double verlet_cutoff=100.0;
+        vacuumms_float box_x=0.0, box_y=0.0, box_z=0.0; // vals pulled from Configuration c
 
-        //double step_size_factor = 1.0;
-        int n_steps = 1000;
 
-        int number_of_samples = 1;
-        int volume_sampling = 0;
-        int include_center_energy = 0;
-        int show_steps = 0;
+        // Operating parameters
+        vacuumms_float test_x0, test_y0, test_z0;
+        vacuumms_float test_x, test_y, test_z;
+        vacuumms_float verlet_center_x, verlet_center_y, verlet_center_z;
+        vacuumms_float diameter = 10.0;
 
-        double test_x0, test_y0, test_z0;
-        double test_x, test_y, test_z;
-        double verlet_center_x, verlet_center_y, verlet_center_z;
-        double diameter = 1.0;
-        double min_diameter = 0.0;
-        double characteristic_length = 1.0;
-        double characteristic_energy = 1.0;
-        double precision_parameter = 0.001; // decimal 
-        int seed = 1;
+        MersenneTwister rng;
 
         int number_of_molecules = 0;
         int close_molecules;
-        int attempts;
-
-        FILE *instream;
-
-        int verbose;
 
 }; // end class DDX
-
 

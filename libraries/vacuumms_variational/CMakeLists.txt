@@ -7,6 +7,7 @@ add_library(vacuumms_variational SHARED
       ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/quaternion.cc
       ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/variational_2D.cc
       ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/variational_3D.cc
+      ${PROJECT_SOURCE_DIR}/libraries/vacuumms_variational/variational_scene.cc
 )
 
 target_link_libraries(vacuumms_variational 

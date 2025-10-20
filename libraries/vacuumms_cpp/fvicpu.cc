@@ -69,9 +69,7 @@ Configuration FVIX::getConfiguration()
 
 void FVIX::setDimensions(std::vector<size_t> _dimensions)
 {
-printf("setting dimensions to %ld x %ld x %ld \n", _dimensions[0], _dimensions[1], _dimensions[2]);
     dimensions = _dimensions;
-printf("set dimensions to %ld x %ld x %ld \n", dimensions[0], dimensions[1], dimensions[2]);
 }
 
 std::vector<size_t> FVIX::getDimensions()
@@ -354,10 +352,16 @@ void FVIX::executeMask(int mask)
     std::vector<ConfigurationRecord> records;
     for (int i=0; i<n_records; i++) records.push_back(ConfigurationRecord(c.recordAt(i)));
 
+/* for now, just calculate all outputs
     if (mask & FVIX_ATTRACTION) attraction.resize(array_size);
     if (mask & FVIX_REPULSION) repulsion.resize(array_size);
     if (mask & FVIX_ENERGY) energy.resize(array_size);
     if (mask & FVIX_FVI) FVI.resize(array_size);
+*/
+    attraction.resize(array_size);
+    repulsion.resize(array_size);
+    energy.resize(array_size);
+    FVI.resize(array_size);
 
     calculateEverything(records, n_records, 
         c.box_dimensions[0], c.box_dimensions[1], c.box_dimensions[2], 

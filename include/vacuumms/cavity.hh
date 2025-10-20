@@ -9,7 +9,7 @@
 #include <vacuumms/limits.h>
 
 #include <vacuumms/parameters.hh>
-#include <vacuumms/types.hh>
+#include <vacuumms/histogram.hh>
 #include <vacuumms/exports.hh>
 
 
@@ -30,6 +30,7 @@ Cavity
         int index;
         int foreign_key;
 
+        Cavity();
         Cavity(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _d);
         Cavity(int _index, 
                vacuumms_float _x, 
@@ -38,6 +39,7 @@ Cavity
                vacuumms_float _d, 
                vacuumms_float _drift);
 
+        std::vector<vacuumms_float> getXYZ();
         void setForeignKey(int _foreign_key);
         int getForeignKey();
 
@@ -52,25 +54,25 @@ CavityConfiguration
 {
     public:
 
-        std::vector<Cavity> records;
-
-//        vacuumms_float box_x;
-//        vacuumms_float box_y;
-//        vacuumms_float box_z;
-
-        std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
-
         CavityConfiguration();
         CavityConfiguration(const char *filename);
         CavityConfiguration(FILE *instream);
-//        void setBoxDimensions(vacuumms_float _box_x, vacuumms_float _box_y, vacuumms_float _box_z);
+        void replicate(std::vector<int> depths);
         void setBoxDimensions(std::vector<vacuumms_float> dims);
+        std::vector<vacuumms_float> getBoxDimensions();
         void setMirrorDepth(int _mirror_depth);
+        void scrubDuplicates();
+        std::vector<vacuumms_float> getDiameters();
         Cavity recordAt(int i);
         void deleteRecordAt(int i);
         int getSize();
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
         int pushBack(Cavity _cavity);
+        void setDuplicateThreshold(vacuumms_float);
+        void reset();
+
+        std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
+        std::vector<Cavity> records;
 
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
@@ -79,6 +81,7 @@ CavityConfiguration
     private:
 
         int mirror_depth = 1;
+        vacuumms_float duplicate_threshold = 0.1f;
 
 }; // end class CavityConfiguration
 
@@ -92,7 +95,10 @@ CavitySizeDistribution : public Histogram
     public:
 
         CavitySizeDistribution(CavityConfiguration cc, Parameters p);
+        CavitySizeDistribution(CavityConfiguration cc);
 
+        std::vector<std::tuple<vacuumms_float, vacuumms_float>> getResult();
+        
 #ifdef BUILD_PYBIND_BINDINGS
         pybind11::str __repr__();
 #endif

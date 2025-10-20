@@ -1,11 +1,12 @@
-#include <vacuumms/types.hh>
 #include <cstdio>
 
 
+#include <vacuumms/histogram.hh>
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 #include <vacuumms/parameters.hh>
-#include <vacuumms/pddx.hh>
+//#include <vacuumms/pddx.hh>
+#include <vacuumms/ddx.hh>
 
 int main()
 {
@@ -13,7 +14,7 @@ int main()
     Configuration c("fcc.gfg");
     std::vector<std::string> argv = {"-n_threads", "4", "-n", "100", "-box", "4.24264", "4.24264", "4.24264"};
     Parameters p(argv);
-    PDDX o(c,p);
+    DDX o(c,p);
     o.execute();
     CavityConfiguration result=o.getResult();
 

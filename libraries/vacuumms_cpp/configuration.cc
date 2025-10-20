@@ -1,8 +1,13 @@
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <vacuumms/configuration.hh>
 #include "vacuumms/types.h"
 
+
+ConfigurationRecord::ConfigurationRecord()
+{
+}
 
 ConfigurationRecord::ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, vacuumms_float _z, vacuumms_float _sigma, vacuumms_float _epsilon)
 {
@@ -11,6 +16,13 @@ ConfigurationRecord::ConfigurationRecord(vacuumms_float _x, vacuumms_float _y, v
     z = _z;
     sigma = _sigma;
     epsilon = _epsilon;
+}
+
+
+std::vector<vacuumms_float> ConfigurationRecord::getXYZ()
+{
+    std::vector<vacuumms_float> xyz = {x, y, z};
+    return xyz;
 }
 
 
@@ -24,16 +36,24 @@ Configuration::Configuration()
 Configuration::Configuration(const char *filename)
 {
     FILE* infile = fopen(filename, "r");
-    vacuumms_float x, y, z, sigma, epsilon;
-    records = std::vector<ConfigurationRecord>();    
-
-    while (!feof(infile))
+    if (infile == NULL)
     {
-        fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
-        records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
+        printf("Failed to open file: %s\n", strerror(errno)); // Print error message
+        fflush(stdout);
     }
+    else
+    {
+        vacuumms_float x, y, z, sigma, epsilon;
+        records = std::vector<ConfigurationRecord>();    
 
-    fclose(infile);
+        while (!feof(infile))
+        {
+            fscanf(infile, "%f\t%f\t%f\t%f\t%f\n", &x, &y, &z, &sigma, &epsilon);
+            records.push_back(ConfigurationRecord(x, y, z, sigma, epsilon));
+        }
+
+        fclose(infile);
+    }
 }
 
 
@@ -80,6 +100,24 @@ void Configuration::dumpContents()
 {
     for (int i = 0; i < records.size(); i++)
         printf("%f\t%f\t%f\t%f\t%f\n", records[i].x, records[i].y, records[i].z, records[i].sigma, records[i].epsilon);
+}
+
+
+void Configuration::writeToFile(const char* filename)
+{
+    std::ofstream file(filename);
+    if (file.is_open())
+    {
+        for (int i = 0; i < records.size(); i++)
+            file << records[i].x << "\t" << records[i].y << "\t" 
+                 << records[i].z << "\t" << records[i].sigma << "\t" 
+                 << records[i].epsilon << std::endl;
+        file.close();
+    }
+    else 
+    {
+        std::cerr << "Could not open " << filename << " for output." << std::endl;
+    }
 }
 
 
@@ -169,9 +207,15 @@ void Configuration::cram()
 {
     for (int i=0; i<records.size(); i++)
     {
+        // check for atoms above upper bound
         while (records[i].x > box_dimensions[0]) records[i].x -= box_dimensions[0];
         while (records[i].y > box_dimensions[1]) records[i].y -= box_dimensions[1];
         while (records[i].z > box_dimensions[2]) records[i].z -= box_dimensions[2];
+
+        // check for atoms below lower bound
+        while (records[i].x < 0.0f) records[i].x += box_dimensions[0];
+        while (records[i].y < 0.0f) records[i].y += box_dimensions[1];
+        while (records[i].z < 0.0f) records[i].z += box_dimensions[2];
     }
     crammed = 1;
 }
@@ -183,6 +227,7 @@ int Configuration::isCrammed()
 }
 
 
+/*
 void Configuration::replicate(int depth)
 {
     // Use size of original vector
@@ -203,7 +248,52 @@ void Configuration::replicate(int depth)
                                              records[r].epsilon)); 
         }
     }
-    replication_depth += depth;
+}
+*/
+
+
+void Configuration::replicate(std::vector<int> depths)
+{
+    // Use size of original vector
+    size_t size = records.size();
+
+    for (int r = 0; r < size; r++)
+    {
+        for (int i=0; i<depths[0]; i++)
+        for (int j=0; j<depths[1]; j++)
+        for (int k=0; k<depths[2]; k++)
+        {
+            // skip the center box
+            if (!((i == 0) && (j == 0) && (k == 0)))
+                pushBack(ConfigurationRecord((box_dimensions[0] * i) + records[r].x, 
+                                             (box_dimensions[1] * j) + records[r].y, 
+                                             (box_dimensions[2] * k) + records[r].z, 
+                                             records[r].sigma, 
+                                             records[r].epsilon)); 
+        }
+    }
+
+    // Now adjust box dimensions
+    box_dimensions[0] *= depths[0];
+    box_dimensions[1] *= depths[1];
+    box_dimensions[2] *= depths[2];
+}
+
+
+void Configuration::shift(std::vector<vacuumms_float> amount)
+{
+    if (amount.size() < 3)
+    {
+        std::cerr << "Inadequate dimensions applied to shift()." << std::endl;
+        return;
+    }
+
+    for (int i=0; i < records.size(); i++) 
+    {
+        records[i].x += amount[0];
+        records[i].y += amount[1];
+        records[i].z += amount[2];
+    }
 }
 
 
@@ -211,9 +301,13 @@ void Configuration::replicate(int depth)
 
 pybind11::str Configuration::__repr__()
 {
+    int max_records = 16;
+
     pybind11::str retval("");
 
-    for (int i=0; i<records.size(); i++)
+    int records_to_show = (records.size() < max_records) ? records.size() : max_records;
+
+    for (int i=0; i<records_to_show; i++)
         retval = retval + 
              pybind11::str(std::to_string(records[i].x)) +
              pybind11::str("\t") +
@@ -225,6 +319,8 @@ pybind11::str Configuration::__repr__()
              pybind11::str("\t") +
              pybind11::str(std::to_string(records[i].epsilon)) +
              pybind11::str("\n");
+
+    if (records_to_show >= max_records) retval = retval + pybind11::str("...\n");
 
     retval = retval + pybind11::str("box dims: ")
              + pybind11::str(std::to_string(box_dimensions[0]))

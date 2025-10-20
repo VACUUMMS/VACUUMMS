@@ -11,16 +11,25 @@
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 
+Scene::Scene()
+{
+    // If no light sources are present, then apply standard light now.
+    //if (light_sources.size() == 0) applyStandardLight();
+    applyStandardLight();
+}
+
 std::string Scene::generateContainerSDL()
 {
 	std::stringstream out;
 
 	// headers
 	
+    out << "#version 3.7;\n";
+    out << "global_settings { assumed_gamma 1.0 }\n";
     out << "#include \"colors.inc\"\n";
-
+    out << "\n";
     out << "background {color " << background_color << "}\n";
-
+    out << "\n";
     out << "camera {location <" << camera_location[0] 
         << "," << camera_location[1] 
         << "," << camera_location[2] 
@@ -29,6 +38,10 @@ std::string Scene::generateContainerSDL()
         << "," << camera_look_at[2] 
         << "> right 1.0 angle 45}\n";
 
+// moved to constructor
+    // If no light sources are present, then apply standard light now.
+//    if (light_sources.size() == 0) applyStandardLight();
+        
     // ambient light
 
 	if (ambient_light) out << "global_settings { ambient_light rgb <" << ambient_light << "," << ambient_light << "," << ambient_light << "> }\n"; 
@@ -46,7 +59,7 @@ std::string Scene::generateContainerSDL()
 			<< "> color " << light_color << "}\n";
     }
     
-    // box
+    // box -- This is using <0,0,0> as corner... should use lower_box_dimensions, but is used rarely, so fix it another day...
     
     if (show_box)
     {
@@ -141,6 +154,43 @@ void SceneComponent::setColor(std::string _color)
     color = _color;
 }
 
+
+void SceneComponent::setClip()
+{
+    clip = 1;
+}
+
+
+void SceneComponent::unsetClip()
+{
+    clip = 0;
+}
+
+
+void SceneComponent::setBoxDimensions(std::vector<vacuumms_float> _box_dimensions)
+{
+    box_dimensions = _box_dimensions;
+}
+
+
+void SceneComponent::setLowerBoxDimensions(std::vector<vacuumms_float> _lower_box_dimensions)
+{
+    lower_box_dimensions = _lower_box_dimensions;
+}
+
+
+void SceneComponent::hide()
+{
+    hidden = 1;
+}
+
+
+void SceneComponent::show()
+{
+    hidden = 0;
+}
+
+
 std::string SceneComponent::getComponentSDL() const
 {
     // Return an unit orange bubble centered at origin as default. 
@@ -151,24 +201,37 @@ std::string SceneComponent::getComponentSDL() const
 ConfigurationComponent::ConfigurationComponent(){}
 
 
-ConfigurationComponent::ConfigurationComponent(Configuration _configuration)
+ConfigurationComponent::ConfigurationComponent(Configuration* _configuration)
 {
     configuration = _configuration;
+    setBoxDimensions(configuration->getBoxDimensions());
+    // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
+    color = "Red";
+}
+
+
+void ConfigurationComponent::rescale(vacuumms_float factor)
+{
+    // iterate configuration and adjust each record
+    for (auto& record : configuration->records)
+        record.sigma *= factor;     
 }
 
 
 std::string ConfigurationComponent::getComponentSDL() const
 {
+    if (hidden) return "// Configuration Component hidden\n\n";
+
     std::stringstream sdl;
     sdl << "// Configuration Component\n\n";
 
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
 
-    for (const auto record : configuration.records) 
+    for (const auto record : configuration->records) 
     {
 
-printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
+//FTW printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.sigma, record.epsilon);
 
         if (clip) 
         {
@@ -177,9 +240,12 @@ printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y,
                 << ", " << record.y 
                 << ", " << record.z
                 << ">, " << (record.sigma * 0.5)
-                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
-                << ", " << configuration.box_dimensions[1]
-                << ", " << configuration.box_dimensions[2]
+                << "} box {<" << lower_box_dimensions[0] 
+                << ", " << lower_box_dimensions[1]
+                << ", " << lower_box_dimensions[2]
+                << "><" << box_dimensions[0] 
+                << ", " << box_dimensions[1]
+                << ", " << box_dimensions[2]
                 << ">} texture { pigment { color "
                 << color << " " << transmit_str 
                 << " } " << phong_str << " }}\n"
@@ -208,25 +274,35 @@ printf("dumping configuration record: %f\t%f\t%f\t%f\t%f\n", record.x, record.y,
 CavityComponent::CavityComponent(){}
 
 
-CavityComponent::CavityComponent(CavityConfiguration _configuration)
+CavityComponent::CavityComponent(CavityConfiguration* _configuration)
 {
     configuration = _configuration;
+    setBoxDimensions(configuration->getBoxDimensions());
+    // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
+    color = "White";
+}
+
+
+void CavityComponent::rescale(vacuumms_float factor)
+{
+    // iterate configuration and adjust each record
+    for (auto& record : configuration->records)
+        record.d *= factor;     
 }
 
 
 std::string CavityComponent::getComponentSDL() const
 {
-//    return std::string("// SceneComponent::getComponentSDL called on CavityComponent\n\n");
+    if (hidden) return "// Cavity Component hidden\n\n";
+
     std::stringstream sdl;
     sdl << "// Cavity Component\n\n";
 
     std::string transmit_str = " transmit " + std::to_string(transmit);
     std::string phong_str = " finish {phong " + std::to_string(phong) + "} ";
 
-    for (const auto record : configuration.records) 
+    for (const auto record : configuration->records) 
     {
-
-printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, record.z, record.d);
 
         if (clip) 
         {
@@ -235,9 +311,13 @@ printf("dumping configuration record: %f\t%f\t%f\t%f\n", record.x, record.y, rec
                 << ", " << record.y 
                 << ", " << record.z
                 << ">, " << (record.d * 0.5)
-                << "} box {<0,0,0><" << configuration.box_dimensions[0] 
-                << ", " << configuration.box_dimensions[1]
-                << ", " << configuration.box_dimensions[2]
+
+                << "} box {<" << lower_box_dimensions[0] 
+                << ", " << lower_box_dimensions[1]
+                << ", " << lower_box_dimensions[2]
+                << "><" << box_dimensions[0] 
+                << ", " << box_dimensions[1]
+                << ", " << box_dimensions[2]
                 << ">} texture { pigment { color "
                 << color << " " << transmit_str 
                 << " } " << phong_str << " }}\n"
@@ -269,26 +349,35 @@ FVIComponent::FVIComponent(FVIX fvix)
 }
 #endif
 
-void Scene::setBoxDimensions(std::vector<vacuumms_float> dims)
+void Scene::setBoxDimensions(std::vector<vacuumms_float> _box_dimensions)
 {
-	box_dimensions = dims;
+	box_dimensions = _box_dimensions;
 }
+
+
+void Scene::setLowerBoxDimensions(std::vector<vacuumms_float> _lower_box_dimensions)
+{
+	lower_box_dimensions = _lower_box_dimensions;
+}
+
 
 std::vector<vacuumms_float> Scene::getBoxDimensions()
 {
 	return box_dimensions;
 }
 
+
 SceneComponent* Scene::componentAt(int i)
 {
 	return components[i];
 }
 
-size_t Scene::deleteComponentAt(int i)
+
+void Scene::deleteComponentAt(int i)
 {
     components.erase(components.begin() + i);
-    return components.size();
 }
+
 
 size_t Scene::getNumberOfComponents()
 {
@@ -296,27 +385,10 @@ size_t Scene::getNumberOfComponents()
 }
 
 
-size_t Scene::addSceneComponent(SceneComponent* comp)
+void Scene::addSceneComponent(SceneComponent* comp)
 {
 	components.push_back(comp);
-	return components.size();
 }
-
-
-/*
-size_t Scene::addConfigurationComponent(ConfigurationComponent* comp)
-{
-	components.push_back(comp);
-	return components.size();
-}
-
-
-size_t Scene::addCavityComponent(CavityComponent* comp)
-{
-	components.push_back(comp);
-	return components.size();
-}
-*/
 
 
 void Scene::setBackgroundColor(std::string color)
@@ -329,10 +401,14 @@ void Scene::setCameraLocation(std::vector<vacuumms_float> location)
 	camera_location = location;
 }
 
-size_t Scene::addLightSource(std::vector<vacuumms_float> source, std::string color)
+void Scene::setCameraLookAt(std::vector<vacuumms_float> look_at)
+{
+	camera_look_at = look_at;
+}
+
+void Scene::addLightSource(std::vector<vacuumms_float> source, std::string color)
 {
 	light_sources.push_back(source);
-    return light_sources.size();
 }
 
 void Scene::applyAmbientLight()
@@ -340,7 +416,7 @@ void Scene::applyAmbientLight()
     ambient_light = 1;
 }
 
-size_t Scene::applyStandardLight()
+void Scene::applyStandardLight()
 {
 	addLightSource({0,0,100}, "White");
 	addLightSource({0,100,0}, "White");
@@ -348,7 +424,11 @@ size_t Scene::applyStandardLight()
 	addLightSource({0,0,-100}, "White");
 	addLightSource({0,-100,0}, "White");
 	addLightSource({-100,0,0}, "White");
-    return light_sources.size();
+}
+
+void Scene::clearLightSources()
+{
+    light_sources.clear();
 }
 
 void Scene::setShowBox(int yn)
@@ -376,7 +456,7 @@ int Scene::dumpSDL()  // dump POV source
         scene << std::endl;
     }
 
-    std::cout << scene.str();
+    std::cout << scene.str() << std::flush;
 
     return 0;
 }
@@ -406,9 +486,15 @@ int Scene::createSceneFile(const char* filename)  // POV file
     }
     else
     {
-        std::cout << "Could not write file " << filename << std::endl;
+        std::cout << "Could not write file " << filename << std::endl << std::flush;
         return 1;
     }
+}
+
+void Scene::setRenderDimensions(int width, int height)
+{
+    render_width = width;
+    render_height = height;
 }
 
 int Scene::renderScene(const char* filename)      // PNG file
@@ -418,29 +504,30 @@ int Scene::renderScene(const char* filename)      // PNG file
 
     createSceneFile(pov_filename.c_str());
 
-    std::string command = "povray -W1920 -H1080 " + pov_filename;
+    // Redirecting stderr to /dev/null because POVRay sends output there which causes jupyter to hang.
+    std::string command = "povray -W" + std::to_string(render_width) + " -H" + std::to_string(render_height) + " " + pov_filename + " 2>/dev/null";
     std::string rm_command = "rm -f " + pov_filename;
 
     // Render
     int result = std::system(command.c_str());
     if (result == 0) 
 	{
-        std::cout << "POV-Ray render completed successfully.\n";
+        std::cout << "POV-Ray render completed successfully." << std::endl;
     } 
 	else 
 	{
-        std::cerr << "POV-Ray render failed with exit code: " << result << "\n";
+        std::cerr << "POV-Ray render failed with exit code: " << result << std::endl;
     }
 
     // Clean up
     int rm_result = std::system(rm_command.c_str());
     if (rm_result == 0) 
 	{
-        std::cout << "POV-Ray temporary file deleted successfully.\n";
+        std::cout << "POV-Ray temporary file deleted successfully." << std::endl;
     } 
 	else 
 	{
-        std::cerr << "POV-Ray temporary file could not be deleted, failed with exit code: " << rm_result << "\n";
+        std::cerr << "POV-Ray temporary file could not be deleted, failed with exit code: " << rm_result << std::endl;
     }
 
     return result;
