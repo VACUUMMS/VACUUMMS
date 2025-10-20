@@ -2,7 +2,9 @@
 
 # VACUUMMS
 
-**VACUUMMS (Void Analysis Codes and Unix Utilities for Molecular Modeling and Simulation) is a collection of codes developed over the course of a research career, specifically for analyzing Free Volume in materials.**
+**VACUUMMS (Void Analysis Codes and Unix-like Utilities for Molecular Modeling and Simulation) is a collection of codes developed over the course of a research career, specifically for analyzing Free Volume in materials.**
+
+Beginning with version 1.3.0, VACUUMMS has shifted fully to development of the C++ interface, which in turn supports the python/pybind11 interface. The original command line interface and utilities still exist and remain largely unchanged, however these are now considered deprecated when there is a alternative available though the new interfaces. 
 
 ## LICENSE
 
@@ -46,7 +48,9 @@
 
  Context: https://repositories.lib.utexas.edu/handle/2152/3515
 
- Summary slides: https://www.xsede.org/documents/234989/378230/XSEDE12-willmore.pdf
+ Slides: 
+
+ Original white paper: share/doc/VACUUMMS_paper.pdf
 
  Videos: https://www.youtube.com/playlist?list=PLb1z5T_SBfZgV0-0qzXOeYTgL8NkGST2w
 
