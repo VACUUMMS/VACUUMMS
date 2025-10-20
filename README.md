@@ -54,9 +54,6 @@ Beginning with version 1.3.0, VACUUMMS has shifted fully to development of the C
 
  Videos: https://www.youtube.com/playlist?list=PLb1z5T_SBfZgV0-0qzXOeYTgL8NkGST2w
 
-## MODULES:
-
-There is currently one optional module, *variational* and it includes its own examples. 
 
 ## QUICK START GUIDE
 
@@ -95,11 +92,12 @@ Select the desired options from the ccmake generator screen, generate, and exit 
 `$ make`
 `$ make install`
 
-See individual commands for usage info, e.g.:
+#### via Conda 
 
-`$ ddx -usage`
+VACUUMMS can also be installed using conda/mamba. There is a pre-built conda binary, or it can be built from source following instructions at [BUILDING_CONDA_PACKAGE.md](BUILDING_CONDA_PACKAGE.md)
 
-## USER AND DEVELOPER GUIDES
+
+## USER GUIDES
 
 [IO Formats](IO_FORMATS.md)
 
@@ -107,12 +105,21 @@ See individual commands for usage info, e.g.:
 
 [Utilities User Guide](UTILITIES_USER_GUIDE.md)
 
+
+## DEVELOPER GUIDES
+
 [Developer Guide](DEVELOPER_GUIDE.md)
 
 [Roadmap](ROADMAP.md)
 
 [Release Notes](RELEASE_NOTES.md)
 
+
 ## Examples:
 
-[Polystyrene](examples/polystyrene/README.md)
+[JuPyter](examples/jupyter) - Examples using the JuPyter/python interface to the C++ library and variational module. Includes PDF of complete notebooks as well as the .ipynb (JuPyter) code used to create them. 
+
+[Variational](examples/variational/README.md) - Examples using the C++ interface and variational module.
+
+[Polystyrene](examples/polystyrene/README.md) - An example using the original CLI (command line interface) and bash scripts.
+

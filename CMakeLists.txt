@@ -15,9 +15,9 @@ option(ENABLE_TESTING "run the unit tests when building" ON)
 
 # set the project name
 if (BUILD_CUDA_COMPONENTS) 
-    project(VACUUMMS VERSION 1.2.1 LANGUAGES C CXX CUDA)
+    project(VACUUMMS VERSION 1.3.0 LANGUAGES C CXX CUDA)
 else()
-    project(VACUUMMS VERSION 1.2.1 LANGUAGES C CXX)
+    project(VACUUMMS VERSION 1.3.0 LANGUAGES C CXX)
 endif()
 
 message("got value for BUILD_CUDA_COMPONENTS=${BUILD_CUDA_COMPONENTS}")
