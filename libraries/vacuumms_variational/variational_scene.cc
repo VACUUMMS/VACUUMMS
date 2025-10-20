@@ -12,6 +12,13 @@ VariationalComponent::VariationalComponent(Variational3D* _variational)
     variational = _variational;
 }
 
+
+void VariationalComponent::setDiameter(vacuumms_float _diameter)
+{
+    cylinder_diameter = _diameter;
+}
+
+
 std::string VariationalComponent::getComponentSDL() const
 {
     if (hidden) return "// Variational Component hidden\n\n";

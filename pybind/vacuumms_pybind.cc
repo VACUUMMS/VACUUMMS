@@ -61,6 +61,7 @@ PYBIND11_MODULE(vacuumms, m)
     // Configuration type(s)
 
     py::class_<Configuration>(m, "Configuration")
+        .def(py::init<>())
         .def(py::init<char*>())
         .def(py::init<char*, std::vector<vacuumms_float>>())
         .def(py::init<char*, std::vector<vacuumms_float>, vacuumms_float>())
@@ -74,6 +75,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("isCrammed", &Configuration::isCrammed)
         .def("replicate", &Configuration::replicate)
         .def("getSize", &Configuration::getSize)
+        .def("pushBack", &Configuration::pushBack)
         .def("recordAt", &Configuration::recordAt)
         .def("deleteRecordAt", &Configuration::deleteRecordAt)
         .def("writeToFile", &Configuration::writeToFile)
@@ -87,6 +89,7 @@ PYBIND11_MODULE(vacuumms, m)
 
     py::class_<ConfigurationRecord>(m, "ConfigurationRecord")
         .def(py::init<>())
+        .def(py::init<vacuumms_float, vacuumms_float, vacuumms_float, vacuumms_float, vacuumms_float>())
         .def("getXYZ", &ConfigurationRecord::getXYZ)
         ;
 
@@ -100,6 +103,7 @@ PYBIND11_MODULE(vacuumms, m)
     // CavityConfiguration type
 
     py::class_<CavityConfiguration>(m, "CavityConfiguration")
+        .def(py::init<>())
         .def(py::init<char*>())
         .def("scrubDuplicates", &CavityConfiguration::scrubDuplicates)
         .def("setDuplicateThreshold", &CavityConfiguration::setDuplicateThreshold)
@@ -107,6 +111,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("getSize", &CavityConfiguration::getSize)
         .def("replicate", &CavityConfiguration::replicate)
         .def("recordAt", &CavityConfiguration::recordAt)
+        .def("pushBack", &CavityConfiguration::pushBack)
         .def("__repr__", &CavityConfiguration::__repr__)
         ;
 
@@ -207,12 +212,14 @@ PYBIND11_MODULE(vacuumms, m)
     py::class_<ConfigurationComponent, SceneComponent>(m, "ConfigurationComponent")
         .def(py::init<>())
         .def(py::init<Configuration*>())
+        .def("rescale", &ConfigurationComponent::rescale)
         .def("getComponentSDL", &ConfigurationComponent::getComponentSDL)
     ;
 
     py::class_<CavityComponent, SceneComponent>(m, "CavityComponent")
         .def(py::init<>())
         .def(py::init<CavityConfiguration*>())
+        .def("rescale", &CavityComponent::rescale)
         .def("getComponentSDL", &CavityComponent::getComponentSDL)
     ;
 
@@ -220,6 +227,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def(py::init<>())
         .def(py::init<Variational3D*>())
         .def("getComponentSDL", &VariationalComponent::getComponentSDL)
+        .def("setDiameter", &VariationalComponent::setDiameter)
     ;
 
 #ifdef BUILD_VORONOI_UTILS
@@ -348,10 +356,13 @@ PYBIND11_MODULE(vacuumms, m)
                       int,                           // n_var_points
                       Configuration*>()
             )
-        .def("setAlpha", &Variational3D::setAlpha)
-        .def("setAlphaMax", &Variational3D::setAlphaMax)
+        .def("setAlpha", &Variational3D::setAlpha)       // alpha sets proportionality of step size to gradient
+        .def("setAlphaMax", &Variational3D::setAlphaMax) // maximimum value of alpha
+        .def("setBeta", &Variational3D::setBeta)         // factor by which alpha increases with success
+        .def("setDeltaMax", &Variational3D::setDeltaMax) // delta is the actual step size taken, limited to avoid instability
         .def("adaptiveIterateAndUpdate", &Variational3D::adaptiveIterateAndUpdate)
         .def("printValues", &Variational3D::printValues)
+        .def("getPoints", &Variational3D::getPoints)
         .def("setVerbose", &Variational3D::setVerbose)
         .def("jitter", &Variational3D::jitter)
     ; 

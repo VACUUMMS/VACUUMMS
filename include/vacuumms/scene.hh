@@ -85,6 +85,7 @@ ConfigurationComponent : public SceneComponent
 
         ConfigurationComponent();
         ConfigurationComponent(Configuration*);
+        void rescale(vacuumms_float);
         std::string getComponentSDL() const;
     
     private:
@@ -108,6 +109,7 @@ CavityComponent : public SceneComponent
 
         CavityComponent();
         CavityComponent(CavityConfiguration*);
+        void rescale(vacuumms_float);
         std::string getComponentSDL() const;
     
     private:
@@ -145,6 +147,7 @@ Scene
 {
     public:
 
+        Scene();
         // I/O
         int dumpSDL();  // dump POV source to stdout
         int createSceneFile(const char* filename);  // POV file

@@ -11,6 +11,13 @@
 #include <vacuumms/configuration.hh>
 #include <vacuumms/cavity.hh>
 
+Scene::Scene()
+{
+    // If no light sources are present, then apply standard light now.
+    //if (light_sources.size() == 0) applyStandardLight();
+    applyStandardLight();
+}
+
 std::string Scene::generateContainerSDL()
 {
 	std::stringstream out;
@@ -31,8 +38,9 @@ std::string Scene::generateContainerSDL()
         << "," << camera_look_at[2] 
         << "> right 1.0 angle 45}\n";
 
+// moved to constructor
     // If no light sources are present, then apply standard light now.
-    if (light_sources.size() == 0) applyStandardLight();
+//    if (light_sources.size() == 0) applyStandardLight();
         
     // ambient light
 
@@ -202,6 +210,14 @@ ConfigurationComponent::ConfigurationComponent(Configuration* _configuration)
 }
 
 
+void ConfigurationComponent::rescale(vacuumms_float factor)
+{
+    // iterate configuration and adjust each record
+    for (auto& record : configuration->records)
+        record.sigma *= factor;     
+}
+
+
 std::string ConfigurationComponent::getComponentSDL() const
 {
     if (hidden) return "// Configuration Component hidden\n\n";
@@ -264,6 +280,14 @@ CavityComponent::CavityComponent(CavityConfiguration* _configuration)
     setBoxDimensions(configuration->getBoxDimensions());
     // setLowerBoxDimensions(configuration.getLowerBoxDimensions());
     color = "White";
+}
+
+
+void CavityComponent::rescale(vacuumms_float factor)
+{
+    // iterate configuration and adjust each record
+    for (auto& record : configuration->records)
+        record.d *= factor;     
 }
 
 

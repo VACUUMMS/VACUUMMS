@@ -84,7 +84,7 @@ Variational3D
 {
     private:
     
-        char *debug; // to be set if running in debug mode
+//        char *debug; // to be set if running in debug mode
 
         // step size regulators
         vacuumms_float alpha = 0.01;
@@ -99,6 +99,7 @@ Variational3D
         vacuumms_float end_y; 
         vacuumms_float end_z; 
         int n_var_points;
+        int iteration = 0;
 
         int verbose = 0;
 
@@ -161,12 +162,15 @@ Variational3D
         vacuumms_float* getZ();
 
         void setAlpha(vacuumms_float _alpha);
+        void setBeta(vacuumms_float _beta);
         void setAlphaMax(vacuumms_float _alpha_max);
         void setDeltaMax(vacuumms_float _delta_max);
         int getNVariationalPoints();
         void setNVariationalPoints(int);
         void setVerbose(int);
         void printValues();
+        std::vector<std::vector<vacuumms_float>> getPoints();
+
         void iterate();
         void iterateWork();
         vacuumms_float adaptiveIterateAndUpdate();

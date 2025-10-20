@@ -301,7 +301,7 @@ void Configuration::shift(std::vector<vacuumms_float> amount)
 
 pybind11::str Configuration::__repr__()
 {
-    int max_records = 32;
+    int max_records = 16;
 
     pybind11::str retval("");
 

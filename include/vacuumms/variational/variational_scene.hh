@@ -24,6 +24,7 @@ VariationalComponent : public SceneComponent
 
         VariationalComponent();
         VariationalComponent(Variational3D*);
+        void setDiameter(vacuumms_float);
         std::string getComponentSDL() const;
     
     private:
