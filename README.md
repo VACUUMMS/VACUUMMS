@@ -1,4 +1,4 @@
-![FVI-xray](examples/polystyrene/images/xray.png)
+![FVI-xray](examples/CLI/polystyrene/images/xray.png)
 
 # VACUUMMS
 
@@ -99,20 +99,20 @@ VACUUMMS can also be installed using conda/mamba. There is a pre-built conda bin
 
 ## USER GUIDES
 
-[IO Formats](IO_FORMATS.md)
+[IO Formats](share/doc/IO_FORMATS.md)
 
-[Applications User Guide](APPLICATIONS_USER_GUIDE.md)
+[Applications User Guide](share/doc/APPLICATIONS_USER_GUIDE.md)
 
-[Utilities User Guide](UTILITIES_USER_GUIDE.md)
+[Utilities User Guide](share/doc/UTILITIES_USER_GUIDE.md)
 
 
 ## DEVELOPER GUIDES
 
-[Developer Guide](DEVELOPER_GUIDE.md)
+[Developer Guide](share/doc/DEVELOPER_GUIDE.md)
 
-[Roadmap](ROADMAP.md)
+[Roadmap](share/doc/ROADMAP.md)
 
-[Release Notes](RELEASE_NOTES.md)
+[Release Notes](share/doc/RELEASE_NOTES.md)
 
 
 ## Examples:
