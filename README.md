@@ -1,14 +1,15 @@
 ![FVI-xray](examples/CLI/polystyrene/images/xray.png)
+Free volume in a simulated sample of polystyrene.
 
 # VACUUMMS
 
 **VACUUMMS (Void Analysis Codes and Unix-like Utilities for Molecular Modeling and Simulation) is a collection of codes developed over the course of a research career, specifically for analyzing Free Volume in materials.**
 
-Beginning with version 1.3.0, VACUUMMS has shifted fully to development of the C++ interface, which in turn supports the python/pybind11 interface. The original command line interface and utilities still exist and remain largely unchanged, however these are now considered deprecated when there is a alternative available though the new interfaces. 
+Beginning with version 1.3.0, VACUUMMS development focuses on the C++ interface, which in turn supports the python interface. The original command line interface and utilities still exist and shall remain largely unchanged, however they are now considered deprecated in favor of the new interface. See the JuPyter examples below for an introduction.
 
 ## LICENSE
 
-  Copyright (C) 2003-2024 Frank T Willmore
+  Copyright (C) 2003-2025 Frank T Willmore
 
   Permission is hereby granted, free of charge, to any person obtaining a 
   copy of this software and associated documentation files (the "Software"), 
@@ -44,7 +45,7 @@ Beginning with version 1.3.0, VACUUMMS has shifted fully to development of the C
 
   https://dl.acm.org/doi/abs/10.1145/2335755.2335826
 
-## ADDITIONAL REFERENCE
+## ADDITIONAL REFERENCES
 
  Context: https://repositories.lib.utexas.edu/handle/2152/3515
 
@@ -55,11 +56,9 @@ Beginning with version 1.3.0, VACUUMMS has shifted fully to development of the C
  Videos: https://www.youtube.com/playlist?list=PLb1z5T_SBfZgV0-0qzXOeYTgL8NkGST2w
 
 
-## QUICK START GUIDE
+## INSTALLATION
 
-### Installation
-
-#### via spack
+### via spack
 
 Get spack:
 
@@ -77,7 +76,7 @@ Load into the user environment:
 
 `$ spack load vacuumms`
 
-#### via CMake
+### via CMake
 
 VACUUMMS can also be installed using the CMake build system generator:
 
@@ -92,7 +91,7 @@ Select the desired options from the ccmake generator screen, generate, and exit 
 `$ make`
 `$ make install`
 
-#### via Conda 
+### via Conda 
 
 VACUUMMS can also be installed using conda/mamba. There is a pre-built conda binary, or it can be built from source following instructions at [BUILDING_CONDA_PACKAGE.md](BUILDING_CONDA_PACKAGE.md)
 
@@ -115,7 +114,7 @@ VACUUMMS can also be installed using conda/mamba. There is a pre-built conda bin
 [Release Notes](share/doc/RELEASE_NOTES.md)
 
 
-## Examples:
+## EXAMPLES
 
 [JuPyter](examples/jupyter) - Examples using the JuPyter/python interface to the C++ library and variational module. Includes PDF of complete notebooks as well as the .ipynb (JuPyter) code used to create them. 
 
@@ -123,3 +122,6 @@ VACUUMMS can also be installed using conda/mamba. There is a pre-built conda bin
 
 [Polystyrene](examples/polystyrene/README.md) - An example using the original CLI (command line interface) and bash scripts.
 
+---
+
+Those interested in using VACUUMMS software are encouraged and invited to reach out directly for assistance.

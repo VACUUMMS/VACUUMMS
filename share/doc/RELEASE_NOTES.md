@@ -6,10 +6,12 @@
 
 - Full-fledged release of C++/Python/Jupyter notebook support for major codes
 - Re-worked DDX algorithm (not yet in PDDX) in C++/python
+- Variational module integrated into default build system
 - Python/JuPyter Examples for simple FCC model and Variational calculation
-- Python/JuPyter Examples of PS (polystyrene) and PMP (polymethylpentene
+- Python/JuPyter Examples of PS (polystyrene) and PMP (polymethylpentene)
+- Deprecates but still supports original CLI (command line interface) applications and utilities
 - LAMMPS reader implemented and available in C++/python
-- Conda package!
+- Introduces Conda recipe and package for python/JuPyter integration
 
 ---
 

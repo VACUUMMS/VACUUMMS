@@ -1,4 +1,4 @@
-# Applications User Guide
+# CLI Applications User Guide
 
 These applications are used to either generate new or analyze existing molecular structures.
 
