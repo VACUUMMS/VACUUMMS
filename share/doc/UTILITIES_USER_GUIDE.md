@@ -1,4 +1,4 @@
-# Utilities User Guide
+# CLI Utilities User Guide
 
 The utilities included here are typically quick text-processing utilities that perform simple manipulations such as smoothing data, sorting/histogramming, translating one format to another, etc.  These utilities are UNIX-based, are designed to be used in conjunction with the standard UNIX utilities sed, awk, and grep to build elegant pipelines for the processing of data streams.  A basic understanding of these standard UNIX utilities will enable the user to perform analyses of data from xyz, car, psf, and other common formats.
 

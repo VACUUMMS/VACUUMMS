@@ -1,12 +1,16 @@
-![FVI-xray](examples/polystyrene/images/xray.png)
+![FVI-xray](examples/CLI/polystyrene/images/xray.png)
+Free volume in a simulated sample of polystyrene.
 
 # VACUUMMS
 
-**VACUUMMS (Void Analysis Codes and Unix Utilities for Molecular Modeling and Simulation) is a collection of codes developed over the course of a research career, specifically for analyzing Free Volume in materials.**
+**VACUUMMS (Void Analysis Codes and Unix-like Utilities for Molecular Modeling and Simulation) is a collection of codes developed over the course of a research career, specifically for analyzing Free Volume in materials.**
+
+Beginning with version 1.3.0, VACUUMMS development focuses on the C++ interface, which in turn supports the python interface. The original command line interface and utilities still exist and shall remain largely unchanged, however they are now considered deprecated in favor of the new interfaces, when available. See the JuPyter examples below for an introduction.
+
 
 ## LICENSE
 
-  Copyright (C) 2003-2024 Frank T Willmore
+  Copyright (C) 2003-2025 Frank T Willmore
 
   Permission is hereby granted, free of charge, to any person obtaining a 
   copy of this software and associated documentation files (the "Software"), 
@@ -26,6 +30,7 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
   DEALINGS IN THE SOFTWARE.
 
+
 ## CITATION
 
   Please reference the following publication/doi in citing this work:
@@ -42,23 +47,19 @@
 
   https://dl.acm.org/doi/abs/10.1145/2335755.2335826
 
-## ADDITIONAL REFERENCE
 
- Context: https://repositories.lib.utexas.edu/handle/2152/3515
+## ADDITIONAL REFERENCES
 
- Summary slides: https://www.xsede.org/documents/234989/378230/XSEDE12-willmore.pdf
+ Thesis for which original codes were developed: https://repositories.lib.utexas.edu/handle/2152/3515
+
+ Original white paper describing the software: share/doc/VACUUMMS_paper.pdf
 
  Videos: https://www.youtube.com/playlist?list=PLb1z5T_SBfZgV0-0qzXOeYTgL8NkGST2w
 
-## MODULES:
 
-There is currently one optional module, *variational* and it includes its own examples. 
+## INSTALLATION
 
-## QUICK START GUIDE
-
-### Installation
-
-#### via spack
+### via spack
 
 Get spack:
 
@@ -76,7 +77,7 @@ Load into the user environment:
 
 `$ spack load vacuumms`
 
-#### via CMake
+### via CMake
 
 VACUUMMS can also be installed using the CMake build system generator:
 
@@ -91,24 +92,37 @@ Select the desired options from the ccmake generator screen, generate, and exit 
 `$ make`
 `$ make install`
 
-See individual commands for usage info, e.g.:
+### via Conda 
 
-`$ ddx -usage`
+VACUUMMS can also be installed using conda/mamba. There is a pre-built conda binary, or it can be built from source following instructions at [BUILDING_AND_USING CONDA_PACKAGE.md](BUILDING_AND_USING CONDA_PACKAGE.md)
 
-## USER AND DEVELOPER GUIDES
 
-[IO Formats](IO_FORMATS.md)
+## USER GUIDES
 
-[Applications User Guide](APPLICATIONS_USER_GUIDE.md)
+[IO Formats](share/doc/IO_FORMATS.md)
 
-[Utilities User Guide](UTILITIES_USER_GUIDE.md)
+[Applications User Guide](share/doc/APPLICATIONS_USER_GUIDE.md)
 
-[Developer Guide](DEVELOPER_GUIDE.md)
+[Utilities User Guide](share/doc/UTILITIES_USER_GUIDE.md)
 
-[Roadmap](ROADMAP.md)
 
-[Release Notes](RELEASE_NOTES.md)
+## DEVELOPER GUIDES
 
-## Examples:
+[Developer Guide](share/doc/DEVELOPER_GUIDE.md)
 
-[Polystyrene](examples/polystyrene/README.md)
+[Roadmap](share/doc/ROADMAP.md)
+
+[Release Notes](share/doc/RELEASE_NOTES.md)
+
+
+## EXAMPLES
+
+[JuPyter](examples/jupyter) - Examples using the JuPyter/python interface to the C++ library and variational module. Includes PDF of complete notebooks as well as the .ipynb (JuPyter) code used to create them. 
+
+[Variational](examples/variational/README.md) - Examples using the C++ interface and variational module.
+
+[Polystyrene](examples/polystyrene/README.md) - An example using the original CLI (command line interface) and bash scripts.
+
+---
+
+Those interested in using VACUUMMS software are encouraged and invited to reach out directly for assistance.

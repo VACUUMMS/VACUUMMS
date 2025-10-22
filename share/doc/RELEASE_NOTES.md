@@ -2,6 +2,19 @@
 
 ---
 
+## 1.3.0:
+
+- Full-fledged release of C++/Python/Jupyter notebook support for major codes
+- Re-worked DDX algorithm (not yet in PDDX) in C++/python
+- Variational module integrated into default build system
+- Python/JuPyter Examples for simple FCC model and Variational calculation
+- Python/JuPyter Examples of PS (polystyrene) and PMP (polymethylpentene)
+- Deprecates but still supports original CLI (command line interface) applications and utilities
+- LAMMPS reader implemented and available in C++/python
+- Introduces Conda recipe and package for python/JuPyter integration
+
+---
+
 ## 1.2.1:
 
 - Patch release with minor fixes to build system for TIFF and CUDA components, precipitated by changes in how CMake handles CUDA.
