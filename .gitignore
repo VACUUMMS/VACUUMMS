@@ -1,11 +1,8 @@
-# .public is a directory to which I copy codes I wish to make public... 
-.public
 *.o
 *.so
 *.swp
 build
 cmake
-package.py
 __pycache__
 env.sh
 .ipynb_checkpoints
