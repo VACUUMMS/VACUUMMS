@@ -96,7 +96,7 @@ Select the desired options from the ccmake generator screen, generate, and exit 
 
 VACUUMMS can also be installed using conda/mamba. There is a pre-built conda binary, or it can be built from source following instructions at:
 
-[BUILDING_AND_USING CONDA_PACKAGE](BUILDING_AND_USING CONDA_PACKAGE.md)
+[BUILDING_AND_USING CONDA_PACKAGE](BUILDING_AND_USING_CONDA_PACKAGE.md)
 
 
 ## USER GUIDES
