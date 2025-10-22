@@ -67,33 +67,40 @@ On some HPC systems, building script runs best on a compute node. YMMV.
 
 ### Alternatively, installation of a pre-built standalone package can be accomplished from the github site:
  
-    mamba install https://raw.githubusercontent.com/frankwillmore/VACUUMMS/scene/channel/linux-64/vacuumms-1.2.1-py313h2bc3f7f_0.conda 
-    mamba install https://raw.githubusercontent.com/frankwillmore/VACUUMMS/scene/channel/linux-aarch64/vacuumms-1.3.0-py312h025b047_0.conda
+    mamba install https://raw.githubusercontent.com/VACUUMMS/VACUUMMS/develop/channel/linux-64/vacuumms-1.2.1-py313h2bc3f7f_0.conda 
+    mamba install https://raw.githubusercontent.com/VACUUMMS/VACUUMMS/develop/channel/linux-aarch64/vacuumms-1.3.0-py312h025b047_0.conda
+
+To override safety checks, it may be necessary to first set CONDA_SAFETY_CHECKS=disabled
 
 ## To run VACUUMMS from the python command line:
 
-Use an conda environment in which all of the needed dependencies are installed, and the VACUUMMS python binding is present in the PYTHONPATH. Then test with:
+Use a conda environment in which all of the needed dependencies are installed, and the VACUUMMS python binding is present in the PYTHONPATH. Then test from the python3 prompt with:
 
-    import vacuumms as v
+    import vacuumms
+
+If there are warnings about missing dependency libraries (e.g. libtiff) then it may be necessary to install those to the environment. It may also be necessary to set or append PYTHONPATH to search the installation directory:
+
+    export PYTHONPATH=/home/fool/miniforge3/lib
+
+Also check your python version and `which python`. It needs to be running the correct version of python, and from the conda/miniconda/minforge directory. Once the import statement succeeds, you are good to go.
 
 ## To run VACUUMMS from a Jupyter kernel:
 
-Make sure vacuumms installed to the environment you will be using (e.g. vacuumms here):
+Make sure vacuumms is installed to the environment you will be using, as above. The environment is called 'vacuumms' here:
 
-     conda activate vacuumms
+     mamba activate vacuumms
 
-Install a kernel so that jupyter can use this environment:
+Assuming the import statement works correctly when running from the python prompt, go ahead and install a kernel so that jupyter can use this environment:
 
      python -m ipykernel install --user --name vacuumms --display-name "VACUUMMS Jupyter kernel"
  
-Then start a Jupyter server using this environment and create a notebook using this kernel. Note that it may be a necessary workaround to put 
-the directory with shared object vacuumms.cpython-313-aarch64-linux-gnu.so in the PYTHONPATH for vacuumms 
-to be visible/importable. The vacuumms classes need to be visible to the server.
+Then start a Jupyter server using this environment and create a notebook using this kernel. The newly named kernel will appear as one of the options when creating a new notebook.  Note that, as above, it may be a necessary workaround to put the directory with shared object vacuumms.cpython-313-aarch64-linux-gnu.so in the PYTHONPATH for vacuumms to be visible/importable. The vacuumms classes need to be visible to the jupyter server.
 
+    mamba activate vacuumms
     export PYTHONPATH=/home/frankwillmore/vacuumms/lib
     jupyter server
 
-### Make sure the jupyter server is configured: 
+### Make sure the jupyter server is configured correctly:
 
     cat ~/.jupyter/jupyter_notebook_config.py 
     c.ServerApp.ip = '0.0.0.0'  # Allow connections from outside the VM
