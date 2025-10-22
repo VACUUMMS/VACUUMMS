@@ -94,7 +94,9 @@ Select the desired options from the ccmake generator screen, generate, and exit 
 
 ### via Conda 
 
-VACUUMMS can also be installed using conda/mamba. There is a pre-built conda binary, or it can be built from source following instructions at [BUILDING_AND_USING CONDA_PACKAGE.md](BUILDING_AND_USING CONDA_PACKAGE.md)
+VACUUMMS can also be installed using conda/mamba. There is a pre-built conda binary, or it can be built from source following instructions at:
+
+[BUILDING_AND_USING CONDA_PACKAGE](BUILDING_AND_USING_CONDA_PACKAGE.md)
 
 
 ## USER GUIDES
@@ -119,9 +121,9 @@ VACUUMMS can also be installed using conda/mamba. There is a pre-built conda bin
 
 [JuPyter](examples/jupyter) - Examples using the JuPyter/python interface to the C++ library and variational module. Includes PDF of complete notebooks as well as the .ipynb (JuPyter) code used to create them. 
 
-[Variational](examples/variational/README.md) - Examples using the C++ interface and variational module.
+[Variational](examples/variational/EXAMPLES.md) - Examples using the C++ interface and variational module.
 
-[Polystyrene](examples/polystyrene/README.md) - An example using the original CLI (command line interface) and bash scripts.
+[Polystyrene](examples/CLI/polystyrene/README.md) - An example using the original CLI (command line interface) and bash scripts.
 
 ---
 
