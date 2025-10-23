@@ -52,7 +52,9 @@ Beginning with version 1.3.0, VACUUMMS development focuses on the C++ interface,
 
  Thesis for which original codes were developed: https://repositories.lib.utexas.edu/handle/2152/3515
 
- Original white paper describing the software: share/doc/VACUUMMS_paper.pdf
+ [Original white paper describing the software]: (share/doc/VACUUMMS_paper.pdf)
+
+ [Slides from AICHE 2025]: (share/doc/AICHE 2025.pdf)
 
  Videos: https://www.youtube.com/playlist?list=PLb1z5T_SBfZgV0-0qzXOeYTgL8NkGST2w
 
