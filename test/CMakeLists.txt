@@ -31,9 +31,6 @@ add_test(
     COMMAND "${CMAKE_SOURCE_DIR}/test/scripts/test_compare_output.sh" 1
 #    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
-#set_tests_properties(test_compare_output PROPERTIES
-#    ENVIRONMENT "TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
-#)
 
 
 # PyBind tests:
@@ -43,39 +40,23 @@ add_test(
     NAME test_pybind_import
     COMMAND python3 ${PROJECT_SOURCE_DIR}/test/python/test_import.py 
 )
-#set_tests_properties(test_pybind_import 
-#    PROPERTIES
-#    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};"
-#)
 
 add_test(
     NAME test_lammps_import
     COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_lammps_import.sh 
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
-#set_tests_properties(test_lammps_import 
-#    PROPERTIES
-#    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
-#)
 
 add_test(
     NAME test_ddx_fcc_py
     COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_ddx_fcc_py.sh
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
-#set_tests_properties(test_ddx_fcc_py
-#    PROPERTIES
-#    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
-#)
 
 #add_test(
 #    NAME test_pddx_fcc_py
 #    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_pddx_fcc_py.sh
 #    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-#)
-#set_tests_properties(test_pddx_fcc_py
-#    PROPERTIES
-#    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
 #)
 
 add_test(
@@ -83,12 +64,6 @@ add_test(
     COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_fvi_fcc_py.sh
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
-#set_tests_properties(test_fvi_fcc_py
-#    PROPERTIES
-#    ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/pybind:$ENV{PYTHONPATH};SourcePath=${CMAKE_SOURCE_DIR};TestDataPath=${CMAKE_SOURCE_DIR}/test/data"
-#)
-#
-
 
 
 # utils testing
@@ -99,9 +74,6 @@ add_test(
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_uniq.sh"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-#set_tests_properties(test_uniq PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};SourcePath=${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}"
-#)
 
 
 # applications testing
@@ -110,26 +82,17 @@ add_test(
     NAME test_ddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_ddx_fcc.sh"
 )
-#set_tests_properties(test_ddx_fcc PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 add_test(
     NAME test_pddx_fcc
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_pddx_fcc.sh"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
-#set_tests_properties(test_pddx_fcc PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 add_test(
     NAME test_ljx
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_ljx.sh"
 )
-#set_tests_properties(test_ljx PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 
 # Variational module tests
@@ -138,36 +101,25 @@ add_test(
     NAME test_variational_lj
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_lj.sh"
 )
-#set_tests_properties(test_variational_lj PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 add_test(
     NAME test_variational_2D
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_2D.sh"
 )
-#set_tests_properties(test_variational_2D PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 add_test(
     NAME test_variational_3D
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_variational_3D.sh"
 )
-#set_tests_properties(test_variational_3D PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 add_test(
     NAME test_quaternion
     COMMAND "${PROJECT_SOURCE_DIR}/test/scripts/test_quaternion.sh"
 )
-#set_tests_properties(test_quaternion PROPERTIES
-#    ENVIRONMENT "BinaryPath=${CMAKE_BINARY_DIR};TestDataPath=${PROJECT_SOURCE_DIR}/test/data"
-#)
 
 #get_test_list(all_tests)
 get_property(test_names DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY TESTS)
 foreach(test_name ${test_names})
     set_tests_properties(${test_name} PROPERTIES ENVIRONMENT "${MY_TEST_ENV}")
 endforeach()
+

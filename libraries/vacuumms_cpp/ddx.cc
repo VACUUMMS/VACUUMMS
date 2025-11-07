@@ -169,20 +169,6 @@ void DDX::execute()
         fprintf(stderr, "Found simulation box volume = 0.0, gracefully exiting.\n");
         return;
     }
-
-    // was  loadConfiguration(); 
-    // now just copy over the records and run the old algorithm
-/* FTW removing magic number VACUUMMS_MAX_NUMBER_OF_MOLECULES
-    for (int i=0; i<configuration.getSize(); i++) 
-    {
-        ConfigurationRecord r = configuration.recordAt(i);
-        x[i] = r.x;
-        y[i] = r.y;
-        z[i] = r.z;
-        sigma[i] = r.sigma;
-        epsilon[i] = r.epsilon;
-    }
-FTW */
   
     number_of_molecules = configuration.getSize();
   
@@ -246,8 +232,6 @@ void DDX::makeVerletList()
     verlet_center_y=test_y;
     verlet_center_z=test_z;
 
-//FTW    close_molecules=0;
-//    for (i=0; i<number_of_molecules; i++)
     for (i=0; i < configuration.getSize(); i++)
     {
         for (int index_x = -verlet_extent; index_x <= verlet_extent; index_x++)
@@ -258,11 +242,6 @@ void DDX::makeVerletList()
             shift_y = index_y * box_y;
             shift_z = index_z * box_z;
 
-/* FTW cleaning up magic numbers for VACUUMMS_MAX_NUMBER_OF_MOLECULES
-            dx = shift_x + x[i] - test_x;
-            dy = shift_y + y[i] - test_y;
-            dz = shift_z + z[i] - test_z;
-*/
             dx = shift_x + configuration.recordAt(i).x - test_x;
             dy = shift_y + configuration.recordAt(i).y - test_y;
             dz = shift_z + configuration.recordAt(i).z - test_z;
@@ -271,32 +250,14 @@ void DDX::makeVerletList()
 
             if (dd < verlet_cutoff) 
             {  
-/* FTW cleaning up magic numbers for VACUUMMS_MAX_NUMBER_OF_MOLECULES
-                close_x[close_molecules] = shift_x + x[i];
-                close_y[close_molecules] = shift_y + y[i];
-                close_z[close_molecules] = shift_z + z[i];
-                close_sigma[close_molecules] = sigma[i];
-                close_sigma6[close_molecules] = sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i];
-                close_sigma12[close_molecules] = close_sigma6[close_molecules]*close_sigma6[close_molecules];
-                close_epsilon[close_molecules] = epsilon[i];
-*/
                 vacuumms_float close_x = shift_x + configuration.recordAt(i).x;
                 vacuumms_float close_y = shift_y + configuration.recordAt(i).y;
                 vacuumms_float close_z = shift_z + configuration.recordAt(i).z;
 
-//                close_x[close_molecules] = shift_x + config.recordAt(i).x;
-//                close_y[close_molecules] = shift_y + config.recordAt(i).y;
-//                close_z[close_molecules] = shift_z + config.recordAt(i).z;
                 vacuumms_float close_sigma = configuration.recordAt(i).sigma;
                 vacuumms_float close_epsilon = configuration.recordAt(i).epsilon;
                 ConfigurationRecord close_atom(close_x, close_y, close_z, close_sigma, close_epsilon);
                 verlet_list.pushBack(close_atom);
-//FTW Do I want to keep precomputed values ?
-//                close_sigma6[close_molecules] = sigma6;
-//                close_sigma12[close_molecules] = sigma6 * sigma6;
-//                close_epsilon[close_molecules] = config.recordAt[i].epsilon;
-
-//FTW                close_molecules++;
             }
         }
     }
@@ -331,25 +292,6 @@ void DDX::findEnergyMinimum()
         // find the gradient at test_x, test_y, test_Z using the derivative of energy
         grad_x=0; grad_y=0; grad_z=0;
 
-/* FTW removing magic number stuff...
-        for (i=0; i<close_molecules; i++)
-        {
-            dx = test_x - close_x[i];
-            dy = test_y - close_y[i];
-            dz = test_z - close_z[i];
-            dd = dx*dx + dy*dy + dz*dz;
-            d6 = dd*dd*dd;
-            d14 = d6*d6*dd;
-
-            // The analytical expression for the gradient contribution contains a factor of -48.0.
-            // The minus is reflected in the sense of the step taken.  The factor of 48 is factored out in the normalization.
-            factor = close_epsilon[i] * close_sigma12[i] / d14;
-
-            grad_x += dx * factor;
-            grad_y += dy * factor;
-            grad_z += dz * factor;
-        }
-*/
         for (int i = 0; i < verlet_list.getSize(); i++)
         {
             dx = test_x - verlet_list.recordAt(i).x;
@@ -358,6 +300,9 @@ void DDX::findEnergyMinimum()
             dd = dx*dx + dy*dy + dz*dz;
             d6 = dd*dd*dd;
             d14 = d6*d6*dd;
+
+            // The analytical expression for the gradient contribution contains a factor of -48.0.
+            // The minus is reflected in the sense of the step taken.  The factor of 48 is factored out in the normalization.
             factor = verlet_list.recordAt(i).epsilon * verlet_list.recordAt(i).sigma / d14;
 
             grad_x += dx * factor;
@@ -401,14 +346,8 @@ vacuumms_float DDX::calculateRepulsion()
     vacuumms_float dx, dy, dz, dd, d6, d12;
     int i;
 
-// FTW    for (i=0; i<close_molecules; i++)
     for (i=0; i<verlet_list.getSize(); i++)
     {
-/* FTW magic numbers...
-        dx = close_x[i] - test_x;
-        dy = close_y[i] - test_y;
-        dz = close_z[i] - test_z;
-*/
         dx = verlet_list.recordAt(i).x - test_x;
         dy = verlet_list.recordAt(i).y - test_y;
         dz = verlet_list.recordAt(i).z - test_z;
@@ -416,7 +355,6 @@ vacuumms_float DDX::calculateRepulsion()
         d6 = dd*dd*dd;
         d12 = d6*d6;
 
-//FTW magic number        repulsion += close_epsilon[i] * close_sigma12[i] / d12;
         vacuumms_float sigma = verlet_list.recordAt(i).sigma;
         vacuumms_float sigma6 = sigma * sigma * sigma * sigma * sigma * sigma;
         vacuumms_float sigma12 = sigma6 * sigma6;
@@ -435,14 +373,8 @@ vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
     vacuumms_float sigma, sigma6, sigma12;
     int i;
 
-//FTW     for (i=0; i<close_molecules; i++)
     for (i=0; i<verlet_list.getSize(); i++)
     {
-/* FTW magic numbers
-        dx = close_x[i] - test_x;
-        dy = close_y[i] - test_y;
-        dz = close_z[i] - test_z;
-*/
         dx = verlet_list.recordAt(i).x - test_x;
         dy = verlet_list.recordAt(i).y - test_y;
         dz = verlet_list.recordAt(i).z - test_z;
@@ -450,15 +382,10 @@ vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
         d6 = dd*dd*dd;
         d12 = d6*d6;
 
-//FTW magic number        sigma = 0.5 * (close_sigma[i] + test_diameter);
         sigma = 0.5 * (verlet_list.recordAt(i).sigma + test_diameter);
         sigma6 = sigma*sigma*sigma*sigma*sigma*sigma;
         sigma12 = sigma6*sigma6;
 
-/* FTW magic number
-        repulsion += close_epsilon[i] * sigma12/d12;
-        attraction += close_epsilon[i] * sigma6/d6;
-*/
         repulsion += verlet_list.recordAt(i).epsilon * sigma12/d12;
         attraction += verlet_list.recordAt(i).epsilon * sigma6/d6;
     }
@@ -506,74 +433,4 @@ std::cout << "energy= " << energy << std::endl;
     // ran out of iterations, return diameter without explicit convergence
     return;
 }
-    
 
-/*
-void DDX::expandTestParticle()
-{
-    int iter=0, max_iter = 100; 
-
-    vacuumms_float epsilon_1 = 1.0e-9; // suggestion was 1.0e-6, for first derivative test
-    vacuumms_float epsilon_2 = 1.0e-36; // suggestion was 1.0e-10, for second derivative test
-    vacuumms_float h = 1.0e-3; // suggestion was 1.0e-5, for finite difference step size
-    vacuumms_float diameter_step = 0.001; // stepping increment for initial guess
-    vacuumms_float step_tolerance = 1.0e-6;
-
-
-    // improved initial guess
-    diameter = 0.0f; 
-    vacuumms_float old_energy = calculateEnergy(diameter);
-    if (old_energy > 0) return; // If zero diameter gives positive insertion energy, not a cavity.
-
-    while(calculateEnergy(diameter += diameter_step) < 0) ;
-/*
-    while (1)
-    {
-        diameter += diameter_step; // increase diameter until energy is positive
-        vacuumms_float energy = calculateEnergy(diameter);
-//        if (energy > old_energy) break;
-        if (energy > 0.0f) break;
-//        old_energy = energy;
-    }
-//    diameter -= diameter_step; //revert to last guess
-*//*
-
-    while (iter < max_iter) 
-    {
-        // Compute derivatives using finite differences
-        vacuumms_float deriv1 = (calculateEnergy(diameter + h) - calculateEnergy(diameter - h)) / (2.0 * h);
-        vacuumms_float deriv2 = (calculateEnergy(diameter + h) - 2.0 * calculateEnergy(diameter) + calculateEnergy(diameter - h)) / (h * h);
-
-        // Check for zero second derivative, and call it if curve is too flat
-        if (fabs(deriv2) < epsilon_2) 
-        {
-            return;
-        }
-
-        // Newton's update: r_{n+1} = r_n - E'(r_n)/E''(r_n)
-        // r_new = r - deriv1 / deriv2;
-        vacuumms_float step_size = - deriv1 / deriv2;
-
-        // check convergence based on step size
-        if (fabs(step_size) < step_tolerance) 
-        {
-std::cout << "tolerance: " << diameter << " / " << calculateEnergy(diameter) << std::endl;
-            return;
-        }
-
-        // Check convergence based on 1st derivative
-        if (fabs(deriv1) < epsilon_1) 
-        {
-std::cout << "deriv1: " << diameter << " / " << calculateEnergy(diameter) << std::endl;
-            return;
-        }
-
-        // update
-        diameter += step_size;
-        iter++;
-    }
-std::cout << "max_iter: " << diameter << " / " << calculateEnergy(diameter) << std::endl;
-
-    // reached max_iter, so give up and accept value thus far 
-}
-*/
