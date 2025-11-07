@@ -172,6 +172,7 @@ void DDX::execute()
 
     // was  loadConfiguration(); 
     // now just copy over the records and run the old algorithm
+/* FTW removing magic number VACUUMMS_MAX_NUMBER_OF_MOLECULES
     for (int i=0; i<configuration.getSize(); i++) 
     {
         ConfigurationRecord r = configuration.recordAt(i);
@@ -181,6 +182,7 @@ void DDX::execute()
         sigma[i] = r.sigma;
         epsilon[i] = r.epsilon;
     }
+FTW */
   
     number_of_molecules = configuration.getSize();
   
@@ -226,6 +228,8 @@ void DDX::generateTestPoint()
 
 void DDX::makeVerletList()
 {
+    verlet_list.clear(); // clear old list
+
     int i;
     vacuumms_float dx, dy, dz, dd;
     vacuumms_float shift_x, shift_y, shift_z;
@@ -242,8 +246,9 @@ void DDX::makeVerletList()
     verlet_center_y=test_y;
     verlet_center_z=test_z;
 
-    close_molecules=0;
-    for (i=0; i<number_of_molecules; i++)
+//FTW    close_molecules=0;
+//    for (i=0; i<number_of_molecules; i++)
+    for (i=0; i < configuration.getSize(); i++)
     {
         for (int index_x = -verlet_extent; index_x <= verlet_extent; index_x++)
         for (int index_y = -verlet_extent; index_y <= verlet_extent; index_y++)
@@ -253,14 +258,20 @@ void DDX::makeVerletList()
             shift_y = index_y * box_y;
             shift_z = index_z * box_z;
 
+/* FTW cleaning up magic numbers for VACUUMMS_MAX_NUMBER_OF_MOLECULES
             dx = shift_x + x[i] - test_x;
             dy = shift_y + y[i] - test_y;
             dz = shift_z + z[i] - test_z;
+*/
+            dx = shift_x + configuration.recordAt(i).x - test_x;
+            dy = shift_y + configuration.recordAt(i).y - test_y;
+            dz = shift_z + configuration.recordAt(i).z - test_z;
 
             dd = dx*dx + dy*dy + dz*dz;
 
             if (dd < verlet_cutoff) 
             {  
+/* FTW cleaning up magic numbers for VACUUMMS_MAX_NUMBER_OF_MOLECULES
                 close_x[close_molecules] = shift_x + x[i];
                 close_y[close_molecules] = shift_y + y[i];
                 close_z[close_molecules] = shift_z + z[i];
@@ -268,8 +279,24 @@ void DDX::makeVerletList()
                 close_sigma6[close_molecules] = sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i]*sigma[i];
                 close_sigma12[close_molecules] = close_sigma6[close_molecules]*close_sigma6[close_molecules];
                 close_epsilon[close_molecules] = epsilon[i];
+*/
+                vacuumms_float close_x = shift_x + configuration.recordAt(i).x;
+                vacuumms_float close_y = shift_y + configuration.recordAt(i).y;
+                vacuumms_float close_z = shift_z + configuration.recordAt(i).z;
 
-                close_molecules++;
+//                close_x[close_molecules] = shift_x + config.recordAt(i).x;
+//                close_y[close_molecules] = shift_y + config.recordAt(i).y;
+//                close_z[close_molecules] = shift_z + config.recordAt(i).z;
+                vacuumms_float close_sigma = configuration.recordAt(i).sigma;
+                vacuumms_float close_epsilon = configuration.recordAt(i).epsilon;
+                ConfigurationRecord close_atom(close_x, close_y, close_z, close_sigma, close_epsilon);
+                verlet_list.pushBack(close_atom);
+//FTW Do I want to keep precomputed values ?
+//                close_sigma6[close_molecules] = sigma6;
+//                close_sigma12[close_molecules] = sigma6 * sigma6;
+//                close_epsilon[close_molecules] = config.recordAt[i].epsilon;
+
+//FTW                close_molecules++;
             }
         }
     }
@@ -304,6 +331,7 @@ void DDX::findEnergyMinimum()
         // find the gradient at test_x, test_y, test_Z using the derivative of energy
         grad_x=0; grad_y=0; grad_z=0;
 
+/* FTW removing magic number stuff...
         for (i=0; i<close_molecules; i++)
         {
             dx = test_x - close_x[i];
@@ -320,6 +348,22 @@ void DDX::findEnergyMinimum()
             grad_x += dx * factor;
             grad_y += dy * factor;
             grad_z += dz * factor;
+        }
+*/
+        for (int i = 0; i < verlet_list.getSize(); i++)
+        {
+            dx = test_x - verlet_list.recordAt(i).x;
+            dy = test_y - verlet_list.recordAt(i).y;
+            dz = test_z - verlet_list.recordAt(i).z;
+            dd = dx*dx + dy*dy + dz*dz;
+            d6 = dd*dd*dd;
+            d14 = d6*d6*dd;
+            factor = verlet_list.recordAt(i).epsilon * verlet_list.recordAt(i).sigma / d14;
+
+            grad_x += dx * factor;
+            grad_y += dy * factor;
+            grad_z += dz * factor;
+
         }
 
         // normalize the gradient
@@ -357,16 +401,26 @@ vacuumms_float DDX::calculateRepulsion()
     vacuumms_float dx, dy, dz, dd, d6, d12;
     int i;
 
-    for (i=0; i<close_molecules; i++)
+// FTW    for (i=0; i<close_molecules; i++)
+    for (i=0; i<verlet_list.getSize(); i++)
     {
+/* FTW magic numbers...
         dx = close_x[i] - test_x;
         dy = close_y[i] - test_y;
         dz = close_z[i] - test_z;
+*/
+        dx = verlet_list.recordAt(i).x - test_x;
+        dy = verlet_list.recordAt(i).y - test_y;
+        dz = verlet_list.recordAt(i).z - test_z;
         dd = dx*dx + dy*dy + dz*dz;
         d6 = dd*dd*dd;
         d12 = d6*d6;
 
-        repulsion += close_epsilon[i] * close_sigma12[i] / d12;
+//FTW magic number        repulsion += close_epsilon[i] * close_sigma12[i] / d12;
+        vacuumms_float sigma = verlet_list.recordAt(i).sigma;
+        vacuumms_float sigma6 = sigma * sigma * sigma * sigma * sigma * sigma;
+        vacuumms_float sigma12 = sigma6 * sigma6;
+        repulsion += verlet_list.recordAt(i).epsilon * sigma / d12;
     }
  
     return 4.0 * repulsion;
@@ -381,21 +435,32 @@ vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
     vacuumms_float sigma, sigma6, sigma12;
     int i;
 
-    for (i=0; i<close_molecules; i++)
+//FTW     for (i=0; i<close_molecules; i++)
+    for (i=0; i<verlet_list.getSize(); i++)
     {
+/* FTW magic numbers
         dx = close_x[i] - test_x;
         dy = close_y[i] - test_y;
         dz = close_z[i] - test_z;
+*/
+        dx = verlet_list.recordAt(i).x - test_x;
+        dy = verlet_list.recordAt(i).y - test_y;
+        dz = verlet_list.recordAt(i).z - test_z;
         dd = dx*dx + dy*dy + dz*dz;
         d6 = dd*dd*dd;
         d12 = d6*d6;
 
-        sigma = 0.5 * (close_sigma[i] + test_diameter);
+//FTW magic number        sigma = 0.5 * (close_sigma[i] + test_diameter);
+        sigma = 0.5 * (verlet_list.recordAt(i).sigma + test_diameter);
         sigma6 = sigma*sigma*sigma*sigma*sigma*sigma;
         sigma12 = sigma6*sigma6;
 
+/* FTW magic number
         repulsion += close_epsilon[i] * sigma12/d12;
         attraction += close_epsilon[i] * sigma6/d6;
+*/
+        repulsion += verlet_list.recordAt(i).epsilon * sigma12/d12;
+        attraction += verlet_list.recordAt(i).epsilon * sigma6/d6;
     }
 
     vacuumms_float energy = 4.0 * (repulsion - attraction);
@@ -417,11 +482,12 @@ void DDX::expandTestParticle()
     for (int iteration = 0; iteration < number_of_steps; iteration++) 
     {
         vacuumms_float energy = calculateEnergy(diameter);
+std::cout << "energy= " << energy << std::endl;
         vacuumms_float d_energy = (calculateEnergy(diameter + h) - calculateEnergy(diameter - h)) / (2.0 * h);
 
         if (fabs(d_energy) < 1e-10)
         {
-            printf("Error: Derivative too small.\n");
+            printf("Error: Derivative too small: %f\n", d_energy);
             fflush(stdout);
             return;
         }

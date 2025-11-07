@@ -55,6 +55,7 @@ DDX : public Operation
 
         CavityConfiguration result;
         Configuration configuration;
+        Configuration verlet_list;
         Parameters parameters;
 
         // settable parameters
@@ -68,6 +69,7 @@ DDX : public Operation
         vacuumms_float tolerance = 10.0f;
         int volume_sampling = 0;
 
+/*
         // Working vars from C implementation
         vacuumms_float x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
         vacuumms_float y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
@@ -80,7 +82,7 @@ DDX : public Operation
         vacuumms_float close_sigma6[VACUUMMS_MAX_CLOSE];
         vacuumms_float close_sigma12[VACUUMMS_MAX_CLOSE];
         vacuumms_float close_epsilon[VACUUMMS_MAX_CLOSE];
-
+*/
         vacuumms_float box_x=0.0, box_y=0.0, box_z=0.0; // vals pulled from Configuration c
 
 

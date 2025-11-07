@@ -70,6 +70,7 @@ Configuration
         void shift(std::vector<vacuumms_float>);
         ConfigurationRecord recordAt(int i);
         void deleteRecordAt(int i);
+        void clear();
         int getSize();
         int pushBack(ConfigurationRecord);
         void cram();
