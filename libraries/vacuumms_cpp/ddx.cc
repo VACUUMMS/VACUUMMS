@@ -65,7 +65,6 @@ void DDX::setNumberOfSamples(int _number_of_samples)
 void DDX::setRNGSeed(int _rng_seed)
 {
     rng_seed = _rng_seed;
-    rng = MersenneTwister(rng_seed);
 }
 
 
@@ -84,6 +83,18 @@ void DDX::setVerletExtent(int _verlet_extent)
 void DDX::setNumberOfSteps(int _number_of_steps)
 {
     number_of_steps = _number_of_steps;
+}
+
+
+void DDX::setNumberOfThreads(int _number_of_threads)
+{
+    // Set equal to number of cores when zero is specified.
+    if (_number_of_threads == 0) 
+    {
+        number_of_threads = std::thread::hardware_concurrency();
+        std::cout << "Using hardware concurrency level = " << number_of_threads << std::endl;
+    }
+    else number_of_threads = _number_of_threads;
 }
 
 
@@ -111,7 +122,7 @@ pybind11::str DDX::__repr__()
     pybind11::str retval;
     retval += configuration.__repr__();
     retval += parameters.__repr__();
-    retval += result.__repr__();
+    retval += results.__repr__();
     return retval;
 }
 #endif
@@ -119,12 +130,36 @@ pybind11::str DDX::__repr__()
 
 CavityConfiguration DDX::getResult()
 {
-    return result;   
+    return results;   
 }
 
 
 void DDX::printUsage()
 {
+    std::cout << 
+        "Constructors: " << std::endl << std::endl <<
+        "DDX(Configuration c);        # Construct from configuration" << std::endl <<
+        "DDX();                       # construct empty DDX operation" << std::endl <<
+        std::endl << 
+        "Member functions:" << std::endl << 
+        std::endl <<
+        "DDX.setNumberOfThreads(1)    # Specify number of threads or 0 to use all available cores." << std::endl <<
+        "DDX.setNumberOfSteps(50)     # Maximum number of steps before giving up and accepting result without explicit convergence" << std::endl <<
+        "DDX.setLearningRate(0.01)    # Set learning rate for gradient descent of location of center." << std::endl <<
+        "DDX.setTolerance(10.0)       # Set comparison value to derivative to determine convergence." << std::endl <<
+        "DDX.setRNGSeed(1)            # Set random number generator seed." << std::endl <<
+        "DDX.setVerletExtent(1)       # Set how many levels of mirror boxes to search when building Verlet list." << std::endl <<
+        "DDX.setConfiguration();      # Set atom configuration." << std::endl <<
+        "DDX.getConfiguration();      # Retrieve atom configuration." << std::endl <<
+        "DDX.setNumberOfSamples(1);   # Specify number of samples to generate." << std::endl <<
+        "DDX.setVerletCutoff(100.0);  # Specify square of radius to use when generating Verlet list." << std::endl <<
+        "DDX.setMinDiameter(0.0);     # Specify minimum diameter of cavity to include." << std::endl <<
+        "DDX.getResult();             # Retrieve results of computation/operation." << std::endl <<
+        "DDX.execute();               # Execute the operation." << std::endl <<
+        "DDX.printUsage();            # Generate this message." << std::endl <<
+        std::endl;
+
+/*
     printf("\nDDX usage:\t-box [ 6.0 6.0 6.0 ]\n");
     printf("\t\t-seed [ 1 ]\n");
     printf("\t\t-randomize \n");
@@ -135,14 +170,16 @@ void DDX::printUsage()
     printf("\t\t-volume_sampling \n");
     printf("\t\t-min_diameter [ 0.0 ]");
     printf("\n");
+*/
 }
 
 
 void DDX::execute()
 {
+    // the new wrapper
     // Clear old results, if any
-    result.reset();
-    result.setBoxDimensions(configuration.getBoxDimensions());
+    results.reset();
+    results.setBoxDimensions(configuration.getBoxDimensions());
 
     if (configuration.getSize() == 0) 
     {
@@ -169,50 +206,98 @@ void DDX::execute()
         fprintf(stderr, "Found simulation box volume = 0.0, gracefully exiting.\n");
         return;
     }
-  
-    number_of_molecules = configuration.getSize();
-  
+
+    // Initialize semaphore
+    if (sem_init(&semaphore, 0, number_of_threads) != 0) 
+    {
+        std::cout << "DDX::execute(): Could not initialize semaphore. " << std::endl;
+        return;
+    }
+
+    // Now launch the workers...
     for (int sample_number = 0; sample_number < number_of_samples; sample_number++)
     {
-        generateTestPoint();
-        while (calculateEnergy(0.0) > 0.0f) generateTestPoint();
-    
-        findEnergyMinimum();
-
-        makeVerletList();
-        expandTestParticle();
-    
-        sq_distance_from_initial_pt = (test_x-test_x0)*(test_x-test_x0) + (test_y-test_y0)*(test_y-test_y0) + (test_z-test_z0)*(test_z-test_z0);
-        if (!volume_sampling || (sq_distance_from_initial_pt < .25 * diameter * diameter))
-        {
-            if (diameter > min_diameter) 
-            {
-                // correct for box edges...
-                while (test_x >= box_x) test_x -= box_x;
-                while (test_x < 0) test_x += box_x;
-                while (test_y >= box_y) test_y -= box_y;
-                while (test_y < 0) test_y += box_y;
-                while (test_z >= box_z) test_z -= box_z;
-                while (test_z < 0) test_z += box_z;
-                result.pushBack(Cavity(test_x, test_y, test_z, diameter));
-            }
-        }
+        // Launch threads
+        threads.emplace_back(&DDX::run_sample, this, sample_number);
     }
-  
+
+    // Wait for completion
+    for (auto& t : threads) {
+        if(t.joinable()) t.join();
+    }
+
+    // Cleanup
+    sem_destroy(&semaphore);
+
 } // end DDX::execute()
 
 
-void DDX::generateTestPoint()
+// Thread function to run single sample for id
+void DDX::run_sample(int id)
 {
-    test_x = test_x0 = rng.next_float() * box_x;
-    test_y = test_y0 = rng.next_float() * box_y;
-    test_z = test_z0 = rng.next_float() * box_z;
+    sem_wait(&semaphore);
+    Sample s(this, id); 
+    sem_post(&semaphore);
+}
+
+
+// Do everything from the constructor
+DDX::Sample::Sample(DDX* _outer, int _id)
+{
+    outer = _outer;
+    id = _id;
+
+    // Initialize RNG based on seed and thread id
+    rng = MersenneTwister(outer->rng_seed + id);
+
+    generateTestPoint();
+    while (calculateEnergy(0.0) > 0.0f) generateTestPoint();
+    
+    findEnergyMinimum();
+
+    makeVerletList();
+    expandTestParticle();
+
+    // Discards point if outside of cavity when using volume sampling
+    vacuumms_float sq_distance_from_initial_pt = 
+            (test_x-test_x0) * (test_x-test_x0) 
+          + (test_y-test_y0) * (test_y-test_y0) 
+          + (test_z-test_z0) * (test_z-test_z0);
+    if (!outer->volume_sampling || (sq_distance_from_initial_pt < .25 * diameter * diameter))
+    {
+        if (diameter > outer->min_diameter) 
+        {
+            // correct for box edges...
+            while (test_x >= outer->box_x) test_x -= outer->box_x;
+            while (test_x < 0) test_x += outer->box_x;
+            while (test_y >= outer->box_y) test_y -= outer->box_y;
+            while (test_y < 0) test_y += outer->box_y;
+            while (test_z >= outer->box_z) test_z -= outer->box_z;
+            while (test_z < 0) test_z += outer->box_z;
+
+            // Synchronized code to write result
+            {
+                std::lock_guard<std::mutex> lock(outer->results_mutex);
+                outer->results.pushBack(Cavity(test_x, test_y, test_z, diameter));
+            }
+            
+        }
+    }
+
+} // end Sample::Sample()
+
+
+void DDX::Sample::generateTestPoint()
+{
+    test_x = test_x0 = rng.next_float() * outer->box_x;
+    test_y = test_y0 = rng.next_float() * outer->box_y;
+    test_z = test_z0 = rng.next_float() * outer->box_z;
 
     makeVerletList();
 } // end DDX::generateTestPoint()
 
 
-void DDX::makeVerletList()
+void DDX::Sample::makeVerletList()
 {
     verlet_list.clear(); // clear old list
 
@@ -220,42 +305,42 @@ void DDX::makeVerletList()
     vacuumms_float dx, dy, dz, dd;
     vacuumms_float shift_x, shift_y, shift_z;
 
-    while (test_x > box_x) test_x -= box_x;
-    while (test_y > box_y) test_y -= box_y;
-    while (test_z > box_z) test_z -= box_z;
+    while (test_x > outer->box_x) test_x -= outer->box_x;
+    while (test_y > outer->box_y) test_y -= outer->box_y;
+    while (test_z > outer->box_z) test_z -= outer->box_z;
 
-    while (test_x < 0) test_x += box_x;
-    while (test_y < 0) test_y += box_y;
-    while (test_z < 0) test_z += box_z;
+    while (test_x < 0) test_x += outer->box_x;
+    while (test_y < 0) test_y += outer->box_y;
+    while (test_z < 0) test_z += outer->box_z;
 
     verlet_center_x=test_x;
     verlet_center_y=test_y;
     verlet_center_z=test_z;
 
-    for (i=0; i < configuration.getSize(); i++)
+    for (i=0; i < outer->configuration.getSize(); i++)
     {
-        for (int index_x = -verlet_extent; index_x <= verlet_extent; index_x++)
-        for (int index_y = -verlet_extent; index_y <= verlet_extent; index_y++)
-        for (int index_z = -verlet_extent; index_z <= verlet_extent; index_z++)
+        for (int index_x = -outer->verlet_extent; index_x <= outer->verlet_extent; index_x++)
+        for (int index_y = -outer->verlet_extent; index_y <= outer->verlet_extent; index_y++)
+        for (int index_z = -outer->verlet_extent; index_z <= outer->verlet_extent; index_z++)
         {
-            shift_x = index_x * box_x;
-            shift_y = index_y * box_y;
-            shift_z = index_z * box_z;
+            shift_x = index_x * outer->box_x;
+            shift_y = index_y * outer->box_y;
+            shift_z = index_z * outer->box_z;
 
-            dx = shift_x + configuration.recordAt(i).x - test_x;
-            dy = shift_y + configuration.recordAt(i).y - test_y;
-            dz = shift_z + configuration.recordAt(i).z - test_z;
+            dx = shift_x + outer->configuration.recordAt(i).x - test_x;
+            dy = shift_y + outer->configuration.recordAt(i).y - test_y;
+            dz = shift_z + outer->configuration.recordAt(i).z - test_z;
 
             dd = dx*dx + dy*dy + dz*dz;
 
-            if (dd < verlet_cutoff) 
+            if (dd < outer->verlet_cutoff) 
             {  
-                vacuumms_float close_x = shift_x + configuration.recordAt(i).x;
-                vacuumms_float close_y = shift_y + configuration.recordAt(i).y;
-                vacuumms_float close_z = shift_z + configuration.recordAt(i).z;
+                vacuumms_float close_x = shift_x + outer->configuration.recordAt(i).x;
+                vacuumms_float close_y = shift_y + outer->configuration.recordAt(i).y;
+                vacuumms_float close_z = shift_z + outer->configuration.recordAt(i).z;
 
-                vacuumms_float close_sigma = configuration.recordAt(i).sigma;
-                vacuumms_float close_epsilon = configuration.recordAt(i).epsilon;
+                vacuumms_float close_sigma = outer->configuration.recordAt(i).sigma;
+                vacuumms_float close_epsilon = outer->configuration.recordAt(i).epsilon;
                 ConfigurationRecord close_atom(close_x, close_y, close_z, close_sigma, close_epsilon);
                 verlet_list.pushBack(close_atom);
             }
@@ -264,7 +349,7 @@ void DDX::makeVerletList()
 } // end DDX::makeVerletList()
 
 
-void DDX::findEnergyMinimum()
+void DDX::Sample::findEnergyMinimum()
 {
     vacuumms_float dx, dy, dz, dd, d6, d14;
     vacuumms_float factor;
@@ -281,13 +366,13 @@ void DDX::findEnergyMinimum()
     makeVerletList();
 
     // begin loop to iterate until minimum found
-    for (int attempts=0; attempts<number_of_steps; attempts++)
+    for (int attempts=0; attempts<outer->number_of_steps; attempts++)
     {
         drift_sq = (test_x-verlet_center_x)*(test_x-verlet_center_x) 
                  + (test_y-verlet_center_y)*(test_y-verlet_center_y) 
                  + (test_z-verlet_center_z)*(test_z-verlet_center_z);
 
-        if (drift_sq > .01 * verlet_cutoff) makeVerletList();
+        if (drift_sq > .01 * outer->verlet_cutoff) makeVerletList();
 
         // find the gradient at test_x, test_y, test_Z using the derivative of energy
         grad_x=0; grad_y=0; grad_z=0;
@@ -340,7 +425,7 @@ void DDX::findEnergyMinimum()
 } // end DDX::findEnergyMinimum()
 
 
-vacuumms_float DDX::calculateRepulsion()
+vacuumms_float DDX::Sample::calculateRepulsion()
 {
     vacuumms_float repulsion=0;
     vacuumms_float dx, dy, dz, dd, d6, d12;
@@ -365,7 +450,7 @@ vacuumms_float DDX::calculateRepulsion()
 } // end DDX::calculateRepulsion()
 
 
-vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
+vacuumms_float DDX::Sample::calculateEnergy(vacuumms_float test_diameter)
 {
     vacuumms_float repulsion=0;
     vacuumms_float attraction=0;
@@ -395,7 +480,7 @@ vacuumms_float DDX::calculateEnergy(vacuumms_float test_diameter)
 } // end DDX::calculateEnergy()
 
 
-void DDX::expandTestParticle()
+void DDX::Sample::expandTestParticle()
 {
     vacuumms_float step_tolerance = 1.0e-6;
     vacuumms_float h = 1.0e-6; // Finite difference step size
@@ -406,10 +491,9 @@ void DDX::expandTestParticle()
     while(calculateEnergy(diameter += diameter_step) < 0);
     
     //while (iteration++ < number_of_steps) 
-    for (int iteration = 0; iteration < number_of_steps; iteration++) 
+    for (int iteration = 0; iteration < outer->number_of_steps; iteration++) 
     {
         vacuumms_float energy = calculateEnergy(diameter);
-std::cout << "energy= " << energy << std::endl;
         vacuumms_float d_energy = (calculateEnergy(diameter + h) - calculateEnergy(diameter - h)) / (2.0 * h);
 
         if (fabs(d_energy) < 1e-10)

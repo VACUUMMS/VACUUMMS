@@ -1,4 +1,4 @@
-/* prng.c */
+/* prng.cc */
 
 /****************************************************************************/
 /*                                                                          */
@@ -24,8 +24,7 @@
 /* includes */
 
 #include <math.h>
-#include <assert.h>
-#include <pthread.h>
+//#include <pthread.h>
 
 #include <vacuumms/prng.h>
 

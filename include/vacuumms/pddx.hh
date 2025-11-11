@@ -28,8 +28,9 @@ PDDX : public Operation
 
         PDDX(Configuration c, Parameters p);
         PDDX();
-//        CavityConfiguration getOutput();
         void execute();
+//        CavityConfiguration getOutput();
+/* gutting this so only constructor remains, to provide warning/redirect to DDX
         void setParameters(Parameters p);
         void setConfiguration(Configuration c);
         Configuration getConfiguration();
@@ -43,9 +44,11 @@ PDDX : public Operation
         pybind11::str __repr__();
 #endif
 
+*/
     private:
 
         // All the data unique to a particular sample is in this struct */
+/*
         typedef struct 
         {
             int                       thread_id;
@@ -72,9 +75,10 @@ PDDX : public Operation
         void expandTestParticle(Trajectory*);
 
         CavityConfiguration result;
+*/
         Configuration c;
         Parameters p;
-
+/*
         // Working vars from C implementation
         double x[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
         double y[VACUUMMS_MAX_NUMBER_OF_MOLECULES];
@@ -127,6 +131,7 @@ PDDX : public Operation
         FILE *instream;
 
         int verbose;
+*/
 
 }; // end class PDDX
 

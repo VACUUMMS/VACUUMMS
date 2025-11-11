@@ -12,7 +12,7 @@
 #include <vacuumms/ddx.hh>
 #include <vacuumms/variational/variational.hh>
 #include <vacuumms/variational/variational_scene.hh>
-//#include <vacuumms/pddx.hh>
+#include <vacuumms/pddx.hh> // deprecated as of 1.3.x
 #include <vacuumms/lammps.hh>
 #include <vacuumms/scene.hh>
 
@@ -149,6 +149,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setMinDiameter", &DDX::setMinDiameter)
         .def("setLearningRate", &DDX::setLearningRate)
         .def("setTolerance", &DDX::setTolerance)
+        .def("setNumberOfThreads", &DDX::setNumberOfThreads)
         .def("setRNGSeed", &DDX::setRNGSeed)
         .def("getResult", &DDX::getResult)
         .def("__repr__", &DDX::__repr__)
@@ -156,18 +157,18 @@ PYBIND11_MODULE(vacuumms, m)
 
     // Interface to PDDX (Operation subclass)
     
-/* needs internal work
     py::class_<PDDX, Operation>(m, "PDDX")
         .def(py::init<>())
         .def(py::init<Configuration, Parameters>())
+/* deprecated, constructor will print warning and new instructions
         .def("printUsage", &PDDX::printUsage)
         .def("getConfiguration", &PDDX::getConfiguration)
         .def("setConfiguration", &PDDX::setConfiguration)
         .def("execute", &PDDX::execute)
         .def("getResult", &PDDX::getResult)
         .def("__repr__", &PDDX::__repr__)
-    ;
 */
+    ;
 
 
     // Scene interface, for generating and rendering POVRay SDL
