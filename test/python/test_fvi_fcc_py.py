@@ -8,14 +8,9 @@ g.setBoxDimensions([4.242640687119285,4.242640687119285,4.242640687119285])
 g.cram()
 
 fvi=v.FVIX(g)
-fvi.setDimensions([256,256,256])
+fvi.setDimensions([4,4,4])
 fvi.execute()
 
 print(fvi.getFVI())
 
-v.finalize_cuda()
-
 print("done")
-
-
-

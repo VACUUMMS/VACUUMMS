@@ -1,4 +1,4 @@
-# CMakeLists.txt for module/variational
+# CMakeLists.txt for libraries/vacuumms_variational
 
 option(BUILD_SHARED_LIBS "shared libs " ON)
 option(BUILD_STATIC_LIBS "static libs " OFF)

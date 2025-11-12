@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <assert.h>
 
 #include <map>
 #include <vector>

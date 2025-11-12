@@ -15,13 +15,20 @@
 PDDX::PDDX(Configuration c, Parameters p) : 
     c{c}, p{p} 
 {
+    std::cout << "PDDX is now deprecated, use DDX instead, " << std::endl;
+    std::cout << "Use DDX.setNumberOfThreads() to specify concurrency. Default value is 1." << std::endl;
+    std::cout << "Specify DDX.setNumberOfThreads(0) to use all availble cores." << std::endl;
 }
+
 
 PDDX::PDDX()
 {
+    std::cout << "PDDX is now deprecated, use DDX instead, " << std::endl;
+    std::cout << "Use DDX.setNumberOfThreads() to specify concurrency. Default value is 1." << std::endl;
+    std::cout << "Specify DDX.setNumberOfThreads(0) to use all availble cores." << std::endl;
 }
 
-
+/*
 void PDDX::setParameters(Parameters _p)
 {
     p = _p;
@@ -71,10 +78,11 @@ void PDDX::printUsage()
     printf("\t\t-min_diameter [ 0.0 ]");
     printf("\n");
 }
-
+*/
 
 /* Helper struct and function for threading of member function */
 
+/*
 struct ThreadArgs
 {
     PDDX* calling_instance;
@@ -91,8 +99,15 @@ void* threadEntry(void* arg)
 
 
 // set up, create, run, and join threads
+*/
 void PDDX::execute()
 {
+    std::cout << "PDDX is now deprecated, use DDX instead, " << std::endl;
+    std::cout << "Use DDX.setNumberOfThreads() to specify concurrency. Default value is 1." << std::endl;
+    std::cout << "Specify DDX.setNumberOfThreads(0) to use all availble cores." << std::endl;
+}
+
+/*
   double sq_distance_from_initial_pt;
 
   verbose = p.getFlagParam((char*)"-verbose");
@@ -151,9 +166,10 @@ void PDDX::execute()
   sem_init(&completion_semaphore, 0, 0);
   assert(status == 0);
   int complete=0;
-
+*/
 
   /* This is the loop where all threads are started, wait and run */
+/*
   for (thread_idx=0; thread_idx<number_of_samples; thread_idx++) {
     sem_wait(&semaphore); // thread waits to become eligible
     int rc;
@@ -172,17 +188,11 @@ void PDDX::execute()
 } // end execute()
  
 
-//------
-// replaces execute() of ddx serial version
-//void *PDDX::ThreadMain(void *threadID)
-//{
-//------
-//
 void *PDDX::ThreadMain(void* passval) 
 {
     Trajectory *p_traj = (Trajectory*)malloc(sizeof(Trajectory));
     assert(p_traj);
-    /* passval is just an int wrapped as void*, need to cast down to int via long to match type size */
+    // passval is just an int wrapped as void*, need to cast down to int via long to match type size 
     p_traj->thread_id = (int)(long)passval;
     MersenneInitialize(&(p_traj->rng), seed + p_traj->thread_id);
 
@@ -457,3 +467,4 @@ void PDDX::expandTestParticle(Trajectory* p_traj)
   }
 } // end PDDX::expandTestParticle()
 
+*/

@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#echo "source>>"${BinaryPath}
 echo "SourcePath>>"${SourcePath}
 echo "TestDataPath>>"${TestDataPath}
 

@@ -2,6 +2,13 @@
 
 ---
 
+## 1.3.1:
+
+- Patch release to support multithreading in DDX
+- Deprecates PDDX with warning/advice to use now multihtreaded DDX
+
+---
+
 ## 1.3.0:
 
 - Full-fledged release of C++/Python/Jupyter notebook support for major codes

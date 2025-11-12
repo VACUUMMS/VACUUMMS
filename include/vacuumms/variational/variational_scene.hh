@@ -5,14 +5,10 @@
 #include <vacuumms/types.h>
 
 #include <vacuumms/scene.hh>
-#include <vacuumms/variational/variational_scene.hh>
 #include <vacuumms/configuration.hh>
 
 #include <vacuumms/exports.hh>
 
-
-// extern const vacuumms_float machine_epsilon;
-// extern const vacuumms_float sqrt_machine_epsilon;
 
 class 
 #ifdef PYBIND11_EXPORTS 

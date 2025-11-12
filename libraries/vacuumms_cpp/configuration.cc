@@ -192,6 +192,12 @@ void Configuration::deleteRecordAt(int i)
 }
 
 
+void Configuration::clear()
+{
+    records.clear();
+}
+
+
 int Configuration::getSize()
 {
     return records.size();
