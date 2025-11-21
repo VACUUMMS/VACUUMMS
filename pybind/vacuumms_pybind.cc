@@ -112,7 +112,14 @@ PYBIND11_MODULE(vacuumms, m)
         .def("replicate", &CavityConfiguration::replicate)
         .def("recordAt", &CavityConfiguration::recordAt)
         .def("pushBack", &CavityConfiguration::pushBack)
+        .def("generateClusters", &CavityConfiguration::generateClusters)
+        .def("setBoxDimensions", &CavityConfiguration::setBoxDimensions)
+        .def("getBoxDimensions", &CavityConfiguration::getBoxDimensions)
         .def("__repr__", &CavityConfiguration::__repr__)
+        ;
+
+    py::class_<CavityCluster>(m, "CavityCluster")
+        .def("__repr__", &CavityCluster::__repr__)
         ;
 
     /* Operations subclass notes: 

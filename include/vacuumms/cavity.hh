@@ -129,7 +129,7 @@ CavityCluster
         vacuumms_float                              volume;
         CavityConfiguration                         configuration;
 
-        CavityCluster();
+        CavityCluster() = default;
         void pushBack(Cavity);
         int getSize();
         int isPointInside(std::array<vacuumms_float, 3>);

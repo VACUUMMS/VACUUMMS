@@ -28,6 +28,7 @@ std::vector<CavityCluster> CavityConfiguration::generateClusters()
 //int cavityA[MAX_PAIRS], cavityB[MAX_PAIRS];
 
     // findAllPairs()
+std::cout << "finding pairs " << std::endl;
     
     std::vector<std::pair<int, int>> pairs;
 
@@ -51,12 +52,14 @@ std::vector<CavityCluster> CavityConfiguration::generateClusters()
         }
     }
 
+std::cout << "initialize clusters " << std::endl;
     // initialize clusters to index of cavities
     std::vector<int> cluster_numbers;
     for (int i = 0; i < records.size(); i++) cluster_numbers.emplace_back(i);
 
     // buildClusters()
 
+std::cout << "build clusters " << std::endl;
     for (int i=0; i<records.size(); i++) 
     for (int j=0; j<pairs.size(); j++) 
         if (pairs[j].first == i) cluster_numbers[pairs[j].second] = cluster_numbers[i];
@@ -70,12 +73,14 @@ std::vector<CavityCluster> CavityConfiguration::generateClusters()
     // build cluster objects 
     // cluster_numbers are the one-to-one mapping of cavity number to cluster number
     
+std::cout << "build cluster objects " << std::endl;
     for (int i = 0; i < cluster_numbers.size(); i++) // for each cluster number
     {
         CavityCluster cluster; // create an empty cluster
 
         for (int j = 0; j < cluster_numbers.size(); j++) // find all cavities mapped to that cluster number
-            if (cluster_numbers[j] == i) cluster.pushBack(records[i]);
+            // if (cluster_numbers[j] == i) cluster.pushBack(records[i]);
+            if (cluster_numbers[j] == i) cluster.pushBack(records[j]);
         
         // size zero clusters get skipped and discarded
         if (cluster.getSize() > 0) clusters.push_back(cluster);
@@ -137,6 +142,7 @@ std::vector<CavityCluster> CavityConfiguration::generateClusters()
     }
 */
 
+std::cout << "returning clusters " << std::endl;
 /* printCluster()
   int i, j;
   for (i=0; i<number_of_cavities; i++)
@@ -153,4 +159,28 @@ int CavityCluster::getSize()
     return configuration.getSize();
 }
 
+
+#ifdef BUILD_PYBIND_BINDINGS
+
+pybind11::str CavityCluster::__repr__()
+{
+    return configuration.__repr__();
+/*
+    pybind11::str retval("");
+
+    for (int i=0; i<records.size(); i++)
+        retval = retval +
+                 pybind11::str(std::to_string(records[i].x)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].y)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].z)) +
+                 pybind11::str("\t") +
+                 pybind11::str(std::to_string(records[i].d)) +
+                 pybind11::str("\n");
+    return retval;
+*/
+}
+
+#endif
 
