@@ -53,11 +53,11 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )
 
-#add_test(
-#    NAME test_pddx_fcc_py
-#    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_pddx_fcc_py.sh
-#    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-#)
+add_test(
+    NAME test_cluster
+    COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test_cluster_py.sh
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+)
 
 add_test(
     NAME test_fvi_fcc_py
