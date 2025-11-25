@@ -50,6 +50,7 @@ DDX : public Operation
         void setTolerance(vacuumms_float);
         static void printUsage();
         CavityConfiguration getResult();
+        void reorderResults();
         void setNumberOfThreads(int);
         void setRNGSeed(int);
 
@@ -61,6 +62,7 @@ DDX : public Operation
 
         // Results and outer settings
         CavityConfiguration results;
+        std::vector<int> results_order;
         Configuration configuration;
         Parameters parameters;
 

@@ -13,6 +13,9 @@
 #include <vacuumms/exports.hh>
 
 
+// forward declaration because used in CavityConfiguration
+class CavityCluster;
+
 class 
 #ifdef PYBIND11_EXPORTS 
 PYBIND11_EXPORT 
@@ -69,6 +72,7 @@ CavityConfiguration
         int checkInclusion(vacuumms_float tx, vacuumms_float ty, vacuumms_float tz);
         int pushBack(Cavity _cavity);
         void setDuplicateThreshold(vacuumms_float);
+        std::vector<CavityCluster> generateClusters();
         void reset();
 
         std::vector<vacuumms_float> box_dimensions = {0.0, 0.0, 0.0};
@@ -110,4 +114,29 @@ CavitySizeDistribution : public Histogram
 
 }; // end class CavitySizeDistribution
 
+
+class
+#ifdef PYBIND11_EXPORTS 
+PYBIND11_EXPORT
+#endif
+CavityCluster
+{
+    public:
+
+        std::vector<std::array<vacuumms_float, 3>>  point_cloud;
+        std::array<vacuumms_float, 3>               center_of_mass;
+        vacuumms_float                              radius_of_gyration;
+        vacuumms_float                              volume;
+        CavityConfiguration                         configuration;
+
+        CavityCluster() = default;
+        void pushBack(Cavity);
+        int getSize();
+        int isPointInside(std::array<vacuumms_float, 3>);
+
+#ifdef BUILD_PYBIND_BINDINGS
+        pybind11::str __repr__();
+#endif
+
+};
 

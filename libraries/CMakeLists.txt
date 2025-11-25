@@ -30,6 +30,7 @@ target_include_directories(vacuumms_rt PUBLIC
 
 add_library(vacuumms_cpp SHARED
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/cavity.cc
+    ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/cluster.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/vertex.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/edge.cc
     ${PROJECT_SOURCE_DIR}/libraries/vacuumms_cpp/param.cc

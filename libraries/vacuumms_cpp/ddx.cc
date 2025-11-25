@@ -116,6 +116,21 @@ void DDX::setTolerance(vacuumms_float _tolerance)
 }
 
 
+void DDX::reorderResults()
+{
+    CavityConfiguration ordered_results;
+    for (int i = 0; i < results_order.size(); i++)
+    for (int j = 0; j < results.getSize(); j++)
+    if (results_order[i] == j) 
+    {
+        ordered_results.pushBack(results.recordAt(j));
+        continue;
+    }
+
+    results = ordered_results;
+}
+
+
 #ifdef BUILD_PYBIND_BINDINGS
 pybind11::str DDX::__repr__()
 {
@@ -279,6 +294,7 @@ DDX::Sample::Sample(DDX* _outer, int _id)
             {
                 std::lock_guard<std::mutex> lock(outer->results_mutex);
                 outer->results.pushBack(Cavity(test_x, test_y, test_z, diameter));
+                outer->results_order.push_back(id);
             }
             
         }
