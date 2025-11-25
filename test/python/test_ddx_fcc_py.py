@@ -26,5 +26,6 @@ ddx.setVerletCutoff(64.0) # default is 10.0 * 10.0 = 100.0, cutoff radius^2 when
 ddx.setVerletExtent(3)    # how many levels of mirror boxes to search when building Verlet list, default is 1
 
 ddx.execute()
+ddx.reorderResults()      # threads run independently. this will order results to match thread ids
 print(ddx.getResult())
 

@@ -159,6 +159,7 @@ PYBIND11_MODULE(vacuumms, m)
         .def("setNumberOfThreads", &DDX::setNumberOfThreads)
         .def("setRNGSeed", &DDX::setRNGSeed)
         .def("getResult", &DDX::getResult)
+        .def("reorderResults", &DDX::reorderResults)
         .def("__repr__", &DDX::__repr__)
     ;
 
